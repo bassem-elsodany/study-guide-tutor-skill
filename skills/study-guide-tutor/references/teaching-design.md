@@ -65,11 +65,11 @@ The student-persona reviewer must answer without elimination tricks and must say
 
 ## The teacher may merge or split chapters
 
-Chapter boundaries follow the source's headings, but the teacher's job is to deliver the knowledge, not to mirror the table of contents. When teaching a chapter shows that two neighbouring chapters are one story (one problem and its remedy, one list and its classification, a chapter too short to stand alone), merge them; when one chapter holds two stories that each need their own thread, split it. This is a standing permission of the skill: do not ask first, but record the reason in the domain README and tell the student in the wrap-up message.
+Chapter boundaries follow the source's headings, but the teacher's job is to deliver the knowledge, not to mirror the table of contents. When teaching a chapter shows that two neighbouring chapters are one story (one problem and its remedy, one list and its classification, a chapter too short to stand alone), merge them; when one chapter holds two stories that each need their own thread, split it. This is a standing permission of the skill: do not ask first, but record the reason in the unit README and tell the student in the wrap-up message.
 
 Signs to merge: the second chapter only makes sense after the first and answers the question the first leaves open; the combined slide range is under about 90 slides and the lesson still fits the reading budget; one running scenario can carry both; the quizzes share concepts and distractors. Signs to split: two unrelated scenarios, or a lesson that cannot fit the budget.
 
-A merge or split keeps the source map intact (the lesson names every slide range), renumbers folders, headings, ledger IDs, flashcards, quiz and key questions, the domain README, concept map, cram sheet, score tracker, revisit list, final quiz and domain exam together, then runs `check_bundle.py`, `audit_quiz.py` and `make_domain_exam.py`. Never lose a ledger fact or a quiz question in a merge.
+A merge or split keeps the source map intact (the lesson names every slide range), renumbers folders, headings, ledger IDs, flashcards, quiz and key questions, the unit README, concept map, cram sheet, score tracker, revisit list, final quiz and exam together, then runs `check_bundle.py`, `audit_quiz.py` and `make_exam.py`. Never lose a ledger fact or a quiz question in a merge.
 
 ## Failures seen in first drafts (check for them)
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Fail a lesson that dumps the slides instead of teaching them.
+"""Fail a lesson that dumps the source (slides, pages, notes) instead of teaching it.
 
-Usage: check_dump.py ROOT_OR_LESSON [--source slides.txt] [--max-overlap 0.45] [--max-sentence-cells 0.35]
+Usage: check_dump.py ROOT_OR_LESSON [--source CACHE.txt] [--max-overlap 0.45] [--max-sentence-cells 0.35]
 
 For every numbered section ("## N. ...") of a 01-lesson.md it measures
   overlap   share of the section's 6-word shingles that also occur in the source text (the chapter's
-            99-fact-ledger.md by default, or --source with the extracted slides). A section that is
-            mostly the slides' own wording is a dump.
+            99-fact-ledger.md by default, or --source with the extracted source text). A section that is
+            mostly the source's own wording is a dump.
   sentence cells   share of the section's words that sit in table cells or list items of 14+ words
-            (slide sentences pasted into a table are still a dump).
+            (source sentences pasted into a table are still a dump).
   teaching  at least one of: a Predict check (<details>), an analogy ("my analogy"), a link or story
             marker ("my link", "my story", "my example", "my scenario"), a question-style heading or a
             "The problem" opening, and at least 25 words of explanatory prose (not table or list).
@@ -17,6 +17,9 @@ or has too little prose. Exact figures and lists are expected to overlap a littl
 for them. Exit code 1 if any section fails. This is a gate: a lesson that fails is rewritten, not shipped.
 """
 import argparse, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 
 def norm(t):
@@ -34,7 +37,8 @@ def sections(text):
     return [(parts[i], parts[i + 1]) for i in range(1, len(parts) - 1, 2)]
 
 
-def analyse(body, src_sh, a):
+def analyse(body, src_sh, a, L=None):
+    L = L or _layout.DEFAULT_LABELS
     lines = [l for l in body.split('\n')]
     prose, cells_long, cells_all, details = 0, 0, 0, 0
     for l in lines:
@@ -54,12 +58,13 @@ def analyse(body, src_sh, a):
     overlap = (len(sh & src_sh) / len(sh)) if sh else 0
     total = max(1, prose + cells_all)
     low = body.lower()
-    teaching = [k for k, v in (('predict', 'predict:' in low), ('analogy', 'my analogy' in low),
-                               ('link/story', any(x in low for x in ('my link', 'my story', 'my example', 'my scenario', 'my picture')))) if v]
+    teaching = [k for k, v in (('predict', (L['predict'].lower() + ':') in low), ('analogy', L['analogy'].lower() in low),
+                               ('link/story', any(L[k].lower() in low for k in ('link', 'story', 'example', 'scenario', 'picture')))) if v]
     return overlap, cells_long / total, prose, teaching
 
 
 def check(lesson, a):
+    L = _layout.labels(lesson)
     ch = os.path.dirname(lesson)
     srcp = a.source or os.path.join(ch, '99-fact-ledger.md')
     src = open(srcp).read() if os.path.exists(srcp) else ''
@@ -67,11 +72,11 @@ def check(lesson, a):
     src_sh = shingles(norm(src))
     bad = 0
     for head, body in sections(open(lesson).read()):
-        ov, sc, prose, teaching = analyse(body, src_sh, a)
-        qhead = '?' in head
+        ov, sc, prose, teaching = analyse(body, src_sh, a, L)
+        qhead = '?' in head or '\u061f' in head
         why = []
         if ov > a.max_overlap: why.append(f'{ov:.0%} of its wording is the source (max {a.max_overlap:.0%})')
-        if sc > a.max_sentence_cells: why.append(f'{sc:.0%} is slide sentences in tables/lists (max {a.max_sentence_cells:.0%})')
+        if sc > a.max_sentence_cells: why.append(f'{sc:.0%} is source sentences in tables/lists (max {a.max_sentence_cells:.0%})')
         if not teaching and not qhead: why.append('no Predict, analogy, story or link')
         if prose < 25: why.append(f'only {prose} words of explanation')
         if why:

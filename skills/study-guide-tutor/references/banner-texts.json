@@ -48,6 +48,18 @@
   },
   "domain-exam-key": {
    "check": "open only after you finish the exam; each miss points back to the chapter to revisit."
+  },
+  "exam": {
+   "check": "exam-style practice; take it in one sitting, then use the key to find weak chapters and add them to the revisit list."
+  },
+  "exam-key": {
+   "check": "open only after you finish the exam; each miss points back to the chapter to revisit."
+  },
+  "unit-exam": {
+   "check": "exam-style practice; take it in one sitting, then use the key to find weak chapters and add them to the revisit list."
+  },
+  "unit-exam-key": {
+   "check": "open only after you finish the exam; each miss points back to the chapter to revisit."
   }
  }
 }

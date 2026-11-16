@@ -106,7 +106,7 @@ A memory anchor is short and concrete: a contrast ("documents 10 years, logs 6 m
 
 
 ## Measured balance (added in v0.4.0)
-- Key-longest share: about 25-35% of questions over a domain; never a key 8% or more longer than the longest wrong option. Write wrong options as near-miss clones of the key (same structure and length, one fact swapped), not as shorter statements. Run `scripts/audit_quiz.py`.
-- Spread key letters across a domain (about equal A, B, C, D) and never three identical letters in a row.
+- Key-longest share: about 25-35% of questions over a unit; never a key 8% or more longer than the longest wrong option. Write wrong options as near-miss clones of the key (same structure and length, one fact swapped), not as shorter statements. Run `scripts/audit_quiz.py`.
+- Spread key letters across a unit (about equal A, B, C, D) and never three identical letters in a row.
 - Every wrong option has its own why-wrong bullet, and every question has a hint line that does not reveal the answer.
 - Why-wrong bullets must not rely on outside knowledge or add claims the slide does not make.

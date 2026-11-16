@@ -1,13 +1,13 @@
-# <Unit name>: Overview Files
+# <Unit or course name>: Overview Files
 
-This folder holds the files that cut across all <N> chapters of the unit. You do **not** need to read them in order, and most of them are used *after* the chapters, not before. This page tells you what each one is for.
+This folder holds the files that cut across all <N> chapters of this unit (or of the whole course when it has no units). You do **not** need to read them in order, and most of them are used *after* the chapters, not before. This page tells you what each one is for.
 
 ## The short version
 
 1. Want to **practise**? Open [09-study-player.html](09-study-player.html) (double-click it).
 2. Want a **map** before you start? Read [01-concept-map.md](01-concept-map.md).
 3. Done with the chapters and want a **quick revision**? Read [02-cram-sheet.md](02-cram-sheet.md).
-4. Want to **test yourself** across everything? Take the [checkpoint](03-final-quiz.md) and then the [timed exam](07-domain-exam.md).
+4. Want to **test yourself** across everything? Take the [checkpoint](03-final-quiz.md) and then the [timed exam](07-exam.md).
 5. After a session the tutor fills [05-score-tracker.md](05-score-tracker.md) and [06-revisit-list.md](06-revisit-list.md); you only read them.
 
 ## What each file is for
@@ -20,8 +20,8 @@ This folder holds the files that cut across all <N> chapters of the unit. You do
 | [04-final-quiz-key.md](04-final-quiz-key.md) | its key with the reason each wrong option is wrong | only after you answered | **yes** |
 | [05-score-tracker.md](05-score-tracker.md) | your results per chapter | to see progress | no |
 | [06-revisit-list.md](06-revisit-list.md) | missed concepts with memory anchors | every day or two, then a few days later, then the week after | facts only |
-| [07-domain-exam.md](07-domain-exam.md) | one timed exam over every chapter (<N> questions, <M> minutes) | once, in one sitting, no notes | no |
-| [08-domain-exam-key.md](08-domain-exam-key.md) | its key with chapter and source of each question | only after the exam | **yes** |
+| [07-exam.md](07-exam.md) | one timed exam over every chapter (<N> questions, <M> minutes) | once, in one sitting, no notes | no |
+| [08-exam-key.md](08-exam-key.md) | its key with chapter and source of each question | only after the exam | **yes** |
 | [09-study-player.html](09-study-player.html) | the interactive player: quiz, flashcards, exam, progress, results download | any time you want to practise | answers show after you choose |
 
 ## Which files you can leave alone
@@ -34,4 +34,4 @@ This folder holds the files that cut across all <N> chapters of the unit. You do
 
 Built from the quiz, key and flashcard files; do not edit the HTML by hand (rebuild with `make_player.py`). Progress is saved in that browser only; "Download my results" saves a file for your tutor. It works offline.
 
-Back to the [unit README](../README.md).
+Back to the [README](../README.md).

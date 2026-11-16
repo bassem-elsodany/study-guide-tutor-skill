@@ -5,7 +5,7 @@ Usage: add_toc.py ROOT [--check]
 
 Rules
   * Lessons get a nested contents list (## sections and ### sub-sections).
-  * Quizzes, answer keys, final quizzes and domain exams get a "Jump to" line of question links;
+  * Quizzes, answer keys, final quizzes and exams get a "Jump to" line of question links;
     an invisible anchor (<a id="q1"></a>) is placed before each question so the links work.
   * Every other file with two or more ## headings (visual summaries, ledgers, cram sheets, concept
     maps, READMEs) gets a list of its ## sections.
@@ -17,6 +17,9 @@ Rules
 --check lists files that should have a TOC but do not (exit code 1) without changing anything.
 """
 import argparse, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 
 def slug(text, seen):
@@ -48,13 +51,14 @@ def display(t):
 
 def kind(path):
     n = re.sub(r'^\d+-', '', os.path.basename(path))
-    if n in ('quiz.md', 'answer-key.md', 'final-quiz.md', 'final-quiz-key.md', 'domain-exam.md', 'domain-exam-key.md') or n.startswith('mock-exam'):
+    if n in ('quiz.md', 'answer-key.md', 'final-quiz.md', 'final-quiz-key.md', 'domain-exam.md', 'domain-exam-key.md', 'exam.md', 'exam-key.md', 'unit-exam.md', 'unit-exam-key.md') or n.startswith('mock-exam'):
         return 'questions'
     if n == 'lesson.md': return 'lesson'
     return 'sections'
 
 
 def build(path):
+    L = _layout.labels(path)
     s = open(path).read()
     s = re.sub(r'<!-- toc -->.*?<!-- /toc -->\n*', '', s, flags=re.S)
     lines = s.split('\n')
@@ -71,13 +75,13 @@ def build(path):
             out.append(l)
         if len(nums) < 2: return None
         lines = out
-        body = 'Jump to: ' + ' · '.join(f'[Q{n}](#q{n})' for n in nums)
+        body = L['jump_to'] + ': ' + ' · '.join(f'[Q{n}](#q{n})' for n in nums)
     else:
-        hs = [h for h in headings(lines) if h[1].strip().lower() != 'contents']
+        hs = [h for h in headings(lines) if h[1].strip().lower() != L['contents'].lower()]
         use = [h for h in hs if h[0] == 2 or (k == 'lesson' and h[0] == 3)]
         if len([h for h in hs if h[0] == 2]) < 2: return None
         body = '\n'.join(('  ' if h[0] == 3 else '') + f'- [{display(h[1])}](#{h[2]})' for h in use)
-    block = f'<!-- toc -->\n## Contents\n\n{body}\n<!-- /toc -->\n'
+    block = f'<!-- toc -->\n## {L["contents"]}\n\n{body}\n<!-- /toc -->\n'
     # insertion point: after a legacy top banner if one exists, else after the H1 (the audience note is now a footer)
     top = next((i for i, l in enumerate(lines) if l.strip() == '<!-- audience-banner:top -->'), None)
     idx = next((i for i, l in enumerate(lines) if i > top and l.strip() == '<!-- /audience-banner -->'), None) if top is not None else None

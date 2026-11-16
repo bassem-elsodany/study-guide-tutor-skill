@@ -33,7 +33,7 @@ select,input[type=number]{font:inherit;background:var(--card);color:var(--ink);b
 label{display:inline-flex;gap:6px;align-items:center}
 .stem{font-size:1.05rem;margin:0 0 14px}
 .opts{display:grid;gap:8px}
-button.opt{font:inherit;text-align:left;display:flex;gap:10px;width:100%;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+button.opt{font:inherit;text-align:start;display:flex;gap:10px;width:100%;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 button.opt:hover:not(:disabled){border-color:var(--accent)}
 button.opt .L{font-weight:700;min-width:1.4em;color:var(--muted)}
 button.opt.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
@@ -51,7 +51,7 @@ button.opt:disabled{cursor:default}
 .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
 .bar>i{display:block;height:100%;background:var(--accent)}
 table{border-collapse:collapse;width:100%}
-th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:start;font-size:.92rem}
 .flash{min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem;padding:18px}
 .grid{display:flex;gap:6px;flex-wrap:wrap}
 .grid button{min-width:36px;padding:4px 8px}
@@ -83,6 +83,116 @@ footer{padding:18px 16px 40px;color:var(--muted);font-size:.85rem}
 var D = JSON.parse(document.getElementById('data').textContent);
 var KEY = 'sgt:' + D.id;
 var DAY = 86400000;
+var STR = {
+  "tabQuiz": "Quiz",
+  "tabCards": "Flashcards",
+  "tabExam": "Exam",
+  "tabProgress": "Progress",
+  "studyModes": "Study modes",
+  "chShort": "Ch. {n}",
+  "chTitle": "Ch. {n} {title}",
+  "setAll": "All chapters, mixed (questions: {n})",
+  "setCh": "Ch. {n} {title} ({k})",
+  "setFinal": "Checkpoint across all chapters (questions: {n})",
+  "setMisses": "My misses ({n})",
+  "quizPick": "Pick what to practise",
+  "quizSetLabel": "Question set",
+  "shufOpts": "Shuffle answer order",
+  "shufQs": "Shuffle question order",
+  "quizHelp": "Answer with a click or with the keys A to D. Hints are optional and are marked in your score. After every answer you see why each wrong option is wrong and where the fact comes from.",
+  "start": "Start",
+  "quit": "Quit",
+  "answerOptions": "Answer options",
+  "qOf": "Question {i} of {n}",
+  "hintShow": "Show a hint",
+  "hintShown": "Hint shown",
+  "hintWord": "Hint:",
+  "correct": "Correct",
+  "notQuite": "Not quite",
+  "yourPick": "(your pick)",
+  "source": "Source: {s}",
+  "nextQ": "Next question",
+  "seeResults": "See results",
+  "results": "Results: {label}",
+  "hintedN": "Answered with a hint: {n}.",
+  "noHints": "No hints used.",
+  "toRevisit": "To revisit",
+  "cleanSweep": "Clean sweep.",
+  "answerLbl": "Answer:",
+  "retakeLabel": "Retake of your misses",
+  "retakeBtn": "Retake the misses",
+  "backSets": "Back to sets",
+  "deckLabel": "Deck",
+  "deckAll": "All chapters ({n} cards)",
+  "deckCh": "Ch. {n} {title} ({k})",
+  "cardInfo": "Due now: {due} (new: {fresh}). A card you miss comes back today; a card you know waits 1, 3, 7, then 14 days.",
+  "studyDue": "Study the due cards ({n})",
+  "studyAnyway": "Nothing due: study 10 anyway",
+  "cardOf": "Card {i} of {n} · {ch} · box {b}",
+  "showAnswer": "Show answer",
+  "missedIt": "Missed it",
+  "knewIt": "Knew it",
+  "cardKeys": "Keys: Space shows the answer · 1 or ← missed it · 2 or → knew it",
+  "sessionDone": "Session done",
+  "knownN": "{got} / {n} known",
+  "missedToday": "Missed today (they come back today)",
+  "againMisses": "Go again on the misses",
+  "backDecks": "Back to decks",
+  "examIntro": "Questions: {n}, from every chapter, mixed and unlabeled. Suggested time (minutes): {minutes}. No hints and no feedback until you submit; you can move back and forth and change answers.",
+  "lastAttempt": "Last attempt: {score} / {total} ({pct}%) on {date}.",
+  "startExam": "Start the exam",
+  "overBy": "over by {t}",
+  "goToQ": "Go to question {n}",
+  "prev": "Previous",
+  "next": "Next",
+  "submitExam": "Submit exam",
+  "unanswered": "Unanswered questions count as wrong (unanswered: {n}). Submit anyway?",
+  "examResults": "Exam results",
+  "timeUsed": "Time used: {used} of {minutes} (minutes).",
+  "thChapter": "Chapter",
+  "thCorrect": "Correct",
+  "revisit": "revisit",
+  "solid": "solid",
+  "reviewMisses": "Review your misses",
+  "youChose": "You chose:",
+  "practiseMisses": "Practise my misses",
+  "back": "Back",
+  "yourProgress": "Your progress",
+  "thQuizLast": "Quiz last",
+  "thBest": "Best",
+  "thTries": "Tries",
+  "otherSets": "Other quiz sets",
+  "thSet": "Set",
+  "thLast": "Last",
+  "setAllShort": "All chapters, mixed",
+  "setFinalShort": "Checkpoint",
+  "setMissesShort": "My misses",
+  "setRetakeShort": "Retakes of misses",
+  "cardsStarted": "Cards started: {seen} of {total} · due now: {due} · boxes 1 to 5: {boxes}",
+  "stillMiss": "Questions you still miss",
+  "missCount": "Questions missed: {n}. Use the \"My misses\" set in Quiz.",
+  "noMiss": "None. Nice.",
+  "examAttempts": "Exam attempts",
+  "thDate": "Date",
+  "thScore": "Score",
+  "thTime": "Time",
+  "downloadBtn": "Download my results (JSON)",
+  "resetBtn": "Reset progress",
+  "resetConfirm": "Erase all saved progress for this course in this browser?",
+  "savedOnly": "Progress is saved only in this browser",
+  "blocked": " (saving is blocked here, so it will be lost when you close the page)",
+  "sendTutor": ". Send the downloaded file to your tutor so it can write the review and plan your revisits.",
+  "footerAudience": "Written for {a}. Your progress stays in this browser only.",
+  "footerDefault": "Built from your course files. Your progress stays in this browser only.",
+  "subtitle": "Chapters: {chapters} · Practice questions: {questions} · Flashcards: {cards}",
+  "subtitleExam": " · Exam: {n} questions"
+};
+function tr(k, v){
+  var s = (D.ui && D.ui[k] != null) ? D.ui[k] : (STR[k] != null ? STR[k] : k);
+  if (v) for (var n in v) s = s.split('{' + n + '}').join(String(v[n]));
+  return s;
+}
+
 var INTERVALS = [0, 1, 3, 7, 14];      // days until a card in box 1..5 is due again
 
 /* ---------- storage ---------- */
@@ -134,7 +244,7 @@ function byId(id){
   for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
   return null;
 }
-function chapterTitle(n){ for (var i = 0; i < D.chapters.length; i++) if (D.chapters[i].n === n) return 'Ch. ' + n + ' ' + D.chapters[i].title; return 'Ch. ' + n; }
+function chapterTitle(n){ for (var i = 0; i < D.chapters.length; i++) if (D.chapters[i].n === n) return tr('chTitle', {n: n, title: D.chapters[i].title}); return tr('chShort', {n: n}); }
 function allCards(){
   var out = [];
   D.chapters.forEach(function(c){ c.cards.forEach(function(cd, i){ out.push({id: 'c' + c.n + ':' + i, ch: c.n, q: cd.q, a: cd.a}); }); });
@@ -143,13 +253,13 @@ function allCards(){
 
 /* ---------- shell ---------- */
 var tab = 'quiz';
-var TABS = [['quiz','Quiz'],['cards','Flashcards'],['exam','Exam'],['progress','Progress']];
+var TABS = [['quiz','tabQuiz'],['cards','tabCards'],['exam','tabExam'],['progress','tabProgress']];
 var state = {quiz: null, cards: null, exam: null};
 function drawTabs(){
   var nav = document.getElementById('tabs'); nav.innerHTML = '';
   TABS.forEach(function(t){
     if (t[0] === 'exam' && !D.exam) return;
-    var b = h('button', {role:'tab', 'aria-selected': String(tab === t[0]), onclick: function(){ tab = t[0]; render(); }}, t[1]);
+    var b = h('button', {role:'tab', 'aria-selected': String(tab === t[0]), onclick: function(){ tab = t[0]; render(); }}, tr(t[1]));
     nav.appendChild(b);
   });
 }
@@ -164,12 +274,12 @@ function render(){
 
 /* ---------- quiz ---------- */
 function quizSets(){
-  var sets = [{id:'all', label:'All chapters, mixed (' + allQuestions().length + ' questions)', qs: allQuestions(), mix: true}];
-  D.chapters.forEach(function(c){ sets.push({id:'c' + c.n, label:'Ch. ' + c.n + ' ' + c.title + ' (' + c.questions.length + ')', qs: c.questions, mix: false}); });
-  if (D.final) sets.push({id:'final', label:'Checkpoint: ' + D.final.questions.length + ' questions across all chapters', qs: D.final.questions, mix: true});
+  var sets = [{id:'all', label: tr('setAll', {n: allQuestions().length}), qs: allQuestions(), mix: true}];
+  D.chapters.forEach(function(c){ sets.push({id:'c' + c.n, label: tr('setCh', {n: c.n, title: c.title, k: c.questions.length}), qs: c.questions, mix: false}); });
+  if (D.final) sets.push({id:'final', label: tr('setFinal', {n: D.final.questions.length}), qs: D.final.questions, mix: true});
   var missIds = Object.keys(S.misses);
   var missQs = missIds.map(byId).filter(Boolean);
-  if (missQs.length) sets.push({id:'misses', label:'My misses (' + missQs.length + ')', qs: missQs, mix: true});
+  if (missQs.length) sets.push({id:'misses', label: tr('setMisses', {n: missQs.length}), qs: missQs, mix: true});
   return sets;
 }
 function viewQuiz(app){
@@ -177,22 +287,22 @@ function viewQuiz(app){
   if (state.quiz) return quizQuestion(app);
   var sets = quizSets();
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Pick what to practise'));
-  var sel = h('select', {id:'qset', 'aria-label':'Question set'});
+  card.appendChild(h('h2', null, esc(tr('quizPick'))));
+  var sel = h('select', {id:'qset', 'aria-label': tr('quizSetLabel')});
   sets.forEach(function(s){ sel.appendChild(h('option', {value:s.id}, esc(s.label))); });
   card.appendChild(sel);
   var opts = h('div', {class:'row', style:'margin:12px 0'});
-  opts.appendChild(h('label', null, '<input type="checkbox" id="qshuf" checked> Shuffle answer order'));
-  opts.appendChild(h('label', null, '<input type="checkbox" id="qmix"> Shuffle question order'));
+  opts.appendChild(h('label', null, '<input type="checkbox" id="qshuf" checked> ' + esc(tr('shufOpts'))));
+  opts.appendChild(h('label', null, '<input type="checkbox" id="qmix"> ' + esc(tr('shufQs'))));
   card.appendChild(opts);
-  card.appendChild(h('p', {class:'muted small'}, 'Answer with a click or with the keys A to D. Hints are optional and are marked in your score. After every answer you see why each wrong option is wrong and where the fact comes from.'));
+  card.appendChild(h('p', {class:'muted small'}, tr('quizHelp')));
   card.appendChild(h('button', {class:'btn primary', id:'qstart', onclick: function(){
     var set = sets.filter(function(s){ return s.id === sel.value; })[0];
     var qs = set.qs.slice();
     if (document.getElementById('qmix').checked || set.mix) qs = shuffle(qs);
     state.quiz = {set:set, list:qs, i:0, shuffleOpts:document.getElementById('qshuf').checked, score:0, hinted:0, wrong:[], answered:false, hintShown:false, order:null};
     render();
-  }}, 'Start'));
+  }}, tr('start')));
   app.appendChild(card);
 }
 function orderFor(q, shuffleOpts){
@@ -204,12 +314,12 @@ function quizQuestion(app){
   if (!Z.order) Z.order = orderFor(q, Z.shuffleOpts);
   var card = h('div', {class:'card'});
   var top = h('div', {class:'row'});
-  top.appendChild(h('span', {class:'muted small grow'}, 'Question ' + (Z.i + 1) + ' of ' + Z.list.length + (q.ch ? ' · ' + esc(chapterTitle(q.ch)) : '') + ' · ' + esc(q.label || '')));
-  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.quiz = null; render(); }}, 'Quit'));
+  top.appendChild(h('span', {class:'muted small grow'}, esc(tr('qOf', {i: Z.i + 1, n: Z.list.length})) + (q.ch ? ' · ' + esc(chapterTitle(q.ch)) : '') + ' · ' + esc(q.label || '')));
+  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.quiz = null; render(); }}, tr('quit')));
   card.appendChild(top);
   card.appendChild(h('div', {class:'bar', style:'margin:8px 0 14px'}, '<i style="width:' + pct(Z.i, Z.list.length) + '%"></i>'));
   card.appendChild(h('p', {class:'stem'}, md(q.stem)));
-  var box = h('div', {class:'opts', role:'group', 'aria-label':'Answer options'});
+  var box = h('div', {class:'opts', role:'group', 'aria-label': tr('answerOptions')});
   Z.order.forEach(function(orig, idx){
     var b = h('button', {class:'opt', 'data-orig':orig, 'data-idx':idx, disabled: Z.answered ? 'disabled' : null, onclick: function(){ answerQuiz(idx); }},
       '<span class="L">' + LETTERS[idx] + '</span><span>' + md(q.opts[orig]) + '</span>');
@@ -224,13 +334,13 @@ function quizQuestion(app){
   card.appendChild(box);
   if (!Z.answered) {
     var r = h('div', {class:'row', style:'margin-top:12px'});
-    if (q.hint) r.appendChild(h('button', {class:'btn small', id:'hintbtn', onclick: function(){ Z.hintShown = true; render(); }}, Z.hintShown ? 'Hint shown' : 'Show a hint'));
+    if (q.hint) r.appendChild(h('button', {class:'btn small', id:'hintbtn', onclick: function(){ Z.hintShown = true; render(); }}, Z.hintShown ? tr('hintShown') : tr('hintShow')));
     card.appendChild(r);
-    if (Z.hintShown && q.hint) card.appendChild(h('div', {class:'panel hint'}, '<strong>Hint:</strong> ' + md(q.hint)));
+    if (Z.hintShown && q.hint) card.appendChild(h('div', {class:'panel hint'}, '<strong>' + esc(tr('hintWord')) + '</strong> ' + md(q.hint)));
   } else {
     var right = Z.order[Z.chosen] === q.key;
     var p = h('div', {class:'panel ' + (right ? 'ok' : 'bad'), id:'feedback'});
-    p.appendChild(h('h3', null, right ? 'Correct' : 'Not quite'));
+    p.appendChild(h('h3', null, right ? tr('correct') : tr('notQuite')));
     var correctIdx = Z.order.indexOf(q.key);
     p.appendChild(h('div', null, '<strong>' + LETTERS[correctIdx] + ':</strong> ' + md(q.explanation || q.opts[q.key])));
     var ul = h('ul', {class:'why'});
@@ -238,13 +348,13 @@ function quizQuestion(app){
       if (orig === q.key) return;
       var w = q.why && q.why[orig];
       if (!w) return;
-      ul.appendChild(h('li', null, '<strong>' + LETTERS[idx] + (idx === Z.chosen ? ' (your pick)' : '') + ':</strong> ' + md(w)));
+      ul.appendChild(h('li', null, '<strong>' + LETTERS[idx] + (idx === Z.chosen ? ' ' + esc(tr('yourPick')) : '') + ':</strong> ' + md(w)));
     });
     if (ul.children.length) p.appendChild(ul);
-    if (q.source) p.appendChild(h('div', {class:'small muted', style:'margin-top:8px'}, 'Source: ' + esc(q.source)));
+    if (q.source) p.appendChild(h('div', {class:'small muted', style:'margin-top:8px'}, esc(tr('source', {s: q.source}))));
     card.appendChild(p);
     card.appendChild(h('div', {class:'row', style:'margin-top:12px'},
-      '<button class="btn primary" id="nextbtn">' + (Z.i + 1 < Z.list.length ? 'Next question' : 'See results') + '</button>'));
+      '<button class="btn primary" id="nextbtn">' + (Z.i + 1 < Z.list.length ? esc(tr('nextQ')) : esc(tr('seeResults'))) + '</button>'));
     card.querySelector('#nextbtn').addEventListener('click', nextQuiz);
   }
   app.appendChild(card);
@@ -259,7 +369,7 @@ function answerQuiz(idx){
   if (Z.hintShown) Z.hinted++;
   if (right) { if (S.misses[q.id]) delete S.misses[q.id]; }
   else { S.misses[q.id] = (S.misses[q.id] || 0) + 1; }
-  save(); say(right ? 'Correct' : 'Not quite');
+  save(); say(right ? tr('correct') : tr('notQuite'));
   render();
 }
 function nextQuiz(){
@@ -276,22 +386,22 @@ function nextQuiz(){
 function quizSummary(app){
   var Z = state.quiz, n = Z.list.length;
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Results: ' + esc(Z.set.label)));
+  card.appendChild(h('h2', null, tr('results', {label: esc(Z.set.label)})));
   card.appendChild(h('p', {class:'big'}, Z.score + ' / ' + n + ' (' + pct(Z.score, n) + '%)'));
-  card.appendChild(h('p', {class:'muted'}, Z.hinted ? Z.hinted + ' answered with a hint.' : 'No hints used.'));
+  card.appendChild(h('p', {class:'muted'}, Z.hinted ? tr('hintedN', {n: Z.hinted}) : tr('noHints')));
   if (Z.wrong.length) {
-    card.appendChild(h('h3', null, 'To revisit'));
+    card.appendChild(h('h3', null, esc(tr('toRevisit'))));
     var ul = h('ul', {class:'why'});
-    Z.wrong.forEach(function(q){ ul.appendChild(h('li', null, '<strong>' + md(q.stem.length > 140 ? q.stem.slice(0, 140) + '…' : q.stem) + '</strong><br><span class="muted">Answer: ' + md(q.opts[q.key]) + '</span>')); });
+    Z.wrong.forEach(function(q){ ul.appendChild(h('li', null, '<strong>' + md(q.stem.length > 140 ? q.stem.slice(0, 140) + '…' : q.stem) + '</strong><br><span class="muted">' + esc(tr('answerLbl')) + ' ' + md(q.opts[q.key]) + '</span>')); });
     card.appendChild(ul);
-  } else card.appendChild(h('p', {class:'strong'}, 'Clean sweep.'));
+  } else card.appendChild(h('p', {class:'strong'}, tr('cleanSweep')));
   var r = h('div', {class:'row', style:'margin-top:12px'});
   if (Z.wrong.length) r.appendChild(h('button', {class:'btn primary', onclick: function(){
     var qs = shuffle(Z.wrong);
-    state.quiz = {set:{id:'misses-retake', label:'Retake of your misses', qs:qs, mix:true}, list:qs, i:0, shuffleOpts:true, score:0, hinted:0, wrong:[], answered:false, hintShown:false, order:null};
+    state.quiz = {set:{id:'misses-retake', label: tr('retakeLabel'), qs:qs, mix:true}, list:qs, i:0, shuffleOpts:true, score:0, hinted:0, wrong:[], answered:false, hintShown:false, order:null};
     render();
-  }}, 'Retake the misses'));
-  r.appendChild(h('button', {class:'btn', onclick: function(){ state.quiz = null; render(); }}, 'Back to sets'));
+  }}, tr('retakeBtn')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.quiz = null; render(); }}, tr('backSets')));
   card.appendChild(r);
   app.appendChild(card);
 }
@@ -304,10 +414,10 @@ function viewCards(app){
   if (state.cards) return cardsFace(app);
   var cards = allCards();
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Flashcards'));
-  var sel = h('select', {id:'cset', 'aria-label':'Deck'});
-  sel.appendChild(h('option', {value:'all'}, 'All chapters (' + cards.length + ' cards)'));
-  D.chapters.forEach(function(c){ if (c.cards.length) sel.appendChild(h('option', {value:String(c.n)}, 'Ch. ' + c.n + ' ' + esc(c.title) + ' (' + c.cards.length + ')')); });
+  card.appendChild(h('h2', null, esc(tr('tabCards'))));
+  var sel = h('select', {id:'cset', 'aria-label': tr('deckLabel')});
+  sel.appendChild(h('option', {value:'all'}, esc(tr('deckAll', {n: cards.length}))));
+  D.chapters.forEach(function(c){ if (c.cards.length) sel.appendChild(h('option', {value:String(c.n)}, esc(tr('deckCh', {n: c.n, title: c.title, k: c.cards.length})))); });
   card.appendChild(sel);
   var info = h('p', {class:'muted small', id:'cinfo', style:'margin:10px 0'});
   card.appendChild(info);
@@ -316,14 +426,14 @@ function viewCards(app){
   }
   function upd(){
     var set = pick(), due = set.filter(isDue).length, fresh = set.filter(function(c){ return !S.cards[c.id]; }).length;
-    info.textContent = due + ' due now (' + fresh + ' new). A card you miss comes back today; a card you know waits 1, 3, 7, then 14 days.';
-    start.disabled = false; start.textContent = due ? 'Study ' + Math.min(due, 20) + ' due cards' : 'Nothing due: study 10 anyway';
+    info.textContent = tr('cardInfo', {due: due, fresh: fresh});
+    start.disabled = false; start.textContent = due ? tr('studyDue', {n: Math.min(due, 20)}) : tr('studyAnyway');
   }
   var start = h('button', {class:'btn primary', id:'cstart', onclick: function(){
     var set = pick(), due = shuffle(set.filter(isDue));
     var list = due.length ? due.slice(0, 20) : shuffle(set).slice(0, 10);
     state.cards = {list:list, i:0, shown:false, got:0, missed:[]}; render();
-  }}, 'Start');
+  }}, tr('start'));
   card.appendChild(start);
   sel.addEventListener('change', upd); upd();
   app.appendChild(card);
@@ -332,19 +442,19 @@ function cardsFace(app){
   var Z = state.cards, c = Z.list[Z.i];
   var card = h('div', {class:'card'});
   var top = h('div', {class:'row'});
-  top.appendChild(h('span', {class:'muted small grow'}, 'Card ' + (Z.i + 1) + ' of ' + Z.list.length + ' · ' + esc(chapterTitle(c.ch)) + ' · box ' + cardRec(c.id).box));
-  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.cards = null; render(); }}, 'Quit'));
+  top.appendChild(h('span', {class:'muted small grow'}, esc(tr('cardOf', {i: Z.i + 1, n: Z.list.length, ch: chapterTitle(c.ch), b: cardRec(c.id).box}))));
+  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.cards = null; render(); }}, tr('quit')));
   card.appendChild(top);
   card.appendChild(h('div', {class:'bar', style:'margin:8px 0 14px'}, '<i style="width:' + pct(Z.i, Z.list.length) + '%"></i>'));
   card.appendChild(h('div', {class:'flash card'}, md(Z.shown ? c.a : c.q)));
   var r = h('div', {class:'row'});
-  if (!Z.shown) r.appendChild(h('button', {class:'btn primary', id:'revealbtn', onclick: function(){ Z.shown = true; render(); }}, 'Show answer'));
+  if (!Z.shown) r.appendChild(h('button', {class:'btn primary', id:'revealbtn', onclick: function(){ Z.shown = true; render(); }}, tr('showAnswer')));
   else {
-    r.appendChild(h('button', {class:'btn', id:'missbtn', onclick: function(){ gradeCard(false); }}, 'Missed it'));
-    r.appendChild(h('button', {class:'btn primary', id:'gotbtn', onclick: function(){ gradeCard(true); }}, 'Knew it'));
+    r.appendChild(h('button', {class:'btn', id:'missbtn', onclick: function(){ gradeCard(false); }}, tr('missedIt')));
+    r.appendChild(h('button', {class:'btn primary', id:'gotbtn', onclick: function(){ gradeCard(true); }}, tr('knewIt')));
   }
   card.appendChild(r);
-  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, 'Keys: Space shows the answer · 1 or ← missed it · 2 or → knew it'));
+  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, tr('cardKeys')));
   app.appendChild(card);
 }
 function gradeCard(got){
@@ -360,17 +470,17 @@ function gradeCard(got){
 }
 function cardsSummary(app){
   var Z = state.cards, card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Session done'));
-  card.appendChild(h('p', {class:'big'}, Z.got + ' / ' + Z.list.length + ' known'));
+  card.appendChild(h('h2', null, esc(tr('sessionDone'))));
+  card.appendChild(h('p', {class:'big'}, tr('knownN', {got: Z.got, n: Z.list.length})));
   if (Z.missed.length) {
-    card.appendChild(h('h3', null, 'Missed today (they come back today)'));
+    card.appendChild(h('h3', null, esc(tr('missedToday'))));
     var ul = h('ul', {class:'why'});
     Z.missed.forEach(function(c){ ul.appendChild(h('li', null, '<strong>' + md(c.q) + '</strong><br><span class="muted">' + md(c.a) + '</span>')); });
     card.appendChild(ul);
   }
   var r = h('div', {class:'row', style:'margin-top:12px'});
-  if (Z.missed.length) r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.cards = {list:shuffle(Z.missed), i:0, shown:false, got:0, missed:[]}; render(); }}, 'Go again on the misses'));
-  r.appendChild(h('button', {class:'btn', onclick: function(){ state.cards = null; render(); }}, 'Back to decks'));
+  if (Z.missed.length) r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.cards = {list:shuffle(Z.missed), i:0, shown:false, got:0, missed:[]}; render(); }}, tr('againMisses')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.cards = null; render(); }}, tr('backDecks')));
   card.appendChild(r); app.appendChild(card);
 }
 
@@ -381,15 +491,15 @@ function viewExam(app){
   if (state.exam && state.exam.done) return examResults(app);
   if (state.exam) return examQuestion(app);
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Domain exam'));
-  card.appendChild(h('p', null, E.questions.length + ' questions from every chapter, mixed and unlabeled. Suggested time: ' + E.minutes + ' minutes. No hints and no feedback until you submit; you can move back and forth and change answers.'));
+  card.appendChild(h('h2', null, esc(tr('tabExam'))));
+  card.appendChild(h('p', null, esc(tr('examIntro', {n: E.questions.length, minutes: E.minutes}))));
   var last = S.exams.length ? S.exams[S.exams.length - 1] : null;
-  if (last) card.appendChild(h('p', {class:'muted small'}, 'Last attempt: ' + last.score + ' / ' + last.total + ' (' + last.pct + '%) on ' + esc(last.date) + '.'));
+  if (last) card.appendChild(h('p', {class:'muted small'}, esc(tr('lastAttempt', {score: last.score, total: last.total, pct: last.pct, date: last.date}))));
   card.appendChild(h('button', {class:'btn primary', id:'examstart', onclick: function(){
     state.exam = {i:0, answers:{}, started:today(), minutes:E.minutes, order: shuffle(E.questions.map(function(q){ return q.id; })), opt:{}};
     E.questions.forEach(function(q){ state.exam.opt[q.id] = orderFor(q, true); });
     startTimer(); render();
-  }}, 'Start the exam'));
+  }}, tr('startExam')));
   app.appendChild(card);
 }
 function startTimer(){
@@ -399,23 +509,23 @@ function startTimer(){
     var el = document.getElementById('timer'); if (el) el.textContent = timeLeft(X);
   }, 1000);
 }
-function timeLeft(X){ var left = X.minutes * 60 - (today() - X.started) / 1000; return (left < 0 ? 'over by ' : '') + fmtTime(Math.abs(left)); }
+function timeLeft(X){ var left = X.minutes * 60 - (today() - X.started) / 1000; return left < 0 ? tr('overBy', {t: fmtTime(Math.abs(left))}) : fmtTime(Math.abs(left)); }
 function examById(id){ for (var i = 0; i < D.exam.questions.length; i++) if (D.exam.questions[i].id === id) return D.exam.questions[i]; return null; }
 function examQuestion(app){
   var X = state.exam, id = X.order[X.i], q = examById(id), order = X.opt[id];
   var card = h('div', {class:'card'});
   var top = h('div', {class:'row'});
-  top.appendChild(h('span', {class:'grow muted small'}, 'Question ' + (X.i + 1) + ' of ' + X.order.length));
+  top.appendChild(h('span', {class:'grow muted small'}, esc(tr('qOf', {i: X.i + 1, n: X.order.length}))));
   top.appendChild(h('span', {class:'tag', id:'timer'}, timeLeft(X)));
   card.appendChild(top);
   var grid = h('div', {class:'grid', style:'margin:10px 0 14px'});
   X.order.forEach(function(qid, k){
-    var b = h('button', {class:'btn' + (X.answers[qid] ? ' done' : '') + (k === X.i ? ' cur' : ''), 'aria-label':'Go to question ' + (k + 1), onclick: function(){ X.i = k; render(); }}, String(k + 1));
+    var b = h('button', {class:'btn' + (X.answers[qid] ? ' done' : '') + (k === X.i ? ' cur' : ''), 'aria-label': tr('goToQ', {n: k + 1}), onclick: function(){ X.i = k; render(); }}, String(k + 1));
     grid.appendChild(b);
   });
   card.appendChild(grid);
   card.appendChild(h('p', {class:'stem'}, md(q.stem)));
-  var box = h('div', {class:'opts', role:'group', 'aria-label':'Answer options'});
+  var box = h('div', {class:'opts', role:'group', 'aria-label': tr('answerOptions')});
   order.forEach(function(orig, idx){
     var b = h('button', {class:'opt' + (X.answers[id] === orig ? ' sel' : ''), 'data-orig':orig, onclick: function(){ X.answers[id] = orig; render(); }},
       '<span class="L">' + LETTERS[idx] + '</span><span>' + md(q.opts[orig]) + '</span>');
@@ -423,17 +533,17 @@ function examQuestion(app){
   });
   card.appendChild(box);
   var r = h('div', {class:'row', style:'margin-top:14px'});
-  r.appendChild(h('button', {class:'btn', disabled: X.i === 0 ? 'disabled' : null, onclick: function(){ X.i--; render(); }}, 'Previous'));
-  r.appendChild(h('button', {class:'btn', disabled: X.i + 1 >= X.order.length ? 'disabled' : null, onclick: function(){ X.i++; render(); }}, 'Next'));
+  r.appendChild(h('button', {class:'btn', disabled: X.i === 0 ? 'disabled' : null, onclick: function(){ X.i--; render(); }}, tr('prev')));
+  r.appendChild(h('button', {class:'btn', disabled: X.i + 1 >= X.order.length ? 'disabled' : null, onclick: function(){ X.i++; render(); }}, tr('next')));
   r.appendChild(h('span', {class:'grow'}));
-  r.appendChild(h('button', {class:'btn primary', id:'examsubmit', onclick: submitExam}, 'Submit exam'));
+  r.appendChild(h('button', {class:'btn primary', id:'examsubmit', onclick: submitExam}, tr('submitExam')));
   card.appendChild(r);
   Array.prototype.forEach.call(card.querySelectorAll('button'), function(b){ if (b.getAttribute('disabled') == null) b.removeAttribute('disabled'); });
   app.appendChild(card);
 }
 function submitExam(){
   var X = state.exam, unanswered = X.order.filter(function(id){ return !X.answers[id]; }).length;
-  if (unanswered && !window.confirm(unanswered + ' question(s) are unanswered and will count as wrong. Submit anyway?')) return;
+  if (unanswered && !window.confirm(tr('unanswered', {n: unanswered}))) return;
   X.done = true; X.seconds = Math.round((today() - X.started) / 1000);
   var byCh = {}, score = 0, wrong = [];
   D.exam.questions.forEach(function(q){
@@ -449,70 +559,70 @@ function submitExam(){
 function examResults(app){
   var X = state.exam, n = D.exam.questions.length;
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Exam results'));
+  card.appendChild(h('h2', null, esc(tr('examResults'))));
   card.appendChild(h('p', {class:'big'}, X.score + ' / ' + n + ' (' + pct(X.score, n) + '%)'));
-  card.appendChild(h('p', {class:'muted'}, 'Time used: ' + fmtTime(X.seconds) + ' of ' + X.minutes + ' minutes.'));
+  card.appendChild(h('p', {class:'muted'}, tr('timeUsed', {used: fmtTime(X.seconds), minutes: X.minutes})));
   var rows = Object.keys(X.byCh).map(Number).sort(function(a, b){ return a - b; });
-  var t = '<table><tr><th>Chapter</th><th>Correct</th><th></th></tr>';
+  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th><th>' + esc(tr('thCorrect')) + '</th><th></th></tr>';
   rows.forEach(function(c){
     var v = X.byCh[c], p = pct(v.right, v.total);
-    t += '<tr><td>' + esc(chapterTitle(c)) + '</td><td>' + v.right + ' / ' + v.total + '</td><td class="' + (p < 70 ? 'weak' : 'strong') + '">' + (p < 70 ? 'revisit' : 'solid') + '</td></tr>';
+    t += '<tr><td>' + esc(chapterTitle(c)) + '</td><td>' + v.right + ' / ' + v.total + '</td><td class="' + (p < 70 ? 'weak' : 'strong') + '">' + esc(p < 70 ? tr('revisit') : tr('solid')) + '</td></tr>';
   });
   card.appendChild(h('div', null, t + '</table>'));
   if (X.wrong.length) {
-    card.appendChild(h('h3', null, 'Review your misses'));
+    card.appendChild(h('h3', null, esc(tr('reviewMisses'))));
     X.wrong.forEach(function(q){
       var mine = X.answers[q.id];
       var d = h('details', {style:'margin:8px 0'});
       d.appendChild(h('summary', null, md(q.stem.length > 130 ? q.stem.slice(0, 130) + '…' : q.stem)));
-      var inner = '<p><strong>Answer:</strong> ' + md(q.opts[q.key]) + '</p>';
-      if (mine) inner += '<p><strong>You chose:</strong> ' + md(q.opts[mine]) + '</p>';
+      var inner = '<p><strong>' + esc(tr('answerLbl')) + '</strong> ' + md(q.opts[q.key]) + '</p>';
+      if (mine) inner += '<p><strong>' + esc(tr('youChose')) + '</strong> ' + md(q.opts[mine]) + '</p>';
       if (q.explanation) inner += '<p>' + md(q.explanation) + '</p>';
       if (mine && q.why && q.why[mine]) inner += '<p class="muted">' + md(q.why[mine]) + '</p>';
-      if (q.source) inner += '<p class="small muted">Source: ' + esc(q.source) + '</p>';
+      if (q.source) inner += '<p class="small muted">' + esc(tr('source', {s: q.source})) + '</p>';
       d.appendChild(h('div', null, inner)); card.appendChild(d);
     });
-  } else card.appendChild(h('p', {class:'strong'}, 'Clean sweep.'));
+  } else card.appendChild(h('p', {class:'strong'}, tr('cleanSweep')));
   var r = h('div', {class:'row', style:'margin-top:12px'});
-  r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.exam = null; tab = 'quiz'; state.quiz = null; render(); }}, 'Practise my misses'));
-  r.appendChild(h('button', {class:'btn', onclick: function(){ state.exam = null; render(); }}, 'Back'));
+  r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.exam = null; tab = 'quiz'; state.quiz = null; render(); }}, tr('practiseMisses')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.exam = null; render(); }}, tr('back')));
   card.appendChild(r); app.appendChild(card);
 }
 
 /* ---------- progress ---------- */
 function viewProgress(app){
   var card = h('div', {class:'card'});
-  card.appendChild(h('h2', null, 'Your progress'));
-  var t = '<table><tr><th>Chapter</th><th>Quiz last</th><th>Best</th><th>Tries</th></tr>';
+  card.appendChild(h('h2', null, esc(tr('yourProgress'))));
+  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th><th>' + esc(tr('thQuizLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
   D.chapters.forEach(function(c){
     var r = S.quiz['c' + c.n];
-    t += '<tr><td>' + esc('Ch. ' + c.n + ' ' + c.title) + '</td><td>' + (r ? r.last + '%' : '-') + '</td><td>' + (r ? r.best + '%' : '-') + '</td><td>' + (r ? r.attempts : 0) + '</td></tr>';
+    t += '<tr><td>' + esc(tr('chTitle', {n: c.n, title: c.title})) + '</td><td>' + (r ? r.last + '%' : '-') + '</td><td>' + (r ? r.best + '%' : '-') + '</td><td>' + (r ? r.attempts : 0) + '</td></tr>';
   });
   card.appendChild(h('div', null, t + '</table>'));
-  var others = [['all','All chapters, mixed'],['final','Checkpoint'],['misses','My misses'],['misses-retake','Retakes of misses']].filter(function(x){ return S.quiz[x[0]]; });
+  var others = [['all', tr('setAllShort')], ['final', tr('setFinalShort')], ['misses', tr('setMissesShort')], ['misses-retake', tr('setRetakeShort')]].filter(function(x){ return S.quiz[x[0]]; });
   if (others.length) {
-    var o = '<h3>Other quiz sets</h3><table><tr><th>Set</th><th>Last</th><th>Best</th><th>Tries</th></tr>';
+    var o = '<h3>' + esc(tr('otherSets')) + '</h3><table><tr><th>' + esc(tr('thSet')) + '</th><th>' + esc(tr('thLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
     others.forEach(function(x){ var r = S.quiz[x[0]]; o += '<tr><td>' + esc(x[1]) + '</td><td>' + r.last + '%</td><td>' + r.best + '%</td><td>' + r.attempts + '</td></tr>'; });
     card.appendChild(h('div', null, o + '</table>'));
   }
   var cards = allCards(), boxes = [0,0,0,0,0], seen = 0, due = 0;
   cards.forEach(function(c){ var r = S.cards[c.id]; if (r) { boxes[r.box - 1]++; seen++; } if (isDue(c)) due++; });
-  card.appendChild(h('h3', null, 'Flashcards'));
-  card.appendChild(h('p', null, seen + ' of ' + cards.length + ' cards started · ' + due + ' due now · boxes 1 to 5: ' + boxes.join(' / ')));
-  card.appendChild(h('h3', null, 'Questions you still miss'));
+  card.appendChild(h('h3', null, esc(tr('tabCards'))));
+  card.appendChild(h('p', null, esc(tr('cardsStarted', {seen: seen, total: cards.length, due: due, boxes: boxes.join(' / ')}))));
+  card.appendChild(h('h3', null, esc(tr('stillMiss'))));
   var ids = Object.keys(S.misses);
-  card.appendChild(h('p', null, ids.length ? ids.length + ' question(s). Use the "My misses" set in Quiz.' : 'None. Nice.'));
+  card.appendChild(h('p', null, esc(ids.length ? tr('missCount', {n: ids.length}) : tr('noMiss'))));
   if (S.exams.length) {
-    card.appendChild(h('h3', null, 'Exam attempts'));
-    var e = '<table><tr><th>Date</th><th>Score</th><th>Time</th></tr>';
+    card.appendChild(h('h3', null, esc(tr('examAttempts'))));
+    var e = '<table><tr><th>' + esc(tr('thDate')) + '</th><th>' + esc(tr('thScore')) + '</th><th>' + esc(tr('thTime')) + '</th></tr>';
     S.exams.forEach(function(x){ e += '<tr><td>' + esc(x.date) + '</td><td>' + x.score + ' / ' + x.total + ' (' + x.pct + '%)</td><td>' + fmtTime(x.seconds) + '</td></tr>'; });
     card.appendChild(h('div', null, e + '</table>'));
   }
   var r = h('div', {class:'row', style:'margin-top:14px'});
-  r.appendChild(h('button', {class:'btn primary', id:'exportbtn', onclick: exportResults}, 'Download my results (JSON)'));
-  r.appendChild(h('button', {class:'btn', onclick: function(){ if (window.confirm('Erase all saved progress for this course in this browser?')) { S = blank(); save(); state = {quiz:null, cards:null, exam:null}; render(); } }}, 'Reset progress'));
+  r.appendChild(h('button', {class:'btn primary', id:'exportbtn', onclick: exportResults}, tr('downloadBtn')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ if (window.confirm(tr('resetConfirm'))) { S = blank(); save(); state = {quiz:null, cards:null, exam:null}; render(); } }}, tr('resetBtn')));
   card.appendChild(r);
-  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, 'Progress is saved only in this browser' + (memoryOnly ? ' (saving is blocked here, so it will be lost when you close the page)' : '') + '. Send the downloaded file to your tutor so it can write the review and plan your revisits.'));
+  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, esc(tr('savedOnly') + (memoryOnly ? tr('blocked') : '') + tr('sendTutor'))));
   app.appendChild(card);
 }
 function exportResults(){
@@ -550,9 +660,13 @@ document.addEventListener('keydown', function(ev){
 
 /* ---------- start ---------- */
 document.getElementById('title').textContent = D.title;
-document.getElementById('subtitle').textContent = D.subtitle || '';
-document.getElementById('foot').innerHTML = md(D.footer || '');
-window.__sgt = {D: D, S: function(){ return S; }, state: function(){ return state; }, render: render, setTab: function(t){ tab = t; render(); }};
+document.documentElement.lang = D.lang || 'en';
+document.documentElement.dir = D.dir || 'ltr';
+document.getElementById('tabs').setAttribute('aria-label', tr('studyModes'));
+var C = D.counts || {chapters: D.chapters.length, questions: allQuestions().length, cards: allCards().length, exam: D.exam ? D.exam.questions.length : 0};
+document.getElementById('subtitle').textContent = tr('subtitle', C) + (C.exam ? tr('subtitleExam', {n: C.exam}) : '');
+document.getElementById('foot').innerHTML = md(D.audience ? tr('footerAudience', {a: D.audience}) : tr('footerDefault'));
+window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, setTab: function(t){ tab = t; render(); }};
 render();
 })();
 </script>

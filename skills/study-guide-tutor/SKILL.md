@@ -4,7 +4,7 @@ description: >
   Turns study material (slide decks, lecture notes, PDFs, textbook chapters, course content) into a
   source-checked tutoring course: an intake of the learner's level and goals, a fact ledger, one lesson per
   chapter with pictures, tricky-part hints and traps, audited exam-style quizzes, grading with memory anchors,
-  flashcards, domain exams and spaced revisits. Use when the user asks to study, learn or be taught some
+  flashcards, exams and spaced revisits. Use when the user asks to study, learn or be taught some
   material, to go through slides, to be quizzed or tested, to prepare for an exam, to make flashcards or a
   concept map, to cram, or to re-quiz weak areas.
 ---
@@ -30,9 +30,9 @@ INTAKE the student (multiple-choice analysis → learner profile)
          → GRADE (score + memory anchors + source location for every miss)
          → REVIEW / RETAKE misses with fresh variants
          → ACTIVE RECALL check before moving on
-   → DOMAIN EXAM (one timed exam covering every chapter of the domain)
+   → EXAM (one timed exam covering every chapter of the unit, or of the whole course when it has no units)
    → WRAP UP (score table, strengths, revisit list, take-away artifacts)
-   → INDEPENDENT FIDELITY REVIEW + STUDENT-PERSONA REVIEW before a domain is called done
+   → INDEPENDENT FIDELITY REVIEW + STUDENT-PERSONA REVIEW before a unit (or the course) is called done
 ```
 
 Not every student needs the full loop. See **Study modes** below for cram and weak-area loops.
@@ -53,12 +53,13 @@ Nothing is generated, taught or quizzed until the student's profile is known. A 
 
 Before teaching anything, read all of it.
 
-1. **Extract once, then work from the cache** (`scripts/source_text.py extract`; the full lifecycle and the cache-first reading order are in `references/lifecycle.md`). The extracted text sits beside the originals, one line per slide, with a hash manifest; image-only slides are transcribed once. Every later step reads the fact ledger, then a cache slice, and opens the original only when its hash changed or a slide is image-only. For non-PDF formats use the appropriate reading skill and write the same kind of cache.
-2. Build a complete outline: every slide or section title, numbered. Count them.
-3. Read the actual content of every section, not just titles. Skim nothing that will be taught.
+1. **Look at what the student gave you before choosing a method.** The material can be slides, a PDF, a Word or PowerPoint file, markdown or plain notes, a web page, an e-book, a video or lecture transcript (`.srt`, `.vtt`, `.txt`), scanned pages or photographed slides, in any language. Note its kind, its size, whether it has a natural grouping (modules, weeks, parts), what its own numbering is (slide, page, section, minute) and its language. Everything below adapts to those answers; none of it assumes slides, English or a fixed folder layout.
+2. **Extract once, then work from the cache** (`scripts/source_text.py extract SOURCE`; the full lifecycle and the cache-first reading order are in `references/lifecycle.md`). It reads pdf, pptx, docx, md, txt, html, epub, srt, vtt, an image, or a folder of images, and writes one numbered unit per slide, page, section or time segment, with a hash manifest; image-only units are transcribed once. Spreadsheets, audio and video are not read directly: convert or transcribe them first. Every later step reads the fact ledger, then a cache slice, and opens the original only when its hash changed or a unit is image-only. Cite locations in the source's own unit ("slide 12", "page 4", "section 3", "minute 14").
+3. Build a complete outline: every slide, page or section title, numbered. Count them.
+4. Read the actual content of every section, not just titles. Skim nothing that will be taught.
 
-4. **Build the fact ledger** (separate pass, before teaching): extract every checkable fact — statistics, deadlines, thresholds, attributions, rankings, rules, definitions, exceptions — with its source location. Read `references/source-fidelity.md` for the format and rules. Tell the student only its shape ("141 facts, 38 of them numbers or deadlines"), not the dump.
-5. **Set the source boundary.** Default is *material-only*: everything taught and keyed traces to the material, because the exam tests the course's version. Say so in one line; switch only when the student asks.
+5. **Build the fact ledger** (separate pass, before teaching): extract every checkable fact — statistics, deadlines, thresholds, attributions, rankings, rules, definitions, exceptions — with its source location. Read `references/source-fidelity.md` for the format and rules. Tell the student only its shape ("141 facts, 38 of them numbers or deadlines"), not the dump.
+6. **Set the source boundary.** Default is *material-only*: everything taught and keyed traces to the material, because the exam tests the course's version. Say so in one line; switch only when the student asks.
 
 Never begin teaching from a partial read. A question written without knowing what later sections cover will contradict the material or miss its emphasis.
 
@@ -68,8 +69,10 @@ Never begin teaching from a partial read. A question written without knowing wha
 2. Identify pure review/recap sections and propose skipping them, stating why.
 3. Present the block list and ask where to start. If the deck is very large and the student asks for literal page-by-page treatment, honor it, but offer merging again once the scale becomes concrete — and when merging, add extra questions so coverage does not shrink.
 4. Offer a **concept map** of the proposed blocks (heading-only outline, see `references/study-artifacts.md`) so the student sees the whole territory before choosing a path. Offer it; do not force it.
-5. **Size chapters before generating anything.** Aim for 20-60 slides (or the equivalent) per chapter and at least 6 quiz questions. Merge a section under about 20 slides into its neighbour unless it is a distinct, list-heavy exam topic; split a chapter over about 70 slides only if it holds clearly separate topics. Freeze the chapter list first: merging later forces renumbering of folders, headings, ledger IDs and cross-references (see `scripts/` for the checks). Ledger IDs use the chapter number (`R07-004`), so decide the structure before writing any ledger.
+5. **Size chapters before generating anything.** Aim for 20-60 slides per chapter (or the equivalent: roughly 10-30 pages, or 5,000-15,000 words of notes, or 30-90 minutes of transcript) and at least 6 quiz questions. Merge a section under about 20 slides into its neighbour unless it is a distinct, list-heavy exam topic; split a chapter over about 70 slides only if it holds clearly separate topics. Freeze the chapter list first: merging later forces renumbering of folders, headings, ledger IDs and cross-references (see `scripts/` for the checks). Ledger IDs use the chapter number (`R07-004`), so decide the structure before writing any ledger.
 6. Honor every pacing instruction immediately and for the rest of the session: merge more, split more, skip sections, change question counts.
+7. **Decide the shape of the output from the material, not from habit.** Does the source have a natural grouping above the chapters (modules, weeks, parts, volumes, domains)? If yes, propose one group folder per source group, named with the source's own word and number (`module-2`, `week-03`); if the material is one plain sequence, propose a flat course with no group folders at all. Show the tree you intend to create (see "Saving work to files"), have the student confirm it once, and never add a level the source does not have.
+8. **Decide the language.** Write every explanation, question and file in the language the student studies in (the material's language unless they ask otherwise). When it is not English, copy `templates/course.json` to the course root as `course.json`, set `language`, and translate its `labels` (the structural words the gates look for, such as the hint and trap headings) and `ui` (the interactive player's text); the gates, the exam builder, the footer note and the player then use those words. Keep the `Q1 (...)` question markers and `A.` to `D.` option letters as they are.
 
 ## Phase 3 — Teach a block
 
@@ -105,7 +108,7 @@ Read `references/question-design.md` before writing any questions. Its rules are
 
 - Scenario-based questions that test the substance, never meta-questions about the material itself.
 - Exactly 4 options (A–D), one correct.
-- All four options equally long, equally detailed, equally plausible. The correct answer must not be identifiable by length, hedging, or richness of explanation. **Measure it:** over a domain the key is strictly the longest option in about 25-35% of questions and never 8% or more longer than the longest wrong option. First drafts reliably come out at 60-80%; write wrong options as near-miss clones of the key and run `scripts/audit_quiz.py` before delivering.
+- All four options equally long, equally detailed, equally plausible. The correct answer must not be identifiable by length, hedging, or richness of explanation. **Measure it:** over a unit the key is strictly the longest option in about 25-35% of questions and never 8% or more longer than the longest wrong option. First drafts reliably come out at 60-80%; write wrong options as near-miss clones of the key and run `scripts/audit_quiz.py` before delivering.
 - Randomize the position of the correct answer; audit each block's answer key for patterns before sending.
 - Mix difficulty by the learner profile (record any override of the default mix in the profile itself so the profile and the output agree).
 - 3–6 questions per block; more when blocks were merged.
@@ -127,11 +130,11 @@ When the student answers:
 - Between blocks, run a short **active recall challenge**: ask the student to reproduce a key list, distinction, or definition from memory before continuing — then fill the gaps they reveal.
 - Offer the next block by name; never advance without the student's go-ahead.
 - At the end of the material, deliver a **final readiness summary**: a score table per block, the student's strongest areas, and a specific revisit list of every concept they missed, each with its anchor restated.
-- **One domain exam per domain:** after the chapter quizzes build a timed exam that covers every chapter (`scripts/make_domain_exam.py`: every chapter at least 2 questions, proportional otherwise, mixed and unlabeled, key with chapter and source). The short cumulative final quiz stays as a checkpoint.
+- **One exam per unit (or per course):** after the chapter quizzes build a timed exam that covers every chapter (`scripts/make_exam.py`: every chapter at least 2 questions, proportional otherwise, mixed and unlabeled, key with chapter and source). The short cumulative final quiz stays as a checkpoint.
 - **Spacing:** schedule revisits (next day, a few days later, the week after, then cumulative quizzes mixing chapters) and a mock exam before the real one. See `references/learning-science.md`.
 - **Student-persona review (saves the learner's time):** the learner's goal is to understand and remember fast, not to read a lot. Measure the reading load (`scripts/reading_load.py`), then spawn a read-only agent that plays the learner (`agents/student-reviewer.md`): it reads only the at-a-glance block and answers 5 quiz questions, skims the explanation for padding, checks each picture at a glance and scores speed, clarity, visuals, padding and exam readiness. Apply its cuts before delivery (`references/student-review.md`).
-- **Independent fidelity review:** before calling a domain done, have a second agent that did not write it sample questions and ledger entries against the source text and report problems by severity (`references/fidelity-review.md`). Fix every HIGH and MEDIUM finding.
-- Offer the **interactive study player** (`scripts/make_player.py DOMAIN_DIR`, one self-contained HTML file in `00-overview/09-study-player.html`): the student clicks answers, sees why each wrong option is wrong, flips flashcards in spaced boxes, takes the timed exam and downloads a results file. Build it after the quizzes pass `audit_quiz.py`; it needs no install and no network. When the student shares the downloaded `*-results.json`, treat it as their answers: write `05-review.md` per chapter (graded misses with memory anchors and source locations), update the score tracker and revisit list, and re-quiz the misses with fresh variants.
+- **Independent fidelity review:** before calling a unit done, have a second agent that did not write it sample questions and ledger entries against the source text and report problems by severity (`references/fidelity-review.md`). Fix every HIGH and MEDIUM finding.
+- Offer the **interactive study player** (`scripts/make_player.py UNIT_DIR`, one self-contained HTML file in `00-overview/09-study-player.html`): the student clicks answers, sees why each wrong option is wrong, flips flashcards in spaced boxes, takes the timed exam and downloads a results file. Build it after the quizzes pass `audit_quiz.py`; it needs no install and no network. When the student shares the downloaded `*-results.json`, treat it as their answers: write `05-review.md` per chapter (graded misses with memory anchors and source locations), update the score tracker and revisit list, and re-quiz the misses with fresh variants.
 - Offer take-away artifacts from the session (formats in `references/study-artifacts.md`): a **revisit flashcard deck** built from the misses and their anchors (with CSV for Anki or Quizlet), a **thematic concept map** with weak branches, and a re-takeable **quiz file**.
 - End each major output with a one-line **Next** menu offering only what makes sense at that point, e.g. `Next: next block · active recall · concept map · flashcards of misses · re-quiz misses`.
 
@@ -152,13 +155,17 @@ For number-heavy or regulatory material, never skip the quiz audit, in any mode.
 
 When the student wants the outputs saved as files, the folder tree **mirrors the structure of the material itself**, never a layout grouped by output type across the whole course.
 
-- **Hierarchy follows the source:** course -> domain/unit -> chapter. One folder per chapter, named `chapter-NN-short-slug`. If the material has a different natural unit (module, lecture group, week), use that instead, and say which you chose.
+- **Hierarchy follows the source, and the grouping level is optional.** Decide the shape from the material (Phase 2), confirm it once, and say which you chose:
+  - **Flat** (the material is one sequence of lectures, chapters or sessions: a book, one deck, a single course): `<course>/chapter-NN-slug/`, with `00-overview/` at the course root. There is no grouping folder.
+  - **Grouped** (the material has a natural higher level such as modules, weeks, parts, volumes or domains): `<course>/<group>/chapter-NN-slug/`, with one `00-overview/` per group. Name the group folder with the **source's own word and number** (`module-2`, `week-03`, `part-1`, `domain-4`), never a word the source does not use. Chapter numbers restart in each group.
+  - **Deeper than one grouping level:** keep the top level as the group and fold the lower level into the chapters (its name in the chapter title or as a section of the lesson). Readers do not need a third folder level.
+  - The teaching block is always called a *chapter* in folder names, even when the source says lecture or lesson, so the tools find it. A **unit** is any folder that directly holds `chapter-*/` folders (the whole course when flat, one group otherwise); the scripts discover units on their own, so nothing needs configuring.
 - **Every file carries a number that is the order a student reads it** (`scripts/sequence_files.py` applies it):
   - chapter folder: `01-lesson.md` (at-a-glance block, then the explanation: one file), `02-flashcards.csv`, `03-quiz.md`, `04-answer-key.md` (kept separate so the student can quiz without spoilers), `05-review.md` (created only after grading), `99-fact-ledger.md` (reference, not part of the reading flow)
-  - domain `00-overview/`: `01-concept-map.md`, `02-cram-sheet.md`, `03-final-quiz.md`, `04-final-quiz-key.md`, `05-score-tracker.md`, `06-revisit-list.md`, `07-domain-exam.md`, `08-domain-exam-key.md`, `09-study-player.html` (from `make_player.py`), and an unnumbered `README.md` that explains each overview file (purpose, when to use it, whether it holds answers; plugin template `templates/overview-readme.md`, or write the same table)
-  - a short `README.md` at the domain root opens with a **Start here** section (the player, the per-chapter loop, how to navigate, which files are the source of the player) and indexes the chapters, slide ranges, status and schedule; a course-level `README.md` and `CLAUDE.md` explain the whole tree to the next reader or agent
-- **Every generated markdown file has a table of contents** (`## Contents`, between `<!-- toc -->` markers, right after the H1), and lessons have the fullest one: every `##` section and `###` sub-section as working links. Quizzes, answer keys, final quizzes and domain exams get a "Jump to: Q1 · Q2 ..." line with an invisible anchor before each question. Only files with fewer than two sections (score tracker, revisit list, flashcards) and `CLAUDE.md` are exempt. `scripts/add_toc.py` builds and refreshes them; `add_toc.py ROOT --check` fails if one is missing.
-- **Order of operations after any generation or edit:** build or edit the files -> `make_glance.py` (rewrites the at-a-glance block in place) / `make_domain_exam.py` (overwrites its files) -> `trim_lesson.py` -> `apply_banner.py` -> `add_toc.py` -> `audit_quiz.py` -> `check_bundle.py` -> `check_dump.py` (must pass) -> `check_tricky.py` (must pass) -> `check_findable.py` (must pass) -> `reading_load.py` -> `make_player.py` (the interactive player, last, so it shows the final questions). Banner and TOC scripts are idempotent, so running the pair again is always safe.
+  - a unit's `00-overview/`: `01-concept-map.md`, `02-cram-sheet.md`, `03-final-quiz.md`, `04-final-quiz-key.md`, `05-score-tracker.md`, `06-revisit-list.md`, `07-exam.md`, `08-exam-key.md`, `09-study-player.html` (from `make_player.py`), and an unnumbered `README.md` that explains each overview file (purpose, when to use it, whether it holds answers; plugin template `templates/overview-readme.md`, or write the same table)
+  - a short `README.md` at the unit root (the course root when flat) opens with a **Start here** section (the player, the per-chapter loop, how to navigate, which files are the source of the player) and indexes the chapters, slide ranges, status and schedule; a course-level `README.md` and `CLAUDE.md` explain the whole tree to the next reader or agent
+- **Every generated markdown file has a table of contents** (`## Contents`, between `<!-- toc -->` markers, right after the H1), and lessons have the fullest one: every `##` section and `###` sub-section as working links. Quizzes, answer keys, final quizzes and exams get a "Jump to: Q1 · Q2 ..." line with an invisible anchor before each question. Only files with fewer than two sections (score tracker, revisit list, flashcards) and `CLAUDE.md` are exempt. `scripts/add_toc.py` builds and refreshes them; `add_toc.py ROOT --check` fails if one is missing.
+- **Order of operations after any generation or edit:** build or edit the files -> `make_glance.py` (rewrites the at-a-glance block in place) / `make_exam.py` (overwrites its files) -> `trim_lesson.py` -> `apply_banner.py` -> `add_toc.py` -> `audit_quiz.py` -> `check_bundle.py` -> `check_dump.py` (must pass) -> `check_tricky.py` (must pass) -> `check_findable.py` (must pass) -> `reading_load.py` -> `make_player.py` (the interactive player, last, so it shows the final questions). Banner and TOC scripts are idempotent, so running the pair again is always safe.
 - **The learner profile lives at the course root** (`learner-profile.md`) and every generated markdown file starts and ends with the audience banner (`scripts/apply_banner.py`, texts in `references/banner-texts.json`).
 - **Confirm the layout once** before creating folders, using the student's chapter list. Never invent a folder name or a location outside the folder the student pointed at; ask.
 - **Always realign:** if the chapter list changes (merge, split, rename, new chapter), move the files, fix every relative link and ID, and update the README index and score tracker in the same pass; then run `scripts/check_bundle.py` and `scripts/audit_quiz.py`. Folder structure and content never drift apart.
@@ -177,7 +184,7 @@ When the student asks how to retain the material (or shows repeated misses on re
 - `references/source-fidelity.md` — fact ledger, exact figures, source boundary, quiz audit pass.
 - `references/study-artifacts.md` — concept maps, flashcards (CSV), standalone quiz file, modes, Next menu, saved-file folder layout.
 - `references/memorization-techniques.md` — retention coaching.
-- `references/learning-science.md` — spacing schedule, interleaving, domain exam and mock exam, adaptive difficulty, exam blueprint.
+- `references/learning-science.md` — spacing schedule, interleaving, the exam and the mock exam, adaptive difficulty, exam blueprint.
 - `references/fidelity-review.md` — the independent review that checks questions and ledger entries against the source.
 - `references/lifecycle.md` — the whole generation sequence, which agent runs at which step, the gates, and the read-once cache rule.
 - `references/teaching-design.md` — teach, do not dump: thread, linked sections, predict checks, decision diagrams.
@@ -195,16 +202,16 @@ When the student asks how to retain the material (or shows repeated misses on re
 | `scripts/make_glance.py CHAPTER [--spec spec.json]` | Write the at-a-glance block inside `01-lesson.md`: validated Mermaid pictures, key facts from the flashcards, words; writes the traps as the closing section |
 | `scripts/source_text.py extract|slice|check|index` | Extract the source once into a per-slide text cache with hashes; read slides by range; detect a changed original |
 | `scripts/check_tricky.py ROOT [--min 2 --max 4]` | GATE: every lesson has 2-4 "Tricky part" callouts, each with a confusion line, a Hint and a Rule-and-anchor box, inside numbered sections |
-| `scripts/make_player.py DOMAIN_DIR [--out FILE]` | Build the interactive study player (quiz with feedback, flashcards with spaced boxes, timed exam, progress, results download) as one HTML file from the quizzes, keys and flashcards |
+| `scripts/make_player.py UNIT_DIR [--out FILE]` | Build the interactive study player (quiz with feedback, flashcards with spaced boxes, timed exam, progress, results download) as one HTML file from the quizzes, keys and flashcards |
 | `scripts/check_findable.py ROOT` | GATE: every quiz answer's content is in the lesson and findable in the at-a-glance block; no Predict copies a quiz scenario |
 | `scripts/check_dump.py ROOT` | GATE: fail any lesson section that is mostly slide wording, slide sentences pasted into tables/lists, or has no teaching (Predict, analogy, story, link). A lesson that fails is rewritten, never shipped |
 | `scripts/trim_lesson.py ROOT` | Remove the repeated blocks (one-sentence lines, recaps, trap quotes, glossary, ledger tags) from the explanation |
 | `scripts/merge_summary.py ROOT` | Migrate an old two-file bundle (separate visual summary) to the one-file lesson |
-| `scripts/make_domain_exam.py DOMAIN --count N` | Build `07-domain-exam.md` and its key covering every chapter |
+| `scripts/make_exam.py UNIT_DIR --count N` | Build `07-exam.md` and `08-exam-key.md` covering every chapter (`make_domain_exam.py` is the older name and writes the older file names) |
 | `scripts/apply_banner.py ROOT` | Add audience banners (idempotent) |
 | `scripts/add_toc.py ROOT [--check]` | Add or refresh the table of contents in every generated markdown file |
-| `scripts/build_chapter.py DOMAIN spec.py ...` | Assemble ledger, lesson, quiz, key and flashcards from a chapter spec module |
-| `scripts/reading_load.py ROOT` | Reading minutes per chapter and domain; flags an at-a-glance block over 5 min or a lesson file over 12 min |
+| `scripts/build_chapter.py UNIT_DIR spec.py ...` | Assemble ledger, lesson, quiz, key and flashcards from a chapter spec module |
+| `scripts/reading_load.py ROOT` | Reading minutes per chapter and unit; flags an at-a-glance block over 5 min or a lesson file over 12 min |
 | `scripts/review_schedule.py` | Dated spaced-review plan from a start date and an exam date |
 
 ## Conduct

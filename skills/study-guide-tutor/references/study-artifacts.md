@@ -99,28 +99,38 @@ Offer only the options that make sense at that point (e.g., "re-quiz misses" onl
 
 ## 6. Folder layout for saved work
 
-The tree mirrors the material, so folders and content always line up:
+The tree mirrors the material, so folders and content always line up. The grouping level is optional: use the shape the material has, and never invent a level it does not have. A *unit* below means any folder that directly holds `chapter-*/` folders.
+
+**Shape A: flat** (a book, one deck, a single course with no higher level)
 
 ```
 <course>/
 ├─ learner-profile.md              from the intake analysis; read before generating anything
-└─ domain-N/                       (or the material's own unit: module, week, part)
-   ├─ README.md                    index: chapters, page ranges, status of each
-   ├─ 00-overview/                 cross-chapter artifacts only
-   │  ├─ concept-map.md
-   │  ├─ score-tracker.md
-   │  ├─ revisit-list.md
-   │  ├─ cram-sheet.md
-   │  ├─ final-quiz.md
-   │  └─ final-quiz-key.md
-   ├─ chapter-01-<slug>/           one self-contained folder per chapter
-   │  ├─ fact-ledger.md
-   │  ├─ lesson.md
-   │  ├─ quiz.md
-   │  ├─ answer-key.md
-   │  ├─ flashcards.csv
-   │  └─ review.md                 created after grading
-   └─ chapter-02-<slug>/ ...
+├─ README.md                       index: chapters, page ranges, status of each
+├─ 00-overview/                    cross-chapter artifacts only (the unit is the whole course)
+├─ chapter-01-<slug>/              one self-contained folder per chapter
+└─ chapter-02-<slug>/ ...
+```
+
+**Shape B: grouped** (modules, weeks, parts, volumes, domains: the source's own word)
+
+```
+<course>/
+├─ learner-profile.md
+├─ <group>-1/                      for example module-1, week-01, part-1, domain-1
+│  ├─ README.md
+│  ├─ 00-overview/                 cross-chapter artifacts of this group only
+│  ├─ chapter-01-<slug>/
+│  └─ chapter-02-<slug>/ ...
+└─ <group>-2/ ...                  chapter numbers restart in each group
+```
+
+Inside every unit:
+
+```
+00-overview/   README.md, 01-concept-map.md, 02-cram-sheet.md, 03-final-quiz.md (+ key), 05-score-tracker.md,
+               06-revisit-list.md, 07-exam.md (+ 08-exam-key.md), 09-study-player.html
+chapter-NN-<slug>/   01-lesson.md, 02-flashcards.csv, 03-quiz.md, 04-answer-key.md, 05-review.md (after grading), 99-fact-ledger.md
 ```
 
 Rules: never group all quizzes, or all lessons, into one folder across chapters; keep keys out of quiz files; relative links only, so the tree can be moved; when chapters are merged, split or renamed, move files and fix links, the README and the tracker in the same pass; ask before creating any folder the student did not point at.
@@ -129,9 +139,9 @@ Every markdown file in the tree closes with ONE audience note from `intake-analy
 
 
 ## File order and diagrams (added in v0.4.0)
-- Files are numbered in reading order: chapter folder `01-lesson.md` (the at-a-glance block with the Mermaid pictures first, then the explanation: ONE file), `02-flashcards.csv`, `03-quiz.md`, `04-answer-key.md`, `05-review.md`, `99-fact-ledger.md`; domain `00-overview/` `01-concept-map.md` to `08-domain-exam-key.md` (see SKILL.md).
+- Files are numbered in reading order: chapter folder `01-lesson.md` (the at-a-glance block with the Mermaid pictures first, then the explanation: ONE file), `02-flashcards.csv`, `03-quiz.md`, `04-answer-key.md`, `05-review.md`, `99-fact-ledger.md`; a unit's `00-overview/` `01-concept-map.md` to `09-study-player.html` (see SKILL.md).
 - The concept map stays a heading-only outline; the at-a-glance block of the lesson holds the pictures. Every diagram is Mermaid and is validated with mermaid-cli by `scripts/make_glance.py`.
-- The domain exam (`07-domain-exam.md` and key) covers every chapter; the final quiz is a short cumulative checkpoint.
+- The exam (`07-exam.md` and `08-exam-key.md`; older courses may use `07-unit-exam.md` or `07-domain-exam.md`, which every script still reads) covers every chapter of the unit; the final quiz is a short cumulative checkpoint.
 
 ## Overview guide and "Start here" (every course)
 
@@ -141,3 +151,16 @@ Students open a folder full of numbered files and do not know where to begin. Tw
 - **A "Start here" section** at the top of the course README and of every unit README: link the interactive player, give the per-chapter loop (read the lesson, practise in the player, retake misses, take the exam, send the results file), say where progress is stored (that browser only) and how to navigate (the chapters table, the contents at the top of every file, reading-order numbers).
 
 Keep both in step with the folder: adding, renaming or removing a file means updating the table in the same pass.
+
+## course.json: language and wording (optional)
+
+A `course.json` at the course root adapts the generated files to the student's language without changing any script. Every key is optional and falls back to English, so a course without one behaves exactly as before. `templates/course.json` (in the plugin) lists every key with its English default.
+
+| Key | Holds | Read by |
+|---|---|---|
+| `language` | a BCP-47 code (`es`, `fr`, `ar` ...); right-to-left languages (`ar`, `he`, `fa`, `ur` ...) flip the player's direction | `make_player.py` (page `lang` and `dir`) |
+| `labels` | the structural words: the hint, rule and anchor words, the trap, say-it-back and next headings, Predict and analogy markers, difficulty words, the contents heading, the exam wording, the footer words, and a letter-reference regex for the course language | `check_tricky.py`, `check_dump.py`, `check_findable.py`, `audit_quiz.py`, `check_bundle.py`, `add_toc.py`, `make_exam.py`, `make_player.py`, `apply_banner.py` |
+| `footer_checks` | the per-file-type sentence of the audience note, keyed like `references/banner-texts.json` | `apply_banner.py` |
+| `ui` | every string of the interactive player | `make_player.py` |
+
+Question headers keep the letter `Q` (`**Q1 (Media).**`) and options keep `A.` to `D.` in every language: those are format markers, not words. The profile line is read through the `audience_statement` label.

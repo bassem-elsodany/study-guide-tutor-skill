@@ -14,6 +14,9 @@ Heuristic by word overlap: paraphrased answers can false-alarm, so confirm by re
 Exit code 1 if anything fails.
 """
 import argparse, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 STOP = set("the a an of to in and or is are was were be as for with by on at that this it its from which what who not no only than then into per vs".split())
 
@@ -29,14 +32,14 @@ def main():
     ap.add_argument('--predict-overlap', type=float, default=0.25)
     a = ap.parse_args(); bad = total = 0
     root = a.root.rstrip('/')
-    chapters = [root + '/'] if os.path.exists(os.path.join(root, '01-lesson.md')) else sorted(glob.glob(os.path.join(root, '**', 'chapter-*/'), recursive=True))
+    chapters = [root + '/'] if os.path.exists(os.path.join(root, '01-lesson.md')) else [c + '/' for c in _layout.all_chapters(root)]
     for ch in chapters:
         if not all(os.path.exists(ch + f) for f in ('01-lesson.md', '03-quiz.md', '04-answer-key.md')): continue
         L = open(ch + '01-lesson.md').read(); q = open(ch + '03-quiz.md').read(); k = open(ch + '04-answer-key.md').read()
         g = re.search(r'<!-- glance -->.*?<!-- /glance -->', L, re.S)
         gw = words(g.group(0)) if g else set(); lw = words(L); qs = sh(norm(q))
         keys = dict(re.findall(r'\| (\d+) \| \*\*([A-D])\*\*', k)); name = os.path.basename(ch.rstrip('/'))[:30]
-        for m in re.finditer(r'<summary><b>Predict:</b>(.*?)</summary>', L, re.S):
+        for m in re.finditer(r'<summary><b>' + re.escape(_layout.labels(ch)['predict']) + r':</b>(.*?)</summary>', L, re.S):
             s = sh(norm(m.group(1)))
             if s and len(s & qs) / len(s) > a.predict_overlap:
                 bad += 1; print(f'COPIED PREDICT  {name}: {m.group(1).strip()[:70]}')

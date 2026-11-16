@@ -1,6 +1,6 @@
 ---
-description: Quiz one chapter (or the whole domain), grade the answers with memory anchors, and queue the misses for a retake
-argument-hint: "[chapter number | domain | grade 1B 2D 3A ...]"
+description: Quiz one chapter (or a whole unit), grade the answers with memory anchors, and queue the misses for a retake
+argument-hint: "[chapter number | unit | grade 1B 2D 3A ...]"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python3:*)
 ---
 

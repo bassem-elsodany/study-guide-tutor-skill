@@ -1,6 +1,6 @@
 ---
 description: Cram mode for a short deadline - high-yield recap from the fact ledger, flashcards, one quiz, misses only
-argument-hint: "[hours available] [chapter or domain]"
+argument-hint: "[hours available] [chapter or unit]"
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash(python3:*)
 ---
 

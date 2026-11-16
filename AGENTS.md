@@ -1,6 +1,6 @@
 # study-guide-tutor: operating manual for coding agents
 
-> One skill, two agents, six slash commands, seventeen scripts and an interactive study player. There is no router and there are no hooks: the skill is loaded when a user asks to study, learn, be quizzed or prepare for an exam.
+> One skill, two agents, six slash commands, seventeen scripts, a shared layout helper and an interactive study player. There is no router and there are no hooks: the skill is loaded when a user asks to study, learn, be quizzed or prepare for an exam.
 
 ## 1. When to load the skill
 
@@ -16,7 +16,8 @@ Load `skills/study-guide-tutor/SKILL.md` when the user shares study material (sl
 | **Teach, do not dump.** A lesson that re-words the slides fails `check_dump.py`. | The student can read the slides faster. |
 | **Warn where students get confused.** 2-4 "Tricky part" callouts per lesson, and a closing "Traps to avoid" section. | `check_tricky.py` enforces it. |
 | **Audit every quiz.** Four options, one correct, all equally long and plausible, key position randomised, every key traced to the ledger. | `audit_quiz.py` and `check_findable.py` enforce it. |
-| **Folders mirror the material.** One folder per chapter; never invent a layout; confirm it once. | Students navigate by the source's own structure. |
+| **Folders mirror the material.** One folder per chapter, grouped only if the source is (flat course, or one group folder per module, week, part or domain, named with the source's own word); never invent a level; confirm the tree once. | Students navigate by the source's own structure. |
+| **Adapt to the student's assets.** Look at the material first: its type, size, grouping, numbering unit and language. Read it with `source_text.py`, shape the folders from it (flat or grouped, never a level it lacks), cite its own units, and write in the student's language with a `course.json`. Nothing in your output may assume slides, English or `domain-N`. | The scripts discover chapters and units by content and read labels from `course.json`. |
 | **Fix the method, not only the instance.** When the student says "too dense" or "too easy", change the profile and regenerate the affected files. | Re-profiling is part of the loop. |
 
 ## 3. The order of work
@@ -24,10 +25,10 @@ Load `skills/study-guide-tutor/SKILL.md` when the user shares study material (sl
 ```
 intake → learner-profile.md → extract + fact ledger → propose chapters → per chapter:
 lesson (teacher-writer) → quiz + key → grade → review → recall check
-→ domain exam → student-reviewer + fidelity review → wrap-up
+→ exam → student-reviewer + fidelity review → wrap-up
 ```
 
-After any generation or edit run, in order: `make_domain_exam.py` (if quizzes changed) → `apply_banner.py` → `add_toc.py` → `audit_quiz.py` → `check_bundle.py` → `check_dump.py` → `check_tricky.py` → `check_findable.py` → `reading_load.py` → `make_player.py` (the interactive page, last, so it shows the final questions). Details: `skills/study-guide-tutor/references/lifecycle.md`.
+After any generation or edit run, in order: `make_exam.py` (if quizzes changed) → `apply_banner.py` → `add_toc.py` → `audit_quiz.py` → `check_bundle.py` → `check_dump.py` → `check_tricky.py` → `check_findable.py` → `reading_load.py` → `make_player.py` (the interactive page, last, so it shows the final questions). Details: `skills/study-guide-tutor/references/lifecycle.md`.
 
 ## 4. Where things are
 

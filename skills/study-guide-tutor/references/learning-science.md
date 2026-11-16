@@ -11,13 +11,13 @@ What turns generated material into retention. Apply it after the chapters exist.
 - Chapter quizzes are blocked practice; they build the first pass. After two or three chapters run a **cumulative mixed quiz** (questions from earlier chapters, unlabeled) so the student must recognize which concept applies, which is what the exam does.
 - Confusable pairs are drilled together (the cram sheet has them in one table).
 
-## The domain exam
-- One timed exam per domain covering every chapter: `scripts/make_domain_exam.py DOMAIN --count N` (about 35-60 questions, about 1.5 minutes each, chapters mixed and unlabeled, every chapter at least 2 questions, proportional otherwise). Hints are off during the exam and offered in review.
+## The exam
+- One timed exam per unit (or per flat course) covering every chapter: `scripts/make_exam.py UNIT_DIR --count N` (about 35-60 questions, about 1.5 minutes each, chapters mixed and unlabeled, every chapter at least 2 questions, proportional otherwise). Hints are off during the exam and offered in review.
 - After it, use the key's chapter column to see weak chapters, add them to the revisit list, and schedule retakes. The short final quiz remains a checkpoint, not a substitute.
-- Before the real exam, one **mock exam across all domains** at the real length and time limit.
+- Before the real exam, one **mock exam across all units** at the real length and time limit.
 
 ## Exam blueprint
-- Ask the learner (multiple choice) whether they have the official exam blueprint with domain weights. If yes, weight study time, domain-exam length and mock-exam mix by it; if no, weight by slide count and say so.
+- Ask the learner (multiple choice) whether they have the official exam blueprint with section weights. If yes, weight study time, exam length and mock-exam mix by it; if no, weight by slide count and say so.
 
 ## Adaptive difficulty
 - If a chapter score is above 85% on first attempt, shorten its review and move on; below 60%, reteach with a new analogy and a smaller step before the retake. Record the decision in `05-review.md`.

@@ -4,12 +4,12 @@ Nothing is generated until the student's profile is known. A beginner needs plai
 
 ## Rules
 
-1. **Ask before generating**, every time a new course or domain starts and no profile exists.
+1. **Ask before generating**, every time a new course starts and no profile exists.
 2. **Every question is multiple choice.** Use the structured question tool (up to 4 questions per call, 2-4 options each, a short description per option, the recommended option first). Never ask an open-ended question; the tool adds "Other" automatically for anything the options miss.
 3. **Skip what is already known.** If `learner-profile.md` exists, show it in one line and ask only whether it still holds.
 4. **If the tool is unavailable**, present numbered options and accept a letter or number as the reply.
 5. **If the student declines or says "just start"**, use the balanced defaults (below), say so in one line, and mark the profile "defaulted, not confirmed".
-6. **Save the answers** to `learner-profile.md` at the course root (the folder above the domains) before generating anything.
+6. **Save the answers** to `learner-profile.md` at the course root (the course folder, above any groups) before generating anything.
 7. **Re-profile** when the student says it is too easy, too hard, too simple or too dense, or when graded results show the level is wrong. Update the profile, bump its version, and regenerate the affected files; list exactly which.
 
 ## Core question bank (ask all nine; two or three tool calls)

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Check that a study bundle is internally consistent.
 
-Usage: check_bundle.py ROOT     (a course folder with domain-*/ or a single domain folder)
+Usage: check_bundle.py ROOT     (a course folder, or any unit folder; chapters and units are found by their content, not by folder names)
 
-Per chapter folder (chapter-NN-slug):
+Per chapter folder (for example chapter-NN-slug, lecture-NN-slug, week-N-slug: any name with a number):
   files        01-lesson.md (the at-a-glance block and the explanation are ONE file), 02-flashcards.csv, 03-quiz.md, 04-answer-key.md, 99-fact-ledger.md exist
   headings     the H1 of lesson, quiz, key and ledger carries the folder's chapter number
   ledger IDs   every ledger ID is [<letters><chapter number>-NNN] and every ID cited in the lesson, quiz and key exists
@@ -15,16 +15,19 @@ Per chapter folder (chapter-NN-slug):
 Exit code 1 if any problem is found.
 """
 import csv, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 NEEDED = ['01-lesson.md', '02-flashcards.csv', '03-quiz.md', '04-answer-key.md', '99-fact-ledger.md']
 
 
 def main():
     root = os.path.abspath(sys.argv[1]); bad = []
-    bases = sorted(glob.glob(os.path.join(root, 'domain-*/'))) or [root + '/']
+    bases = [u + '/' for u in _layout.find_units(root)] or [root + '/']
     for b in bases:
-        for ch in sorted(glob.glob(os.path.join(b, 'chapter-*/'))):
-            n = int(os.path.basename(ch.rstrip('/')).split('-')[1]); rel = os.path.relpath(ch, root)
+        for ch in [x + '/' for x in _layout.chapters_of(b.rstrip('/'))]:
+            n = _layout.chapter_number(ch); rel = os.path.relpath(ch, root)
             for f in NEEDED:
                 if not os.path.exists(ch + f): bad.append((rel, 'missing', f))
             led = open(ch + '99-fact-ledger.md').read() if os.path.exists(ch + '99-fact-ledger.md') else ''
@@ -35,7 +38,7 @@ def main():
                 p = ch + f
                 if not os.path.exists(p) or not f.endswith('.md'): continue
                 t = open(p).read()
-                h = re.match(r'# (?:Fact Ledger: )?Chapter (\d+)', t)
+                h = re.match(r'# (?:' + re.escape(_layout.labels(root)['fact_ledger']) + r': )?(?:[^\W\d_]+[ \t]+)?(\d+)', t)
                 if not h or int(h.group(1)) != n: bad.append((rel, f, 'H1 chapter number'))
                 if t.count('audience-banner:top') != 0 or t.count('audience-banner:end') != 1: bad.append((rel, f, 'banner count (want exactly one footer note, no top banner)'))
                 if f == '01-lesson.md' and '<!-- glance -->' not in t: bad.append((rel, f, 'no at-a-glance block'))

@@ -21,7 +21,7 @@ You are an experienced teacher writing ONE chapter lesson for one specific learn
 
 **Inputs**
 - Learner profile: {PROFILE}
-- Source slides (text): read ONLY the chapter's slice of the cache: `python3 {SKILL_DIR}/scripts/source_text.py slice {SOURCE_TEXT} START END` for {SLIDE_RANGE} (cache file e.g. `assets/Domain+01+Lecture+Notes.slides.txt`). Do not open the original PDF.
+- Source slides (text): read ONLY the chapter's slice of the cache: `python3 {SKILL_DIR}/scripts/source_text.py slice {SOURCE_TEXT} START END` for {SLIDE_RANGE} (cache file e.g. `assets/course-notes.slides.txt`). Do not open the original PDF.
 - Chapter folder: {CHAPTER_DIR} (read `99-fact-ledger.md` for exact facts; read `02-flashcards.csv`; read the existing `01-lesson.md` only to see what facts and examples the current version holds, never to copy its structure)
 - Format exemplar (structure and voice only, not its content): {EXEMPLAR}
 

@@ -15,7 +15,9 @@ jobs:
         run: |
           python3 -I scripts/validate-plugin.py --self-test
           python3 -I scripts/validate-plugin.py .
-      - name: Scripts compile, run with --help, and the gates pass on the sample course
+      - name: Install a PDF text extractor so the PDF reader is tested too
+        run: sudo apt-get install -y poppler-utils >/dev/null
+      - name: Scripts compile, run with --help, source readers, labels and the gates pass on every sample course
         run: scripts/quality-check.sh
       - name: Interactive study player passes its scripted click-through in headless Chrome
         run: scripts/test-player.sh

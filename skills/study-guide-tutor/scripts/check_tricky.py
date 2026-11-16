@@ -21,10 +21,15 @@ a "**Hint:**" line (a test the student can run, not the answer) and, right after
 "Rule and anchor" box holding "**Rule:**" and "**Anchor:**"; titles are unique; callouts sit
 inside numbered sections, not in the glance block. Exit 1 on any failure.
 It cannot judge whether the confusions are the right ones: the student-persona reviewer does that.
+The words above (Tricky part, Hint, Rule and anchor, Rule, Anchor, Traps to avoid, Say it back, Next) are the English
+defaults. A course in another language sets its own in `course.json` under "labels" (see _layout.py); the checks then
+look for those words.
 """
 import argparse, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
-HEAD = re.compile(r'^> \*\*⚠ Tricky part:\s*(.+?)\*\*\s*$')
 
 
 def lessons(root):
@@ -34,22 +39,27 @@ def lessons(root):
 
 
 def check(path, lo, hi):
+    L = _layout.labels(path)
+    esc = {k: re.escape(v) for k, v in L.items()}
+    HEAD = re.compile(r'^> \*\*⚠ ' + esc['tricky_part'] + r':\s*(.+?)\*\*\s*$')
+    hint_prefix = f'> **{L["hint"]}:**'
     text = open(path, encoding='utf-8').read()
     in_glance = re.findall(r'<!-- glance -->.*?<!-- /glance -->', text, flags=re.S)
     for g in in_glance:
-        if '⚠ Tricky part' in g:
+        if '⚠ ' + L['tricky_part'] in g:
             return ['callout placed inside the at-a-glance block (it belongs in a numbered section)']
     body = re.sub(r'<!-- glance -->.*?<!-- /glance -->', '', text, flags=re.S)
     lines = body.split('\n')
     errs, titles = [], []
-    if '### Traps to avoid' in text:
-        errs.append('traps table is inside the at-a-glance block; it belongs in the closing "## Traps to avoid" section before "## Next"')
-    elif '<!-- traps -->' not in body or not re.search(r'<!-- traps -->\n## Traps to avoid', body):
-        errs.append('no closing "## Traps to avoid" section (between <!-- traps --> markers, before "## Next")')
+    traps, nxt = L['traps_heading'], L['next_heading']
+    if '### ' + traps in text:
+        errs.append(f'traps table is inside the at-a-glance block; it belongs in the closing "## {traps}" section before "## {nxt}"')
+    elif '<!-- traps -->' not in body or not re.search(r'<!-- traps -->\n## ' + esc['traps_heading'], body):
+        errs.append(f'no closing "## {traps}" section (between <!-- traps --> markers, before "## {nxt}")')
     else:
-        heads = re.findall(r'(?m)^## (Say it back|Traps to avoid|Next)\b', body)
-        if 'Next' in heads and heads.index('Traps to avoid') > heads.index('Next'):
-            errs.append('"## Traps to avoid" must come before "## Next"')
+        heads = re.findall(r'(?m)^## (' + esc['say_it_back'] + '|' + esc['traps_heading'] + '|' + esc['next_heading'] + r')\b', body)
+        if nxt in heads and heads.index(traps) > heads.index(nxt):
+            errs.append(f'"## {traps}" must come before "## {nxt}"')
     idx = [i for i, l in enumerate(lines) if HEAD.match(l)]
     if len(idx) < lo:
         errs.append(f'{len(idx)} callouts, need at least {lo}')
@@ -64,14 +74,14 @@ def check(path, lo, hi):
         j = i + 1
         while j < len(lines) and lines[j].startswith('>'):
             block.append(lines[j]); j += 1
-        confusion = [b for b in block if not b.startswith('> **Hint:**') and b.strip('> ').strip()]
+        confusion = [b for b in block if not b.startswith(hint_prefix) and b.strip('> ').strip()]
         if not confusion:
             errs.append(f'"{title}": no one-line confusion statement')
-        if not any(b.startswith('> **Hint:**') and len(b) > 20 for b in block):
-            errs.append(f'"{title}": missing a "> **Hint:**" line')
+        if not any(b.startswith(hint_prefix) and len(b) > 20 for b in block):
+            errs.append(f'"{title}": missing a "{hint_prefix}" line')
         tail = '\n'.join(lines[j:j + 14])
-        if not ('<summary>Rule and anchor</summary>' in tail and '**Rule:**' in tail and '**Anchor:**' in tail):
-            errs.append(f'"{title}": missing the "Rule and anchor" box with **Rule:** and **Anchor:**')
+        if not (f'<summary>{L["rule_and_anchor"]}</summary>' in tail and f'**{L["rule"]}:**' in tail and f'**{L["anchor"]}:**' in tail):
+            errs.append(f'"{title}": missing the "{L["rule_and_anchor"]}" box with **{L["rule"]}:** and **{L["anchor"]}:**')
         # must sit under a numbered section
         prior = [l for l in lines[:i] if l.startswith('## ')]
         if not prior or not re.match(r'## \d+\.', prior[-1]):

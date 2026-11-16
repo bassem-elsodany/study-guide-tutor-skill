@@ -22,13 +22,13 @@ Re-reading the original files every time wastes tokens and time. Extract once, i
 | 4 | Teach: write the lesson | `agents/teacher-writer.md`, one agent per chapter | profile, ledger, cache slice, the quiz (for coverage only) | `01-lesson.md` | `check_dump.py`, `check_tricky.py` and `check_findable.py` pass; Mermaid validates |
 | 5 | Quiz, key, flashcards | `build_chapter.py` and `references/question-design.md` | ledger, lesson | `03-quiz.md`, `04-answer-key.md`, `02-flashcards.csv` | `audit_quiz.py` passes |
 | 6 | Stamp | `apply_banner.py`, `add_toc.py` | the files | banners, contents | `add_toc.py --check` |
-| 7 | Domain files | tutor, `make_domain_exam.py` | all chapters | `00-overview/` files, domain exam, README | `check_bundle.py` passes |
+| 7 | Unit files | tutor, `make_exam.py` | all chapters | `00-overview/` files, exam, README | `check_bundle.py` passes |
 | 8 | Independent fidelity review | `references/fidelity-review.md`, read-only agents | ledger, cache slice, keys | list of wrong keys/facts | all fixed |
 | 9 | Student-persona review | `agents/student-reviewer.md`, read-only agents | lesson, quiz, cache slice | cuts and fixes | cuts applied; dump gate and reading load re-run |
 | 10 | Teach and grade with the student | the tutor | lesson, quiz | `05-review.md`, tracker, revisit list | student's pace |
 | 11 | Wrap up | the tutor | all | readiness summary, take-away artifacts | |
 
-After any change run, in order: `make_domain_exam.py` (if quizzes changed), `apply_banner.py`, `add_toc.py`, `audit_quiz.py`, `check_bundle.py`, `check_dump.py`, `check_tricky.py`, `check_findable.py`, `reading_load.py` -> `make_player.py` (the interactive player, last, so it shows the final questions), then `graphify update .` where a graph exists.
+After any change run, in order: `make_exam.py` (if quizzes changed), `apply_banner.py`, `add_toc.py`, `audit_quiz.py`, `check_bundle.py`, `check_dump.py`, `check_tricky.py`, `check_findable.py`, `reading_load.py` -> `make_player.py` (the interactive player, last, so it shows the final questions), then `graphify update .` where a graph exists.
 
 ## Standing rules every step obeys
 

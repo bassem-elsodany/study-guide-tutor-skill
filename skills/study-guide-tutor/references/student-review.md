@@ -9,7 +9,7 @@ The whole point of the bundle is that the learner gains knowledge and understand
 - Run `reading_load.py ROOT` after generating. Fix every flag by cutting, not by adding.
 
 ## The student reviewer
-- Template: `agents/student-reviewer.md`. Spawn one read-only general-purpose agent per domain (3 chapters each: the longest, one list-heavy, one law/process-heavy) before calling a domain done.
+- Template: `agents/student-reviewer.md`. Spawn one read-only general-purpose agent per unit (3 chapters each: the longest, one list-heavy, one process-heavy) before calling a unit done.
 - It plays the learner from the profile: reads only the at-a-glance block and answers 5 quiz questions (**summary-only score**), skims the lesson for cuts, checks every diagram at a glance, compares with reading the slides, and scores speed, clarity, visuals, padding and exam readiness 1-5.
 - **Pass bar:** summary-only score at least 3 of 5 on average, no chapter below 2; every "speed" and "no padding" score at least 4; no diagram marked unreadable.
 - Apply the cuts it lists (largest time saving first), regenerate the at-a-glance block (`make_glance.py`) if the lesson changed, re-run `apply_banner.py`, `add_toc.py`, `audit_quiz.py`, `check_bundle.py` and `reading_load.py`, and re-run the reviewer on any chapter that failed.

@@ -4,15 +4,15 @@
 Usage:
   audit_quiz.py ROOT [--target-low 0.20] [--target-high 0.40] [--margin 0.08] [--allow-easy]
 
-ROOT is a domain folder (containing chapter-*/ and optionally 00-overview/) or a course
-folder containing several domain-*/ folders.
+ROOT is a course folder, or a unit folder (any folder that directly holds chapter folders and optionally
+00-overview/); every unit below ROOT is audited (see _layout.py: flat, grouped and nested courses all work).
 
 Checks, per quiz file and key file pair:
   structure   four options A-D per question, labels, the "N questions" header matches
   key         key table rows and explanation blocks match the questions one to one
   why-wrong   every wrong option has an explanation bullet (grouped bullets such as
-              "A, C and D ..." count), and every explanation has a "- Hint:" line
-  difficulty  labels are Medium or Hard (use --allow-easy to permit Easy)
+              "A, C and D ..." count), and every explanation has a "- Hint:" line (the word comes from course.json labels)
+  difficulty  labels are Medium or Hard (use --allow-easy to permit Easy; a course.json can rename them)
   letters     key letters are spread (no letter far from an equal share; no run of three)
   length      share of questions where the key is strictly the longest option stays within
               [target-low, target-high]; flags questions where the key is at least
@@ -20,6 +20,9 @@ Checks, per quiz file and key file pair:
 Exit code 1 when any ERROR is found; warnings do not fail.
 """
 import argparse, glob, os, re, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 from collections import Counter
 
 Q_RX = re.compile(r'\n\*\*Q(\d+) \(([^)]*)\)\.\*\* ')
@@ -29,10 +32,13 @@ KEYBLK_RX = re.compile(r'\*\*Q(\d+): ([A-D])\.\*\* (.*?)(?=\n\n(?:<a id="q\d+"><
 BULLET_RX = re.compile(r'^- ([A-D](?:(?:,\s*| and | & )[A-D])*)(?=[:\s])', re.M)
 
 
+LABELS = _layout.DEFAULT_LABELS
+
+
 def parse_quiz(path):
     s = open(path).read()
     parts = Q_RX.split(s)
-    hdr = re.search(r'^(\d+) questions', s, re.M)
+    hdr = re.search(r'^(\d+) ' + re.escape(LABELS['questions']), s, re.M)
     out = {}
     for i in range(1, len(parts), 3):
         n, label, body = int(parts[i]), parts[i + 1], parts[i + 2]
@@ -49,20 +55,19 @@ def parse_key(path):
         letters = set()
         for g in BULLET_RX.findall(body):
             letters |= set(re.findall(r'[A-D]', g))
-        blocks[int(m.group(1))] = (m.group(2), letters, '- Hint:' in body)
+        blocks[int(m.group(1))] = (m.group(2), letters, f"- {LABELS['hint']}:" in body)
     return rows, blocks
 
 
 def find_pairs(root):
     pairs = []
-    domains = sorted(glob.glob(os.path.join(root, 'domain-*/')))
-    bases = [d.rstrip('/') for d in domains] or [root.rstrip('/')]
+    bases = _layout.find_units(root)
     for b in bases:
-        for c in sorted(glob.glob(os.path.join(b, 'chapter-*/'))):
+        for c in [x + '/' for x in _layout.chapters_of(b)]:
             q = next((c + n for n in ('03-quiz.md', 'quiz.md') if os.path.exists(c + n)), c + '03-quiz.md')
             k = next((c + n for n in ('04-answer-key.md', 'answer-key.md') if os.path.exists(c + n)), c + '04-answer-key.md')
             pairs.append((q, k, True))
-        for q, k in (('03-final-quiz.md', '04-final-quiz-key.md'), ('07-domain-exam.md', '08-domain-exam-key.md'), ('final-quiz.md', 'final-quiz-key.md')):
+        for q, k in (_layout.FINAL_PAIR,) + _layout.EXAM_PAIRS + (('final-quiz.md', 'final-quiz-key.md'),):
             qp = os.path.join(b, '00-overview', q)
             if os.path.exists(qp):
                 pairs.append((qp, os.path.join(b, '00-overview', k), False))
@@ -81,6 +86,8 @@ def main():
     ap.add_argument('--margin', type=float, default=0.08)
     ap.add_argument('--allow-easy', action='store_true')
     a = ap.parse_args()
+    global LABELS
+    LABELS = _layout.labels(a.root)  # the course's own words (course.json), English by default
     errors, warns = [], []
     total = strict = 0
     letters = Counter(); diff = Counter(); flagged = []
@@ -99,7 +106,7 @@ def main():
         for n, (label, opts) in sorted(q.items()):
             if sorted(opts) != list('ABCD'):
                 errors.append((rel, f'Q{n}: options are {sorted(opts)}')); continue
-            if label not in ('Medium', 'Hard') and not (a.allow_easy and label == 'Easy'):
+            if label not in (LABELS['medium'], LABELS['hard']) and not (a.allow_easy and label == LABELS['easy']):
                 errors.append((rel, f'Q{n}: difficulty label "{label}"'))
             diff[label] += 1
             key = rows.get(n)

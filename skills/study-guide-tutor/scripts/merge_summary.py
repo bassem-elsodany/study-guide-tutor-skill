@@ -12,6 +12,9 @@ Then rewrites every reference to the old file names in all markdown files under 
 Run apply_banner.py, add_toc.py, audit_quiz.py, check_bundle.py and reading_load.py afterwards.
 """
 import argparse, glob, os, re, subprocess, sys
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RENAMES = [('02-lesson.md', '01-lesson.md'), ('03-flashcards.csv', '02-flashcards.csv'), ('04-quiz.md', '03-quiz.md'),
@@ -21,7 +24,7 @@ RENAMES = [('02-lesson.md', '01-lesson.md'), ('03-flashcards.csv', '02-flashcard
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('root'); ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
-    chapters = [c for c in sorted(glob.glob(os.path.join(a.root, '**', 'chapter-*/'), recursive=True)) if os.path.exists(c + '01-visual-summary.md')]
+    chapters = [c + '/' for c in _layout.all_chapters(a.root) if os.path.exists(os.path.join(c, '01-visual-summary.md'))]
     print(f'{len(chapters)} chapters in the old layout')
     if a.dry_run: return
     for ch in chapters:

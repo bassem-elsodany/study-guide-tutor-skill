@@ -5,8 +5,8 @@ Usage: review_schedule.py --start 2026-11-17 --exam 2026-12-20 [--chapters 43] [
 
 Study days walk through the chapters (lesson, quiz, review). Each chapter's misses come back the
 next day, 3 days later, a week later and two weeks later (retake with fresh variants). The last
-10 days before the exam are reserved for cumulative quizzes, domain exams, one mock exam and the
-revisit list. Output is Markdown; paste it into score-tracker.md or the domain README.
+10 days before the exam are reserved for cumulative quizzes, unit exams, one mock exam and the
+revisit list. Output is Markdown; paste it into score-tracker.md or the unit README.
 """
 import argparse, datetime as dt
 
@@ -32,8 +32,8 @@ for i in range(a.chapters):
         if d < e - dt.timedelta(days=tail): add(d, f'Chapter {c}: {what}')
 for k in range(tail):
     d = e - dt.timedelta(days=tail - k)
-    task = ['Domain exam (timed) for the first domain', 'Review the exam key; update the revisit list', 'Domain exam (timed) for the next domain',
-            'Revisit list and revisit flashcards', 'Cram sheet pass', 'Mock exam (all domains, timed)', 'Review the mock exam key',
+    task = ['Unit exam (timed) for the first unit', 'Review the exam key; update the revisit list', 'Unit exam (timed) for the next unit',
+            'Revisit list and revisit flashcards', 'Cram sheet pass', 'Mock exam (all units, timed)', 'Review the mock exam key',
             'Revisit list again', 'Light review: cram sheets only', 'Rest, short flashcard pass'][k % 10]
     add(d, task)
 print('| Date | Do |\n|---|---|')

@@ -10,7 +10,7 @@ Chapter folder (reading order):
   04-answer-key.md       open after answering
   05-review.md           created after grading
   99-fact-ledger.md      reference for checking facts, not part of the reading flow
-Domain 00-overview folder:
+Unit 00-overview folder:
   01-concept-map.md  02-cram-sheet.md  03-final-quiz.md  04-final-quiz-key.md
   05-score-tracker.md  06-revisit-list.md
 
@@ -18,6 +18,9 @@ Renames the files and rewrites every reference to them (links, backticked names,
 in all markdown files under COURSE_ROOT. Run once; already-numbered files are left alone.
 """
 import argparse, glob, os, re
+import sys as _sys, os as _os
+_sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
+import _layout
 
 CHAPTER = {'lesson.md': '01-lesson.md', 'flashcards.csv': '02-flashcards.csv', 'quiz.md': '03-quiz.md',
            'answer-key.md': '04-answer-key.md', 'review.md': '05-review.md', 'fact-ledger.md': '99-fact-ledger.md'}
@@ -30,7 +33,7 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument('root'); ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
     renames = {}
-    for d in glob.glob(os.path.join(a.root, '**', 'chapter-*'), recursive=True):
+    for d in _layout.all_chapters(a.root):
         if os.path.isdir(d):
             for old, new in CHAPTER.items():
                 if os.path.exists(os.path.join(d, old)):

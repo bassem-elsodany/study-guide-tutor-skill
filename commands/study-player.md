@@ -1,6 +1,6 @@
 ---
 description: Build the interactive study player for a unit - click-through quiz with feedback, spaced flashcards, timed exam, progress and a results file
-argument-hint: "[unit folder, e.g. domain-1]"
+argument-hint: "[unit folder: the course folder if flat, or one module, week, part ...]"
 allowed-tools: Read, Write, Grep, Glob, Bash(python3:*)
 ---
 

@@ -20,7 +20,7 @@ flowchart LR
     D["<b>TEACH</b><br/>glance block, sections,<br/>tricky parts, traps"]
     E["<b>QUIZ</b><br/>4 options, audited<br/>key traced to ledger"]
     F["<b>GRADE</b><br/>anchors, source location<br/>retake the misses"]
-    G["<b>EXAM</b><br/>one domain exam<br/>spaced revisits"]
+    G["<b>EXAM</b><br/>one exam per unit<br/>spaced revisits"]
     H["<b>REVIEW</b><br/>student persona<br/>fidelity check"]
     A --> B --> C --> D --> E --> F --> G --> H
     F -. "misses feed the revisit list" .-> D
@@ -197,7 +197,7 @@ You mostly just talk. When you share material and ask to study it, the skill run
 | **Practise** | "make me the interactive player" | one HTML file: click an answer, get the reason at once; flip flashcards; take the timed exam |
 | **Test** | "quiz me" | scenario questions (3 to 6 per chapter, more for merged ones), 4 options, hints on request only |
 | **Fix** | "I keep missing X" | grading with a memory anchor per miss, a retake with fresh variants, the revisit list |
-| **Prepare** | "mock exam" / "I only have an hour" | one timed domain exam; or cram mode |
+| **Prepare** | "mock exam" / "I only have an hour" | one timed exam; or cram mode |
 | **Remember** | "when should I revisit this?" | a dated spaced-review plan from your exam date |
 
 ### What a session looks like (illustrative)
@@ -234,6 +234,21 @@ Coding agents are fluent teachers and still make the same expensive mistakes wit
 | Long lessons nobody finishes | `reading_load.py`: a reading budget per chapter and per at-a-glance block |
 | Misses are shrugged off | grading with a memory anchor per miss, `05-review.md`, a revisit list, fresh-variant retakes and a dated spaced-review plan |
 
+## It adapts to what you give it
+
+Nothing in the skill assumes slides, English or one folder layout. It looks at your material first and shapes the course to it.
+
+| What you bring | What the skill does |
+|---|---|
+| **A file type** | reads **pdf, pptx, docx, md, txt, html, epub, srt, vtt**, a single image, or a folder of images (scanned notes, photographed slides) into a numbered text cache, one unit per slide, page, section or time segment. Spreadsheets, audio and video are not read directly: transcribe them first (a `.txt`, `.srt` or `.vtt` transcript works) |
+| **Its own numbering** | cites facts in the source's unit: "slide 12", "page 4", "section 3", "minute 14" |
+| **A flat sequence** (a book, one deck) | a flat course: `chapter-NN-slug/` folders and one overview at the course root |
+| **A natural grouping** (modules, weeks, parts, volumes, domains) | one group folder per source group, named with the source's own word (`module-2`, `week-03`, `part-1`), each with its own overview and player |
+| **Another language** | writes everything in the student's language; a `course.json` carries the language, the structural words the gates look for, and the player's text (Arabic, Hebrew, Persian and Urdu flip the player to right-to-left). Copy [`templates/course.json`](templates/course.json) and translate it |
+| **A learner** | the intake profile sets level, goal, time, style, quiz difficulty and the audience note of every file |
+
+Chapter folders are found by their **content** (a lesson, quiz, ledger or flashcards), not by their name, so `chapter-03-x`, `lecture-3-x`, `week-2-x` and `capitulo-01-x` all work. The test suite proves each case: a flat course, a module-grouped course with a differently named chapter folder, a Spanish course with its own labels, an Arabic variant for right-to-left, and a reader test for every source type.
+
 ## How it thinks
 
 The loop is in [`SKILL.md`](skills/study-guide-tutor/SKILL.md); the depth is in [`references/`](skills/study-guide-tutor/references). Three ideas drive everything:
@@ -262,9 +277,9 @@ flowchart TB
 | **12 reference files** | intake analysis, question design, source fidelity, teaching design, student review, fidelity review, grading files, learning science, memorization techniques, artifacts, lifecycle, banner texts |
 | **2 agents** | `teacher-writer` (one chapter lesson, read-write), `student-reviewer` (plays the learner, read-only) |
 | **6 commands** | `/study`, `/study-quiz`, `/study-player`, `/study-cram`, `/study-weak`, `/study-check` |
-| **17 scripts** | extract the source once, build the at-a-glance block, number files, add contents and the audience note, build the domain exam, and the eight gates below; Python standard library only |
-| **Templates** | a learner-profile template, the generated course layout, an overview-folder guide |
-| **Sample course** | `tests/fixtures/sample-course/`: one invented chapter that passes every gate; used by CI |
+| **17 scripts** (and a shared layout helper) | extract the source once, build the at-a-glance block, number files, add contents and the audience note, build the exam, and the eight gates below; Python standard library only |
+| **Templates** | a learner-profile template, the generated course layout, an overview-folder guide, and `course.json` (every label and player string, ready to translate) |
+| **Sample courses** | `tests/fixtures/`: a flat course, a module-grouped course and a Spanish course, all invented, all passing every gate; used by CI |
 
 ### The gates
 
@@ -301,28 +316,43 @@ flowchart LR
 |---|---|
 | **Quiz** | click an option or press A to D; the right answer turns green at once; every wrong option comes with the reason it is wrong, the source location and the explanation; an optional hint (marked in your score); answer order is shuffled; "Retake the misses" |
 | **Flashcards** | flip, then "knew it" or "missed it"; a missed card returns today, a known card waits 1, 3, 7, then 14 days (five boxes); due counts per deck |
-| **Exam** | the timed domain exam: no feedback until you submit, free navigation, results by chapter with "revisit" flags, review of every miss |
+| **Exam** | the timed exam: no feedback until you submit, free navigation, results by chapter with "revisit" flags, review of every miss |
 | **Progress** | last and best score per chapter, flashcard boxes, the questions you still miss, exam attempts, and **Download my results (JSON)** to send back to the tutor |
 
 The tutor turns a results file into `05-review.md` (graded misses with memory anchors), a score-tracker update and a revisit list. The player reads the same Markdown the gates check, so it cannot show a question that failed the audit. `scripts/test-player.sh` drives it in headless Chrome as a click-through test. Questions that refer to options by letter ("both A and B") are never reshuffled.
 
 ## The files it generates
 
-The folder tree mirrors your material (course, then unit, then one folder per chapter). Every file has a number that is its reading order.
+The folder tree mirrors your material, and **the grouping level is optional**: the skill looks at the material, proposes a layout, and you confirm it once. Every file has a number that is its reading order.
+
+**No higher level in the material** (a book, one deck, a single course): a flat course.
 
 ```
 my-course/
 ├── learner-profile.md                 written after the intake
-├── domain-1/
-│   ├── 00-overview/                   README.md (what each file is for), concept map, cram sheet, final quiz, score tracker, revisit list, domain exam, 09-study-player.html
-│   └── chapter-01-short-slug/
-│       ├── 01-lesson.md               at a glance, numbered sections, tricky parts, say it back, traps, next
-│       ├── 02-flashcards.csv
-│       ├── 03-quiz.md  ·  04-answer-key.md  ·  05-review.md (after grading)
-│       └── 99-fact-ledger.md          every checkable fact with its source location
+├── README.md                          start here: the player, the loop, the chapter table
+├── 00-overview/                       README.md (what each file is for), concept map, cram sheet, final quiz, score tracker, revisit list, exam, 09-study-player.html
+├── chapter-01-short-slug/
+│   ├── 01-lesson.md                   at a glance, numbered sections, tricky parts, say it back, traps, next
+│   ├── 02-flashcards.csv
+│   ├── 03-quiz.md  ·  04-answer-key.md  ·  05-review.md (after grading)
+│   └── 99-fact-ledger.md              every checkable fact with its source location
+└── chapter-02-short-slug/ ...
 ```
 
-More in [`templates/course-layout.md`](templates/course-layout.md). The scripts look for `domain-*/chapter-NN-*` folders; "domain" is just the name of the unit level.
+**A natural higher level** (modules, weeks, parts, volumes, domains): one folder per group, named with the source's own word, each with its own `00-overview/`. Chapter numbers restart in each group.
+
+```
+my-course/
+├── learner-profile.md
+├── module-1/                          or week-01, part-1, domain-1 ... whatever the material calls it
+│   ├── README.md
+│   ├── 00-overview/                   one overview and one player per group
+│   └── chapter-01-short-slug/ ...
+└── module-2/ ...
+```
+
+The scripts need no configuration for either shape: a *unit* is any folder that directly holds `chapter-*/` folders, and every script finds units on its own. More in [`templates/course-layout.md`](templates/course-layout.md).
 
 ## Configuration
 
@@ -332,6 +362,7 @@ Nothing is required: there are no hooks and no environment variables. What you c
 |---|---|
 | `learner-profile.md` (written by the intake; template in [`templates/`](templates/learner-profile.md)) | level, background, goal, time, explanation style, examples, quiz level, pace, memory aids, and the one-line **Audience statement** used in every file's footer |
 | Your prompts | "too simple", "too dense", "too easy", "too hard": the skill re-profiles and regenerates the affected files |
+| `course.json` at the course root (template in [`templates/`](templates/course.json)) | the course's language, the structural words the gates look for, the audience note's wording and every string of the player; all optional, English by default |
 | Script flags | e.g. `audit_quiz.py --allow-easy`, `check_findable.py --min-glance 0.6`, `reading_load.py`: each script's `--help` lists them |
 
 ## Safety and privacy
@@ -365,10 +396,12 @@ Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) (authoring standards, what a go
 
 ## Status and limits
 
-- **Version 1.0.1**, single maintainer, opinionated by design.
+- **Version 1.1.0**, single maintainer, opinionated by design.
 - Built and refined on one real course (a professional-certification course of 43 chapters across four units, taught from lecture PDFs) and verified on the invented sample course. It has not yet been run on other kinds of material, such as video transcripts, books or code bootcamps.
 - The gates are **heuristics**: `check_findable.py` and `check_dump.py` compare words, so a paraphrase can false-alarm and a clever dump could pass. They nominate; a reader decides. The `student-reviewer` and fidelity-review prompts exist for that.
-- The scripts assume lecture-style material ("slides" and slide ranges in ledgers) and the `domain-*/chapter-NN-*` folder scheme; ledger IDs are `<letters><chapter number>-NNN`. English is the tested language.
+- The scripts assume lecture-style material (a source with numbered units, cited in ledgers) and chapter folders that hold the skill's numbered files; folder names and grouping are free, and ledger IDs are `<letters><chapter number>-NNN`, unique within a unit.
+- Tested languages: English, plus an invented Spanish course (labels, exam text, footer note and player text) and an Arabic setting for right-to-left direction. Other languages should work through `course.json` but have not been run. The reading-time budget assumes 200 words a minute, which is not right for every language (`reading_load.py --wpm`).
+- Source readers use only the standard library: Word and PowerPoint files are read as text (headings, paragraphs, slide text, speaker notes), not as images, tables or charts, and a PDF needs `pdftotext` or `pypdf`. Scanned or image-only material is marked for a visual read, which the agent does by looking at it.
 - Adding the tricky-part callouts lengthens lessons by about a minute; `reading_load.py` reports the cost against the budget.
 - Verified: the repository checks, the installer, the gates on the sample course, and the interactive player in headless Chrome (scripted click-through, plus manual screenshots at phone and desktop width). Not verified: the player in Safari, Firefox or Edge, or with a screen reader. Not verified: other agents, Windows, other source formats, Claude Code versions beyond those in use when it was written.
 
