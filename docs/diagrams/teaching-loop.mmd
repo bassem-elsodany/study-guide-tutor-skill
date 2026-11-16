@@ -1,0 +1,11 @@
+flowchart LR
+    A["<b>INTAKE</b><br/>multiple-choice profile<br/>learner-profile.md"]
+    B["<b>INGEST</b><br/>extract once<br/>fact ledger"]
+    C["<b>STRUCTURE</b><br/>chapters + concept map<br/>confirm layout"]
+    D["<b>TEACH</b><br/>glance block, sections,<br/>tricky parts, traps"]
+    E["<b>QUIZ</b><br/>4 options, audited<br/>key traced to ledger"]
+    F["<b>GRADE</b><br/>anchors, source location<br/>retake the misses"]
+    G["<b>EXAM</b><br/>one domain exam<br/>spaced revisits"]
+    H["<b>REVIEW</b><br/>student persona<br/>fidelity check"]
+    A --> B --> C --> D --> E --> F --> G --> H
+    F -. "misses feed the revisit list" .-> D

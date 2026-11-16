@@ -1,0 +1,16 @@
+.DS_Store
+# local Claude settings (do not distribute)
+.claude/settings.json
+.claude/settings.local.json
+!.claude/settings.example.json
+
+# Python caches, editors, OS
+__pycache__/
+*.pyc
+.idea/
+.vscode/
+Thumbs.db
+
+# generated study courses and extracted source caches when you run the scripts here
+tests/fixtures/**/*.slides.txt
+tests/fixtures/**/*.manifest.json

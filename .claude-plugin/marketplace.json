@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "study-guide-tutor",
+  "version": "1.0.0",
+  "description": "A study tutor for agents: turns any course material into lessons, audited quizzes and a revisit plan",
+  "owner": {
+    "name": "bassem-elsodany"
+  },
+  "plugins": [
+    {
+      "name": "study-guide-tutor",
+      "description": "Teach-me-this-material skill: intake, fact ledger, teacher-written lessons with tricky-part hints, audited quizzes, grading with memory anchors, flashcards, domain exams, spaced revisits, plus gates that fail slide dumps and unfindable quiz answers.",
+      "source": "./",
+      "category": "education",
+      "license": "MIT",
+      "keywords": [
+        "education",
+        "exam-preparation",
+        "quiz",
+        "flashcards",
+        "active-recall"
+      ]
+    }
+  ]
+}

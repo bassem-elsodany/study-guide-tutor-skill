@@ -1,0 +1,32 @@
+name: ci
+on: { push: { branches: [main] }, pull_request: {} }
+permissions: { contents: read }
+concurrency: { group: "ci-${{ github.ref }}", cancel-in-progress: true }
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4          # pin to a commit SHA before relying on this workflow
+        with: { persist-credentials: false }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: Plugin conventions (frontmatter, agents, commands, manifests, hygiene, links)
+        run: |
+          python3 -I scripts/validate-plugin.py --self-test
+          python3 -I scripts/validate-plugin.py .
+      - name: Scripts compile, run with --help, and the gates pass on the sample course
+        run: scripts/quality-check.sh
+      - name: Interactive study player passes its scripted click-through in headless Chrome
+        run: scripts/test-player.sh
+      - name: Installer for other agents (link, copy, uninstall) works in a temp project
+        run: |
+          T=$(mktemp -d); mkdir -p "$T/proj"; cd "$T/proj"
+          "$GITHUB_WORKSPACE/scripts/install-agents.sh" --agents-md >/dev/null
+          test -f .agents/skills/study-guide-tutor/SKILL.md && grep -q "study-guide-tutor:start" AGENTS.md
+          "$GITHUB_WORKSPACE/scripts/install-agents.sh" --agents-md --uninstall >/dev/null
+          test -z "$(ls .agents/skills)" && ! grep -q "study-guide-tutor:start" AGENTS.md
+          HOME="$T/home" "$GITHUB_WORKSPACE/scripts/install-agents.sh" --scope user --mode copy >/dev/null
+          test -f "$T/home/.agents/skills/study-guide-tutor/scripts/audit_quiz.py"
+      - name: JSON manifests parse
+        run: python3 -c "import json;[json.load(open(f)) for f in ['.claude-plugin/plugin.json','.claude-plugin/marketplace.json','skills/study-guide-tutor/references/banner-texts.json']]"

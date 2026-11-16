@@ -1,0 +1,53 @@
+{
+ "generated_for": "a learner studying this material at the level, goal and pace in their learner profile.",
+ "types": {
+  "fact-ledger": {
+   "check": "level-independent reference. Use it to check a fact or find its source location; the lesson is the explained reading."
+  },
+  "lesson": {
+   "check": "adapted to the learner profile. Pictures and tables first, definitions in the words the profile asks for, an example per idea. Left out: only what the goal does not test; the fact ledger keeps every fact."
+  },
+  "quiz": {
+   "check": "difficulty set by the learner profile; hints on request; nothing outside the source material is tested."
+  },
+  "answer-key": {
+   "check": "every wrong option is explained, with the source location of the fact; open it after answering."
+  },
+  "concept-map": {
+   "check": "same facts as the chapters; wording kept plain; no facts dropped."
+  },
+  "cram-sheet": {
+   "check": "same facts as the chapters; wording kept plain; no facts dropped."
+  },
+  "final-quiz": {
+   "check": "cumulative across all chapters; hints on request; misses go to the revisit list."
+  },
+  "final-quiz-key": {
+   "check": "cumulative across all chapters; open it after answering."
+  },
+  "score-tracker": {
+   "check": "same facts as the chapters; wording kept plain; no facts dropped."
+  },
+  "revisit-list": {
+   "check": "same facts as the chapters; wording kept plain; no facts dropped."
+  },
+  "README": {
+   "check": "a plain-language guide to the files; no facts changed."
+  },
+  "review": {
+   "check": "each explanation names the exact trap, not only the answer."
+  },
+  "mock-exam": {
+   "check": "exam-style practice; scored in one sitting; misses go to the revisit list."
+  },
+  "mock-exam-key": {
+   "check": "open only after you finish the exam."
+  },
+  "domain-exam": {
+   "check": "exam-style practice; take it in one sitting, then use the key to find weak chapters and add them to the revisit list."
+  },
+  "domain-exam-key": {
+   "check": "open only after you finish the exam; each miss points back to the chapter to revisit."
+  }
+ }
+}

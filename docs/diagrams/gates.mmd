@@ -1,0 +1,9 @@
+flowchart LR
+    L["01-lesson.md"] --> D["check_dump<br/>no slide dumps"]
+    L --> T["check_tricky<br/>hints + closing traps"]
+    L --> R["reading_load<br/>time budget"]
+    Q["03-quiz.md + 04-answer-key.md"] --> A["audit_quiz<br/>option length, key spread"]
+    Q --> F["check_findable<br/>answers findable in the lesson"]
+    L --> F
+    X["whole course"] --> B["check_bundle<br/>ids, links, footer note"]
+    X --> C["add_toc --check<br/>contents"]
