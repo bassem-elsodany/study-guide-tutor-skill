@@ -12,6 +12,7 @@ All notable changes to study-guide-tutor. Format: [Keep a Changelog](https://kee
 - **Language.** An optional `course.json` carries `language`, `labels` (the structural words the gates look for), `footer_checks` and `ui` (the player's text). The tricky-parts, dump, findable, quiz-audit and bundle gates, the exam builder, the contents builder, the audience note and the player all read it; Arabic, Hebrew, Persian and Urdu flip the player to right-to-left. English is the default, so existing courses are unchanged. `templates/course.json` lists every key.
 - **One name everywhere.** The skill folder and skill name are now `study-guide-tutor-skill`, the same as the repository, the plugin and the marketplace (it was `study-guide-tutor`).
 - **A worked example.** `examples/water-cycle/` holds a 10-slide PDF and the full course made from it (two chapters, an exam, a ready-to-open practice page).
+- **README: bundle list and UI mock-ups.** The README lists every part of the bundle (1 skill, 6 commands, 2 helpers), and the validator fails if it misses one. The intake step is shown as two UI mock-ups (`docs/images/src/` holds their HTML sources) instead of a text table.
 - **A plain-language README.** The technical material moved to `docs/how-it-works.md` and `docs/installation.md`.
 - The sample courses are now five differently structured courses (flat; by module; by week with lecture folders; nested term/week/session; Spanish by unidad), each with its gates run in CI, plus tests for every source reader, for the label mechanism and for right-to-left direction.
 

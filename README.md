@@ -30,22 +30,16 @@ you    > Teach me this PDF.        [water-cycle.pdf]
 
 ```text
 tutor  > I read all 10 slides and found 10 facts worth teaching, one of them a number (97%).
-         Before I write a word, nine quick questions so this fits you. Tap one answer each time:
+         Before I write a word, a few quick questions so this fits you.
 ```
 
-| # | The tutor asks | You choose from |
-|---|---|---|
-| 1 | How well do you know this topic today? | Beginner · Some familiarity · Intermediate · Advanced |
-| 2 | What is your background? | Non-technical · Technical · Mixed |
-| 3 | What are you studying for? | A certification exam · Work · General understanding · Teaching others |
-| 4 | How much time do you have? | Under 2 weeks · 2-6 weeks · 2+ months · No deadline |
-| 5 | How should I explain things? | Simplified · Balanced · Concise and advanced |
-| 6 | What kind of examples help you most? | Everyday analogies · Real-world cases · Both · Minimal |
-| 7 | How hard should the quizzes be? | Gentle ramp · Mixed · Exam-level |
-| 8 | How big should each study step be? | Small steps · Standard · Large blocks |
-| 9 | Do you want memory aids? | None · Analogies and anchors · Mnemonics too |
+![A mock-up of the tutor's first question: a row of tabs (Knowledge, Background, Goal, Time), the question "How well do you know this topic today?" and four options plus "Other", with "Beginner" selected](docs/images/intake-question.png)
 
-Your answers become a one-page profile that shapes every file. Pick *Beginner, Non-technical, Simplified, Everyday analogies* and every idea comes with plain words and a picture from daily life. Pick *Advanced, Concise, Exam-level* and the basics are skipped and the questions get harder. Change your mind any time: say **"too dense"** or **"too easy"** and the tutor rewrites the affected files.
+You pick one option for each question, four at a time: how much you know, your background, what you are studying for, how much time you have, how to explain things, which examples help you, how hard the quizzes should be, how big each step should be, and whether you want memory aids. Nothing to type. Then you see all nine answers before you confirm:
+
+![A mock-up of the review screen: nine answers with ticks, a Submit button, and the tutor confirming it saved a profile and is planning the chapters](docs/images/intake-review.png)
+
+*Mock-ups of the screens (the questions and options are the real ones).* Your answers become a one-page profile that shapes every file. Pick *Beginner, Non-technical, Simplified, Everyday analogies* and every idea comes with plain words and a picture from daily life. Pick *Advanced, Concise, Exam-level* and the basics are skipped and the questions get harder. Change your mind any time: say **"too dense"** or **"too easy"** and the tutor rewrites the affected files.
 
 ### 3. It shows you the plan before it writes anything
 
@@ -111,6 +105,24 @@ Using another AI tool, a team setup, or something not working? See [docs/install
 | "I only have an hour before the exam" | a short recap of what matters, flashcards, one quiz on the weak spots |
 | "Quiz me on what I missed" | fresh questions on your misses until they clear |
 | "Check everything" | the tutor checks the course for mistakes and tells you what it found |
+
+## What is in the bundle
+
+One plugin installs everything below. Nothing runs in the background: no hooks, no services.
+
+| Part | Name | What it does | How you use it |
+|---|---|---|---|
+| **Skill** | `study-guide-tutor-skill` | The tutor itself: asks about you, reads your material, writes the lessons, quizzes you, grades you and plans your revisits | starts by itself when you ask to study, learn, be quizzed or prepare for an exam |
+| **Command** | `/study-guide-tutor-skill:study` | Start or continue a course from your material | `/study-guide-tutor-skill:study my-notes.pdf` |
+| **Command** | `/study-guide-tutor-skill:study-quiz` | Quiz a chapter (or a whole unit), or grade the answers you give | `/study-guide-tutor-skill:study-quiz 2` |
+| **Command** | `/study-guide-tutor-skill:study-player` | Build the clickable practice page: quiz, flashcards, exam, progress | `/study-guide-tutor-skill:study-player` |
+| **Command** | `/study-guide-tutor-skill:study-cram` | Cram mode for a short deadline: a recap of what matters, flashcards, one quiz | `/study-guide-tutor-skill:study-cram 2 hours` |
+| **Command** | `/study-guide-tutor-skill:study-weak` | Re-quiz what you keep missing, with fresh questions, until it clears | `/study-guide-tutor-skill:study-weak` |
+| **Command** | `/study-guide-tutor-skill:study-check` | Check a finished course for mistakes and report what it found | `/study-guide-tutor-skill:study-check` |
+| **Helper** | `teacher-writer` | Writes one chapter's lesson the way a teacher would, for your profile | used by the tutor behind the scenes |
+| **Helper** | `student-reviewer` | Plays a learner to test whether a lesson is quick to learn from | used by the tutor behind the scenes |
+
+That is 1 skill, 6 commands and 2 helpers. You never have to type a command: saying what you want in your own words works too (see the table above).
 
 ## Questions
 

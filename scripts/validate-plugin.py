@@ -98,6 +98,23 @@ def validate(root):
         k = keys(fm)
         for need in ('description', 'allowed-tools'):
             if need not in k or not k[need].strip(): e(f'{p}: {need} missing')
+    # the README must list every part of the bundle (published skills are expected to)
+    readme = os.path.join(root, 'README.md')
+    if os.path.exists(readme):
+        rt = open(readme, encoding='utf-8').read()
+        try: plugin_name = json.load(open(os.path.join(root, '.claude-plugin/plugin.json'))).get('name', '')
+        except Exception: plugin_name = ''
+        for kind, d in (('command', 'commands'), ('agent', 'agents')):
+            dd = os.path.join(root, d)
+            for f in sorted(os.listdir(dd)) if os.path.isdir(dd) else []:
+                if not f.endswith('.md'): continue
+                n = f[:-3]
+                if (f'{plugin_name}:{n}`' if kind == 'command' else f'`{n}`') not in rt:
+                    e(f'README.md does not list the {kind} "{n}" (the bundle section must name every command and agent)')
+        sk = os.path.join(root, 'skills')
+        for name in sorted(os.listdir(sk)) if os.path.isdir(sk) else []:
+            if os.path.exists(os.path.join(sk, name, 'SKILL.md')) and f'`{name}`' not in rt:
+                e(f'README.md does not list the skill "{name}"')
     own = os.path.abspath(__file__)
     for p in files(root):
         if os.path.abspath(p) == own: continue
@@ -128,7 +145,7 @@ def self_test():
         open(T + '/CLAUDE.md', 'w').write('x')
         open(T + '/README.md', 'w').write('see [gone](missing.md) and ' + '/' + 'Users/someone/x and a@gmail' + '.com\n')
         errs = '\n'.join(validate(T))
-        for needle in ('version 9.9.9', 'must all be the same', 'CLAUDE.md', 'name must equal', 'angle brackets', 'Use when', 'tools must be a YAML list', 'model missing', 'allowed-tools missing', 'broken link', 'absolute macOS', 'personal email'):
+        for needle in ('version 9.9.9', 'must all be the same', 'CLAUDE.md', 'name must equal', 'angle brackets', 'Use when', 'tools must be a YAML list', 'model missing', 'allowed-tools missing', 'broken link', 'absolute macOS', 'personal email', 'README.md does not list'):
             if needle not in errs: print('SELF-TEST FAIL: did not catch:', needle); return 1
         print('self-test OK: every check fires on a broken tree'); return 0
     finally:

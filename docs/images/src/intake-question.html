@@ -1,0 +1,33 @@
+<!doctype html><meta charset="utf-8"><title>Intake: one question</title>
+<style>
+:root{--bg:#15171c;--panel:#1d2027;--line:#333844;--ink:#e8eaee;--muted:#9aa3b2;--accent:#6ea8ff;--accent-bg:#1c2b44}
+*{box-sizing:border-box}html,body{margin:0;background:#0e1014;font-family:-apple-system,"Segoe UI",Roboto,system-ui,sans-serif;color:var(--ink)}
+.win{width:860px;margin:20px auto;background:var(--bg);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.bar{display:flex;gap:7px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);background:#191c22}
+.dot{width:11px;height:11px;border-radius:50%;background:#444a57}.title{margin-left:10px;color:var(--muted);font-size:13px}
+.body{padding:20px 22px 18px}
+.msg{font-size:15.5px;line-height:1.5;margin:0 0 16px}.msg b{color:#fff}.who{color:var(--accent);font-weight:600}
+.box{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:16px 16px 12px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{font-size:13px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip.on{background:var(--accent-bg);border-color:var(--accent);color:#cfe1ff;font-weight:600}.chip.go{margin-left:auto;color:var(--muted)}
+.q{font-size:17px;font-weight:600;margin:0 0 12px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid transparent;border-radius:9px;margin-bottom:6px}
+.opt .n{width:22px;height:22px;flex:0 0 22px;border-radius:50%;border:1.5px solid #566074;color:var(--muted);font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.opt .t{font-size:15px;font-weight:600}.opt .d{font-size:13px;color:var(--muted);margin-top:1px}
+.opt.sel{background:var(--accent-bg);border-color:var(--accent)}.opt.sel .n{background:var(--accent);border-color:var(--accent);color:#0b1220;font-weight:700}
+.hint{margin-top:10px;color:#707a8c;font-size:12.5px;font-family:ui-monospace,Menlo,monospace}
+</style>
+<div class="win"><div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="title">Study tutor: water-cycle.pdf</span></div>
+<div class="body">
+<p class="msg"><span class="who">Tutor</span> I read all <b>10 slides</b> and found <b>10 facts</b> worth teaching. Before I write a word, a few quick questions so this fits <b>you</b>.</p>
+<div class="box">
+<div class="tabs"><span class="chip on">Knowledge</span><span class="chip">Background</span><span class="chip">Goal</span><span class="chip">Time</span><span class="chip go">Review &amp; submit</span></div>
+<p class="q">How well do you know this topic today?</p>
+<div class="opt sel"><span class="n">1</span><div><div class="t">Beginner</div><div class="d">New to it</div></div></div>
+<div class="opt"><span class="n">2</span><div><div class="t">Some familiarity</div><div class="d">I know the basic terms</div></div></div>
+<div class="opt"><span class="n">3</span><div><div class="t">Intermediate</div><div class="d">I use it at work or in my studies</div></div></div>
+<div class="opt"><span class="n">4</span><div><div class="t">Advanced</div><div class="d">I practise it and know most of it</div></div></div>
+<div class="opt"><span class="n">5</span><div><div class="t">Other</div><div class="d">Type your own answer</div></div></div>
+<div class="hint">Enter: select · Tab: next question · Esc: cancel</div>
+</div></div></div>
