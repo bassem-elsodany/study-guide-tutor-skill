@@ -179,7 +179,7 @@ Contributing: [CONTRIBUTING.md](../CONTRIBUTING.md) (authoring standards, what a
 
 ## Status and limits
 
-- **Version 1.1.0**, single maintainer, opinionated by design.
+- **Version 1.0.0**, single maintainer, opinionated by design.
 - Built and refined on one real course (a professional-certification course of 43 chapters across four units, taught from lecture PDFs) and verified on the invented sample course. It has not yet been run on other kinds of material, such as video transcripts, books or code bootcamps.
 - The gates are **heuristics**: `check_findable.py` and `check_dump.py` compare words, so a paraphrase can false-alarm and a clever dump could pass. They nominate; a reader decides. The `student-reviewer` and fidelity-review prompts exist for that.
 - The scripts assume lecture-style material (a source with numbered units, cited in ledgers) and chapter folders that hold the skill's numbered files; folder names and grouping are free, and ledger IDs are `<letters><chapter number>-NNN`, unique within a unit.

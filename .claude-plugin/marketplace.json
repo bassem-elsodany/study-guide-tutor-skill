@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "study-guide-tutor-skill",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "A study tutor for agents: turns any course material into lessons, audited quizzes and a revisit plan",
   "owner": {
     "name": "bassem-elsodany"
