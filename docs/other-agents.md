@@ -5,11 +5,11 @@
 ## The short version
 
 ```bash
-git clone https://github.com/bassem-elsodany/study-guide-tutor.git ~/src/study-guide-tutor
+git clone https://github.com/bassem-elsodany/study-guide-tutor-skill.git ~/src/study-guide-tutor-skill
 cd /path/to/your/study/folder
-~/src/study-guide-tutor/scripts/install-agents.sh --agents-md          # project scope: ./.agents/skills + a managed block in ./AGENTS.md
+~/src/study-guide-tutor-skill/scripts/install-agents.sh --agents-md          # project scope: ./.agents/skills + a managed block in ./AGENTS.md
 # or for every project of your user:
-~/src/study-guide-tutor/scripts/install-agents.sh --scope user --agents-md ~/AGENTS.md
+~/src/study-guide-tutor-skill/scripts/install-agents.sh --scope user --agents-md ~/AGENTS.md
 ```
 
 Restart (or reload skills in) the agent. Remove everything the script created with the same command plus `--uninstall`.

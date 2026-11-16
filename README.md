@@ -37,10 +37,10 @@ flowchart LR
 **1. Install**: in Claude Code:
 
 ```
-/plugin marketplace add bassem-elsodany/study-guide-tutor
+/plugin marketplace add bassem-elsodany/study-guide-tutor-skill
 /plugin install study-guide-tutor@study-guide-tutor
 ```
-(Replace `bassem-elsodany/study-guide-tutor` with the repository you cloned from.)
+(Replace `bassem-elsodany/study-guide-tutor-skill` with the repository you cloned from.)
 
 **2. Reload and check**: run `/reload-plugins` (or start a new session), then `/plugin` → *Installed*: `study-guide-tutor` should be listed and enabled. Type `/study` and the commands appear (full names look like `/study-guide-tutor:study`).
 
@@ -86,7 +86,7 @@ Tested on macOS (Apple silicon) with Claude Code. Linux is expected to work. Win
 Inside a Claude Code session:
 
 ```
-/plugin marketplace add bassem-elsodany/study-guide-tutor
+/plugin marketplace add bassem-elsodany/study-guide-tutor-skill
 /plugin install study-guide-tutor@study-guide-tutor
 /reload-plugins
 ```
@@ -94,16 +94,16 @@ Inside a Claude Code session:
 or from your shell:
 
 ```bash
-claude plugin marketplace add bassem-elsodany/study-guide-tutor
+claude plugin marketplace add bassem-elsodany/study-guide-tutor-skill
 claude plugin install study-guide-tutor@study-guide-tutor            # --scope user (default) | project | local
 ```
 
-`bassem-elsodany/study-guide-tutor` can also be a full git URL (`https://github.com/bassem-elsodany/study-guide-tutor.git`, GitLab, a self-hosted host) or an SSH address.
+`bassem-elsodany/study-guide-tutor-skill` can also be a full git URL (`https://github.com/bassem-elsodany/study-guide-tutor-skill.git`, GitLab, a self-hosted host) or an SSH address.
 
 **`Permission denied (publickey)`?** The marketplace is cloned with git. Either add an SSH key to your host, or use the HTTPS URL:
 
 ```
-/plugin marketplace add https://github.com/bassem-elsodany/study-guide-tutor.git
+/plugin marketplace add https://github.com/bassem-elsodany/study-guide-tutor-skill.git
 ```
 
 </details>
@@ -112,14 +112,14 @@ claude plugin install study-guide-tutor@study-guide-tutor            # --scope u
 <summary><b>From a local clone (also the way to try changes)</b></summary>
 
 ```bash
-git clone https://github.com/bassem-elsodany/study-guide-tutor.git ~/src/study-guide-tutor
+git clone https://github.com/bassem-elsodany/study-guide-tutor-skill.git ~/src/study-guide-tutor-skill
 
 # A) install it (persistent)
-claude plugin marketplace add ~/src/study-guide-tutor
+claude plugin marketplace add ~/src/study-guide-tutor-skill
 claude plugin install study-guide-tutor@study-guide-tutor
 
 # B) or load it for ONE session only, nothing installed
-claude --plugin-dir ~/src/study-guide-tutor
+claude --plugin-dir ~/src/study-guide-tutor-skill
 ```
 
 After editing the clone, `/reload-plugins` picks up skill and command changes in a running session.
@@ -137,7 +137,7 @@ Copy (or symlink) the folder `skills/study-guide-tutor/` to `~/.claude/skills/st
 <summary><b>For a whole team (project scope)</b></summary>
 
 ```bash
-claude plugin marketplace add bassem-elsodany/study-guide-tutor --scope project
+claude plugin marketplace add bassem-elsodany/study-guide-tutor-skill --scope project
 claude plugin install study-guide-tutor@study-guide-tutor --scope project
 git add .claude/settings.json && git commit -m "chore: enable study-guide-tutor for the team"
 ```
@@ -151,9 +151,9 @@ Settings are shared through git, but each teammate still adds the marketplace an
 Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, Windsurf/Devin and Kiro discover skills as folders containing `SKILL.md`, most of them in a shared `.agents/skills/` location (Kiro: `.kiro/skills/`).
 
 ```bash
-git clone https://github.com/bassem-elsodany/study-guide-tutor.git ~/src/study-guide-tutor
+git clone https://github.com/bassem-elsodany/study-guide-tutor-skill.git ~/src/study-guide-tutor-skill
 cd /path/to/your/study/folder
-~/src/study-guide-tutor/scripts/install-agents.sh --agents-md        # ./.agents/skills + a managed block in ./AGENTS.md
+~/src/study-guide-tutor-skill/scripts/install-agents.sh --agents-md        # ./.agents/skills + a managed block in ./AGENTS.md
 #   --scope user --agents-md ~/AGENTS.md   all your projects   ·   --kiro   also .kiro/skills
 #   --mode copy   self-contained copy       ·   --dry-run  preview   ·   --uninstall  remove only what it created
 ```
