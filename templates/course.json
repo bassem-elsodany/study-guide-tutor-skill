@@ -166,6 +166,16 @@
     "notesTitle": "My notes",
     "notesHint": "Select any text in the lesson to highlight it or add a note. With text selected, press H to highlight or N to add a note.",
     "selectHint": "Select text to highlight it or add a note.",
+    "notesWhere": "Your notes are kept in this browser and in the file {f} in each chapter folder. Connect your course folder to save that file automatically, or download it.",
+    "notesPending": "Chapters with notes not yet in their {f} file: {n}. Connect your course folder to save them, or download the file and put it in the chapter folder.",
+    "notesConnect": "Connect my course folder",
+    "notesConnected": "Connected. Your notes are saved to {f} in each chapter folder as you write them.",
+    "notesSavedAt": "Saved to your course folder at {t}.",
+    "notesWriteFail": "Could not write to the course folder. Download the file instead.",
+    "notesFolderWrong": "That folder does not hold this course's chapter folders. Pick the folder that holds {d}.",
+    "notesNoApi": "This browser cannot save into your folders, so download the file and put it in the chapter folder.",
+    "notesDownloadCh": "Download this chapter's notes ({f})",
+    "notesDownloadAll": "Download all notes (one file)",
     "notesNone": "No notes yet. Open a lesson, select some text, and choose Highlight or Add note.",
     "notesChapter": "My notes in this chapter ({n})",
     "noteHighlight": "Highlight",
@@ -179,7 +189,6 @@
     "noteEdit": "Edit",
     "noteOrphan": "The lesson text changed, so this highlight is not shown, but your note is kept.",
     "noteSaved": "Saved",
-    "downloadNotes": "Download my notes (Markdown)",
     "diagramMissing": "This diagram could not be drawn here. Its description is below; the picture is in the Markdown lesson if your viewer draws Mermaid."
   }
 }

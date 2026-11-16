@@ -9,6 +9,7 @@ Chapter folder (reading order):
   03-quiz.md             questions only
   04-answer-key.md       open after answering
   05-review.md           created after grading
+  06-notes.md            the student's own highlights and notes (written by the study player; never regenerated)
   99-fact-ledger.md      reference for checking facts, not part of the reading flow
 Unit 00-overview folder:
   01-concept-map.md  02-cram-sheet.md  03-final-quiz.md  04-final-quiz-key.md
@@ -23,7 +24,7 @@ _sys.path.insert(0, _os.path.dirname(_os.path.abspath(__file__)))
 import _layout
 
 CHAPTER = {'lesson.md': '01-lesson.md', 'flashcards.csv': '02-flashcards.csv', 'quiz.md': '03-quiz.md',
-           'answer-key.md': '04-answer-key.md', 'review.md': '05-review.md', 'fact-ledger.md': '99-fact-ledger.md'}
+           'answer-key.md': '04-answer-key.md', 'review.md': '05-review.md', 'notes.md': '06-notes.md', 'fact-ledger.md': '99-fact-ledger.md'}
 OVERVIEW = {'concept-map.md': '01-concept-map.md', 'cram-sheet.md': '02-cram-sheet.md',
             'final-quiz.md': '03-final-quiz.md', 'final-quiz-key.md': '04-final-quiz-key.md',
             'score-tracker.md': '05-score-tracker.md', 'revisit-list.md': '06-revisit-list.md'}

@@ -13,7 +13,7 @@
 - **A tutor that asks about you first.** Your level, your goal, how much time you have. Everything it writes is written for you.
 - **Lessons that teach.** Short and clear, with a "tricky part" warning wherever people usually get confused, not slides re-typed into bullet points.
 - **One page for everything.** Read the lesson, take the quiz, flip the cards and sit the exam in a single file. Section tabs follow you down the page, so you can jump to any part. The lessons are still plain Markdown files you can open in any editor, whichever you prefer.
-- **Highlight and take notes as you read.** Select any text to highlight it or write yourself a note. Everything you marked is listed by chapter, can be downloaded as a Markdown file, and goes to the tutor with your results, so it can see where you got stuck.
+- **Highlight and take notes as you read.** Select any text to highlight it or write yourself a note. Your notes are saved as a plain Markdown file beside each lesson (`06-notes.md`), so they are yours to keep, search, edit or version, and the tutor reads them to see where you got stuck.
 - **Practice that gives the reason.** Click an answer and see at once why each wrong option is wrong and which slide the fact came from.
 - **Flashcards and a mock exam.** Cards come back just when you are about to forget them; a timed exam shows which chapters to go back to.
 - **It works with what you have.** PDFs, PowerPoint, Word, notes, web pages, lecture transcripts, scanned pages; in any language; however your material is organised.
@@ -82,11 +82,11 @@ That is the page in the picture at the top: one file you open by double-clicking
 | **Flashcards** | flip, then "knew it" or "missed it". A card you miss comes back today; one you know comes back after 1, 3, 7, then 14 days. |
 | **Exam** | a timed mock exam with no feedback until you finish, then a list of the chapters to revisit. |
 | **Progress** | your scores, the questions you still miss, and a button to save your results. |
-| **Notes** | every highlight and note you made, by chapter, with a button that jumps back to the spot in the lesson and one that downloads them all as a Markdown file. |
+| **Notes** | every highlight and note you made, by chapter, with a button that jumps back to the spot in the lesson, a button to connect your course folder so the notes are saved as `06-notes.md`, and downloads (one chapter, or all). |
 
 ![Selecting text in the lesson: the passage is highlighted in yellow and a small box lets you type a note; the bar of section tabs is above the lesson](docs/images/player-notes.png)
 
-*Highlights and notes stay in your browser. Your notes are included in the results file you send the tutor, so it can see what confused you.*
+*Your notes are saved to `06-notes.md` in the chapter folder, next to `01-lesson.md`. In Chrome or Edge, press "Connect my course folder" once and the player writes that file for you as you type; in other browsers, download the file and drop it in the chapter folder. Rebuild the player and your notes are right where you left them. The file is plain Markdown, so you can also write a note there by hand.*
 
 ### 6. Afterwards
 

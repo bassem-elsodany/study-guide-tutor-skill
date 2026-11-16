@@ -34,6 +34,10 @@ step "lesson renderer: markdown to safe html"
 if python3 -I "$ROOT/tests/test-markdown.py" >/tmp/sgt-md.out 2>&1; then echo "ok   $(grep -c '^ok' /tmp/sgt-md.out) lesson renderer checks passed"; else cat /tmp/sgt-md.out; fail=1; fi
 rm -f /tmp/sgt-md.out
 
+step "notes file: format, hand-written notes, left alone by the rewriting scripts"
+if python3 -I "$ROOT/tests/test-notes.py" >/tmp/sgt-notes.out 2>&1; then echo "ok   $(grep -c '^ok' /tmp/sgt-notes.out) notes file checks passed"; else cat /tmp/sgt-notes.out; fail=1; fi
+rm -f /tmp/sgt-notes.out
+
 step "player data: independent of build order, example counts"
 if python3 -I "$ROOT/tests/test-player-data.py" >/tmp/sgt-pd.out 2>&1; then echo "ok   $(grep -c '^PASS' /tmp/sgt-pd.out) player data checks passed"; else cat /tmp/sgt-pd.out; fail=1; fi
 rm -f /tmp/sgt-pd.out

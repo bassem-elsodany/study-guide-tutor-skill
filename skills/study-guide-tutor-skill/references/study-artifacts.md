@@ -130,7 +130,7 @@ Inside every unit:
 ```
 00-overview/   README.md, 01-concept-map.md, 02-cram-sheet.md, 03-final-quiz.md (+ key), 05-score-tracker.md,
                06-revisit-list.md, 07-exam.md (+ 08-exam-key.md), 09-study-player.html
-chapter-NN-<slug>/   01-lesson.md, 02-flashcards.csv, 03-quiz.md, 04-answer-key.md, 05-review.md (after grading), 99-fact-ledger.md
+chapter-NN-<slug>/   01-lesson.md, 02-flashcards.csv, 03-quiz.md, 04-answer-key.md, 05-review.md (after grading), 06-notes.md (the student's own, from the player), 99-fact-ledger.md
 ```
 
 Rules: never group all quizzes, or all lessons, into one folder across chapters; keep keys out of quiz files; relative links only, so the tree can be moved; when chapters are merged, split or renamed, move files and fix links, the README and the tracker in the same pass; ask before creating any folder the student did not point at.
@@ -139,7 +139,7 @@ Every markdown file in the tree closes with ONE audience note from `intake-analy
 
 
 ## File order and diagrams (added in v0.4.0)
-- Files are numbered in reading order: chapter folder `01-lesson.md` (the at-a-glance block with the Mermaid pictures first, then the explanation: ONE file), `02-flashcards.csv`, `03-quiz.md`, `04-answer-key.md`, `05-review.md`, `99-fact-ledger.md`; a unit's `00-overview/` `01-concept-map.md` to `09-study-player.html` (see SKILL.md).
+- Files are numbered in reading order: chapter folder `01-lesson.md` (the at-a-glance block with the Mermaid pictures first, then the explanation: ONE file), `02-flashcards.csv`, `03-quiz.md`, `04-answer-key.md`, `05-review.md`, `06-notes.md` (the student's own highlights and notes), `99-fact-ledger.md`; a unit's `00-overview/` `01-concept-map.md` to `09-study-player.html` (see SKILL.md).
 - The concept map stays a heading-only outline; the at-a-glance block of the lesson holds the pictures. Every diagram is Mermaid and is validated with mermaid-cli by `scripts/make_glance.py`.
 - The exam (`07-exam.md` and `08-exam-key.md`; older courses may use `07-unit-exam.md` or `07-domain-exam.md`, which every script still reads) covers every chapter of the unit; the final quiz is a short cumulative checkpoint.
 

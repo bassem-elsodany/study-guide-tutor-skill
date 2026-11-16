@@ -97,6 +97,7 @@ def main():
     a = ap.parse_args(); changed = missing = 0
     for f in sorted(glob.glob(os.path.join(a.root, '**', '*.md'), recursive=True)):
         if 'graphify-out' in f or os.path.basename(f) == 'CLAUDE.md': continue
+        if re.sub(r'^\d+-', '', os.path.basename(f)) == 'notes.md': continue   # the student's own notes file: never touched
         s = open(f).read(); t = build(f)
         if t is None: continue
         has = '<!-- toc -->' in s

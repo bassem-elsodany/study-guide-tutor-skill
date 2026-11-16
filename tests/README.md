@@ -4,6 +4,7 @@
 |---|---|---|
 | Repository conventions (frontmatter, manifests, versions, links, no personal data or absolute paths) | `python3 -I scripts/validate-plugin.py .` (and `--self-test` proves its checks still fire) | Python 3 |
 | Every script compiles and answers `--help`; every gate passes on every example and fixture course | `scripts/quality-check.sh` | Python 3, bash |
+| The notes file (`06-notes.md`): the format round-trips, hand-written notes are read, a player build picks the file up, and the scripts that rewrite generated files leave it alone | `python3 -I tests/test-notes.py` (run by `quality-check.sh`) | Python 3 |
 | The lesson renderer: headings, tables, lists, the Tricky-part and audience boxes, details, links, and that raw HTML cannot get into the page | `python3 -I tests/test-markdown.py` (run by `quality-check.sh`) | Python 3 |
 | The player reads a course whatever order its files were built in, and the example's counts | `python3 -I tests/test-player-data.py` (run by `quality-check.sh`) | Python 3 |
 | The interactive study player: builds it for one unit of every course with a scripted click-through appended and runs it in headless Chrome or Chromium (skips if none is installed) | `scripts/test-player.sh` | Chrome or Chromium |

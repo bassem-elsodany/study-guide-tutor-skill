@@ -18,7 +18,8 @@ refreshes it. Diagrams are drawn at build time with mermaid-cli (mmdc) when it i
 The other four modes: Quiz (click or press A-D, instant feedback with the reason every wrong option is wrong,
 optional hint, source location, retake of misses), Flashcards (flip, "knew it / missed it", spaced boxes with due
 dates), Exam (timed, no feedback until submit, results by chapter, review of misses) and Progress (scores, boxes,
-misses, "Download my results" as JSON for the tutor). Progress lives only in the browser (localStorage).
+misses, "Download my results" as JSON for the tutor). Progress lives only in the browser (localStorage). The student's notes are different: they live in a Markdown file, 06-notes.md, in
+each chapter's folder, read here when the player is built and written back by the player (see _notes.py).
 
 Default output: UNIT_DIR/00-overview/09-study-player.html (or UNIT_DIR/study-player.html without 00-overview).
 --selftest appends a scripted click-through to the page (for tests only; do not ship that file).
@@ -28,6 +29,7 @@ import argparse, base64, csv, glob, hashlib, json, math, os, re, shutil, subproc
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _layout
 import _md
+import _notes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, '..', 'assets', 'player.html')
@@ -250,6 +252,10 @@ def build(unit, title=None, out=None, diagrams=True, lessons=True):
                     if len(r) >= 2 and r[0].strip().lower() != 'question':
                         cards.append({'q': r[0].strip(), 'a': r[1].strip()})
         ch = {'n': n, 'title': lesson_title(chdir, n), 'questions': qs, 'cards': cards}
+        ntext = read(os.path.join(chdir, _notes.FILE))      # the student's own notes file, if there is one
+        ch['dir'] = os.path.basename(chdir)
+        ch['notes'] = _notes.parse(ntext)
+        ch['notesHash'] = _notes.fnv(ntext)
         tx = lesson_text.get(os.path.normpath(chdir), '')
         if tx.strip():
             ch['lesson'] = lesson_html(os.path.normpath(chdir), tx, chapter_dirs, out_dir, drawn)
@@ -275,13 +281,14 @@ def build(unit, title=None, out=None, diagrams=True, lessons=True):
             'title': name, 'counts': {'chapters': len(chapters), 'questions': nq, 'cards': sum(len(c['cards']) for c in chapters),
                                       'exam': len(exam['questions']) if exam else 0},
             'audience': audience_statement(unitdir), 'chapters': chapters, 'final': final, 'exam': exam,
+            'notesIntro': _notes.INTRO,
             'lang': lang, 'dir': direction, 'ui': {k: v for k, v in cfg.get('ui', {}).items() if isinstance(v, str)}}
     return data, problems
 
 
 SELFTEST = r'''<script>
 (function(){
-var out = [], ok = true;
+var out = [], ok = true, tail = Promise.resolve();
 function check(n, c){ out.push((c ? 'PASS ' : 'FAIL ') + n); if (!c) ok = false; }
 function $(s){ return document.querySelector(s); }
 function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
@@ -328,36 +335,78 @@ try {
       return out;
     }
     function selectText(node, a, b){ var r = document.createRange(); r.setStart(node, a); r.setEnd(node, b); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); return r.toString(); }
-    var cur = $('#lchap').value, first = textNodes()[0], quote1 = selectText(first, 0, 12).trim();
+    var cur = $('#lchap').value, curN = parseInt(cur, 10);
+    var mineNotes = function(){ return A.S().notes[cur] || []; };
+    var base = mineNotes().length;
+    check('notes seeded from the notes file (if any) are painted', mineNotes().length === 0 || $$('#lesson mark.hl').length >= 1);
+    var first = textNodes()[0], quote1 = selectText(first, 0, 12).replace(/\s+/g, ' ').trim();
     check('selecting lesson text shows the highlight toolbar', A.checkSelection() && !!$('#nphl') && !!$('#npnote'));
     click($('#nphl'));
-    check('a highlight is saved and painted', (A.S().notes[cur] || []).length === 1 && A.S().notes[cur][0].quote === quote1 && $$('#lesson mark.hl').length >= 1);
+    check('a highlight is saved and painted', mineNotes().length === base + 1 && mineNotes().some(function(n){ return n.quote === quote1; }) && $$('#lesson mark.hl').length >= 1);
     var tn = textNodes(), last = tn[tn.length - 1];
     selectText(last, 0, 14);
     check('toolbar shows again for new text', A.checkSelection());
     click($('#npnote'));
     check('note editor opens with a text box', !!$('#nptext') && !!$('#npsave'));
     $('#nptext').value = 'my test note'; click($('#npsave'));
-    check('a note is saved, painted and listed', A.S().notes[cur].length === 2 && A.S().notes[cur][1].note === 'my test note' && $$('#lesson mark.has-note').length >= 1 && $('#chnotes').textContent.indexOf('my test note') >= 0);
-    var m0 = $('#lesson mark.hl');
+    function mine(){ return mineNotes().filter(function(n){ return n.note === 'my test note' || n.note === 'changed note' || n.note === 'edited again'; })[0]; }
+    check('a note is saved, painted and listed', mineNotes().length === base + 2 && !!mine() && $$('#lesson mark.has-note').length >= 1 && $('#chnotes').textContent.indexOf('my test note') >= 0);
+    check('the note remembers its section', typeof mine().sec === 'string' && mine().sec.length > 0);
+    check('the chapter is marked as not yet saved to its notes file', !!A.S().dirty[curN]);
+    var m0 = $('#lesson mark.hl[data-id="' + mineNotes().filter(function(n){ return n.quote === quote1; })[0].id + '"]');
     selectText(m0.firstChild, 0, m0.firstChild.nodeValue.length);
     check('selecting already highlighted text offers nothing', !A.checkSelection() && !$('#notepop'));
     window.getSelection().removeAllRanges();
     A.setTab('notes');
-    check('Notes tab lists the notes and offers a download', $('#app').textContent.indexOf('my test note') >= 0 && !!$('#notesdl') && A.notesMd().indexOf('my test note') >= 0);
-    check('Notes tab label shows the count', $$('#tabs button').some(function(b){ return b.textContent.indexOf('(2)') >= 0; }));
+    check('Notes tab lists the notes and offers downloads', $('#app').textContent.indexOf('my test note') >= 0 && !!$('#notesdl') && A.notesMd().indexOf('my test note') >= 0);
+    check('Notes tab label shows the count', $$('#tabs button').some(function(b){ return b.textContent.indexOf('(' + (base + 2) + ')') >= 0; }));
     click($$('.notelist li')[0].querySelector('button'));
     check('Show in lesson opens the lesson with the highlights painted', !!$('#lesson') && $$('#lesson mark.hl').length >= 2);
     A.render();
     check('highlights come back after a redraw', $$('#lesson mark.hl').length >= 2);
-    var li0 = $$('#chnotes .notelist li')[1], b0 = li0.querySelectorAll('button');
-    click(b0[0]);
+    function liWith(s){ return $$('#chnotes .notelist li').filter(function(li){ return li.textContent.indexOf(s) >= 0; })[0]; }
+    click(liWith('my test note').querySelectorAll('button')[0]);
     check('Edit opens the editor with the saved note', !!$('#nptext') && $('#nptext').value === 'my test note');
     $('#nptext').value = 'changed note'; click($('#npsave'));
-    check('an edited note is saved', A.S().notes[cur][1].note === 'changed note');
-    var li1 = $$('#chnotes .notelist li')[0], b1 = li1.querySelectorAll('button');
-    click(b1[b1.length - 1]);
-    check('deleting a note removes it and its highlight', A.S().notes[cur].length === 1 && $$('#lesson mark.hl').every(function(m){ return m.getAttribute('data-id') === A.S().notes[cur][0].id; }));
+    check('an edited note is saved', mine().note === 'changed note');
+    var lb = liWith(quote1).querySelectorAll('button');
+    click(lb[lb.length - 1]);
+    check('deleting a note removes it and its highlight', mineNotes().length === base + 1 && $$('#lesson mark.hl').every(function(m){ return m.getAttribute('data-id') !== undefined && mineNotes().some(function(n){ return n.id === m.getAttribute('data-id'); }); }));
+
+    // the notes file: the same text as Python writes and reads, and a folder to keep it in
+    var FX = __NOTES_FIXTURE__;
+    var keyed = function(n){ return [n.id, n.quote, n.note, n.sec, n.start, n.end, n.prefix, n.suffix, n.ts]; };
+    check('the player writes the same notes file as the Python writer', A.notesToMd(FX.title, FX.notes) === FX.md);
+    check('the player reads a notes file the same way as the Python reader', JSON.stringify(A.parseNotes(FX.md).map(keyed)) === JSON.stringify(FX.parsed.map(keyed)));
+    check('the content hash matches the Python one', A.fnv('hello') === '4f9f2cab' && A.fnv(FX.md) === FX.hash);
+    var files = {};
+    var fake = {getDirectoryHandle: function(name){
+      if (!D.chapters.some(function(c){ return c.dir === name; })) return Promise.reject({name: 'NotFoundError'});
+      return Promise.resolve({getFileHandle: function(fn, o){
+        var key = name + '/' + fn;
+        if (!(key in files) && !(o && o.create)) return Promise.reject({name: 'NotFoundError'});
+        return Promise.resolve({
+          createWritable: function(){ return Promise.resolve({write: function(t){ files[key] = t; return Promise.resolve(); }, close: function(){ return Promise.resolve(); }}); },
+          getFile: function(){ return Promise.resolve({text: function(){ return Promise.resolve(files[key]); }}); }});
+      }});
+    }};
+    var chd = D.chapters.filter(function(c){ return String(c.n) === cur; })[0].dir, nfile = chd + '/06-notes.md';
+    tail = tail.then(function(){ return A.useFolder(fake); }).then(function(ok){
+      check('connecting a course folder works', ok === true);
+      var text = files[nfile];
+      check('connecting writes the unsaved notes into the chapter folder', !!text && text.indexOf('changed note') >= 0 && A.parseNotes(text).length === mineNotes().length);
+      check('a saved chapter is no longer marked unsaved', !A.S().dirty[curN]);
+      files[nfile] = text + '\n## Note 99\n\n> written by hand in the file\n\nfrom the file\n';
+      return A.useFolder(fake);
+    }).then(function(){
+      check('a note written by hand in the file is picked up', mineNotes().some(function(n){ return n.note === 'from the file'; }));
+      A.setTab('lesson');
+      click(liWith('changed note').querySelectorAll('button')[0]);
+      $('#nptext').value = 'edited again'; click($('#npsave'));
+      return A.flush();
+    }).then(function(){
+      check('a change made in the player is written to the notes file', files[nfile].indexOf('edited again') >= 0 && !A.S().dirty[curN]);
+    });
   }
   // quiz: start first chapter set
   A.setTab('quiz'); A.state().quiz = null; A.render();
@@ -438,8 +487,10 @@ try {
   // markdown escaping
   check('no raw script injection in stem', !/<script/i.test(document.getElementById('app').innerHTML));
 } catch (e) { out.push('FAIL exception: ' + e.message); ok = false; }
-var pre = document.createElement('pre'); pre.id = 'selftest'; pre.textContent = (ok ? 'SELFTEST OK\n' : 'SELFTEST FAILED\n') + out.join('\n');
-document.body.appendChild(pre);
+tail.catch(function(e){ out.push('FAIL exception (async): ' + (e && e.message || e)); ok = false; }).then(function(){
+  var pre = document.createElement('pre'); pre.id = 'selftest'; pre.textContent = (ok ? 'SELFTEST OK\n' : 'SELFTEST FAILED\n') + out.join('\n');
+  document.body.appendChild(pre);
+});
 })();
 </script>'''
 
@@ -456,8 +507,14 @@ def main():
         print('WARN', p, file=sys.stderr)
     if not any(c['questions'] for c in data['chapters']):
         sys.exit('no questions found: is this a unit folder whose chapter folders hold 03-quiz.md and 04-answer-key.md?')
-    blob = json.dumps(data, ensure_ascii=False).replace('</', '<\\/').replace('<!--', '<\\!--')
-    page = read(TEMPLATE).replace('__TITLE__', re.sub(r'[<>&]', '', data['title'])).replace('__DATA__', blob).replace('__SELFTEST__', SELFTEST if a.selftest else '')
+    blob = json.dumps(data, ensure_ascii=False).replace('</', '<\\/').replace('<!--', '<\\u0021--')
+    sample = [
+        {'id': 'n1', 'quote': 'puddle  in a\nschool yard', 'note': 'Line one\n## not a heading\n> not a quote\nend --> done', 'sec': '1. What happens?',
+         'start': 4, 'end': 30, 'prefix': 'One ', 'suffix': 'ory', 'ts': 1700000000000},
+        {'id': 'n2', 'quote': '\u00e9 \u00fcn\u00efcode "q" <b>', 'note': '', 'sec': '', 'start': 100, 'end': 110, 'prefix': 'a-->b', 'suffix': 'x', 'ts': 1700000000001}]
+    md = _notes.render('Notes: Ch. 1 Test', sample)
+    fixture = json.dumps({'title': 'Notes: Ch. 1 Test', 'notes': sample, 'md': md, 'parsed': _notes.parse(md), 'hash': _notes.fnv(md)}, ensure_ascii=False).replace('</', '<\\/')
+    page = read(TEMPLATE).replace('__TITLE__', re.sub(r'[<>&]', '', data['title'])).replace('__DATA__', blob).replace('__SELFTEST__', SELFTEST.replace('__NOTES_FIXTURE__', fixture) if a.selftest else '')
     open(out, 'w', encoding='utf-8').write(page)
     nq = sum(len(c['questions']) for c in data['chapters'])
     extra = []

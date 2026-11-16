@@ -98,11 +98,15 @@ flowchart LR
 | Mode | What you get |
 |---|---|
 | **Lesson** | the first tab: each chapter's `01-lesson.md` as a page, with tables, the "Tricky part" boxes, drawn diagrams, a chapter picker, a bar of section tabs that stays in view and follows you as you scroll, a read-time estimate, an "I have read this chapter" box and one-click buttons to that chapter's quiz and flashcards |
-| **Notes** | every highlight and note, by chapter. In the Lesson tab, select any text (or press H / N with text selected) to highlight it or add a note; click a highlight to edit or delete it. Notes are anchored to the quoted text, so they survive a rebuild of the player (if you rewrite the passage itself, the note is kept and marked as not shown). They are saved in the browser, listed under each lesson and here, downloadable as Markdown, and included in the results JSON |
+| **Notes** | every highlight and note, by chapter. In the Lesson tab, select any text (or press H / N with text selected) to highlight it or add a note; click a highlight to edit or delete it. Notes are saved as Markdown, in `06-notes.md` beside the lesson (see below); the browser keeps a working copy. They are anchored to the quoted text, so they survive a rebuild of the player (if you rewrite the passage itself, the note is kept and marked as not shown), and they are included in the results JSON |
 | **Quiz** | click an option or press A to D; the right answer turns green at once; every wrong option comes with the reason it is wrong, the source location and the explanation; an optional hint (marked in your score); answer order is shuffled; "Retake the misses" |
 | **Flashcards** | flip, then "knew it" or "missed it"; a missed card returns today, a known card waits 1, 3, 7, then 14 days (five boxes); due counts per deck |
 | **Exam** | the timed exam: no feedback until you submit, free navigation, results by chapter with "revisit" flags, review of every miss |
 | **Progress** | last and best score per chapter, flashcard boxes, the questions you still miss, exam attempts, and **Download my results (JSON)** to send back to the tutor |
+
+**Notes live in Markdown too.** Each chapter's notes are one file, `06-notes.md`, next to `01-lesson.md`: a `## Note N` block per note with the `> quoted passage`, your own text, and a small machine-readable comment that lets the note find its place again. The quote alone is enough, so a note you write by hand in that file shows up in the player. The file is yours: the tutor never regenerates or reformats it, and `add_toc.py` and `apply_banner.py` skip it.
+
+A web page cannot write to your disk on its own, so the player offers two ways to keep the file current. **Chrome and Edge:** press **Connect my course folder** once (pick the folder that holds the chapter folders; the player asks again for permission on later visits) and every change is written to the right `06-notes.md` as you make it. The player only ever writes that one file. **Other browsers:** use **Download this chapter's notes** and put the file in the chapter folder. Either way the browser keeps a working copy, and the rule when the two differ is simple: the file wins, unless the browser holds changes the file has not seen, in which case the two are merged and nothing is lost. Rebuild the player after you edit a notes file by hand, so it picks the change up.
 
 The Markdown stays the source of truth. The Lesson tab is a view built from the lesson files, each page links to its `.md` file, and the same text reads fine in any Markdown viewer; after you edit a lesson, rebuild the player to refresh it. Diagrams are drawn when the player is built, with [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) if it is installed (drawn pictures are cached in `~/.cache/study-guide-tutor/diagrams`); without it a diagram shows its Mermaid text.
 
@@ -122,7 +126,7 @@ my-course/
 ├── chapter-01-short-slug/
 │   ├── 01-lesson.md                   at a glance, numbered sections, tricky parts, say it back, traps, next
 │   ├── 02-flashcards.csv
-│   ├── 03-quiz.md  ·  04-answer-key.md  ·  05-review.md (after grading)
+│   ├── 03-quiz.md  ·  04-answer-key.md  ·  05-review.md (after grading)  ·  06-notes.md (yours)
 │   └── 99-fact-ledger.md              every checkable fact with its source location
 └── chapter-02-short-slug/ ...
 ```

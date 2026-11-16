@@ -248,6 +248,16 @@ var STR = {
   "notesTitle": "My notes",
   "notesHint": "Select any text in the lesson to highlight it or add a note. With text selected, press H to highlight or N to add a note.",
   "selectHint": "Select text to highlight it or add a note.",
+  "notesWhere": "Your notes are kept in this browser and in the file {f} in each chapter folder. Connect your course folder to save that file automatically, or download it.",
+  "notesPending": "Chapters with notes not yet in their {f} file: {n}. Connect your course folder to save them, or download the file and put it in the chapter folder.",
+  "notesConnect": "Connect my course folder",
+  "notesConnected": "Connected. Your notes are saved to {f} in each chapter folder as you write them.",
+  "notesSavedAt": "Saved to your course folder at {t}.",
+  "notesWriteFail": "Could not write to the course folder. Download the file instead.",
+  "notesFolderWrong": "That folder does not hold this course's chapter folders. Pick the folder that holds {d}.",
+  "notesNoApi": "This browser cannot save into your folders, so download the file and put it in the chapter folder.",
+  "notesDownloadCh": "Download this chapter's notes ({f})",
+  "notesDownloadAll": "Download all notes (one file)",
   "notesNone": "No notes yet. Open a lesson, select some text, and choose Highlight or Add note.",
   "notesChapter": "My notes in this chapter ({n})",
   "noteHighlight": "Highlight",
@@ -261,7 +271,6 @@ var STR = {
   "noteEdit": "Edit",
   "noteOrphan": "The lesson text changed, so this highlight is not shown, but your note is kept.",
   "noteSaved": "Saved",
-  "downloadNotes": "Download my notes (Markdown)",
   "diagramMissing": "This diagram could not be drawn here. Its description is below; the picture is in the Markdown lesson if your viewer draws Mermaid."
 };
 function tr(k, v){
@@ -273,7 +282,7 @@ function tr(k, v){
 var INTERVALS = [0, 1, 3, 7, 14];      // days until a card in box 1..5 is due again
 
 /* ---------- storage ---------- */
-function blank(){ return {cards:{}, quiz:{}, misses:{}, exams:[], read:{}, lesson:0, notes:{}}; }
+function blank(){ return {cards:{}, quiz:{}, misses:{}, exams:[], read:{}, lesson:0, notes:{}, sync:{}, dirty:{}, gone:{}}; }
 function load(){
   try { var o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o) { var b = blank(); for (var k in b) if (!(k in o)) o[k] = b[k]; return o; } } catch(e) {}
   return blank();
@@ -406,17 +415,20 @@ function selectionAnchor(art){
   while (s < e && /\s/.test(tm.text.charAt(s))) s++;
   while (e > s && /\s/.test(tm.text.charAt(e - 1))) e--;
   if (e - s < 2) return null;
-  return {start: s, end: e, quote: tm.text.slice(s, e), prefix: tm.text.slice(Math.max(0, s - 30), s), suffix: tm.text.slice(e, e + 30), rect: r.getBoundingClientRect()};
+  var sec = '';
+  Array.prototype.forEach.call(art.querySelectorAll('h2'), function(hh){ if (hh.compareDocumentPosition(r.startContainer) & Node.DOCUMENT_POSITION_FOLLOWING) sec = hh.textContent.trim(); });
+  return {start: s, end: e, quote: tm.text.slice(s, e).replace(/\s+/g, ' '), prefix: tm.text.slice(Math.max(0, s - 30), s), suffix: tm.text.slice(e, e + 30), sec: sec, rect: r.getBoundingClientRect()};
 }
 function locate(tm, n){
-  if (tm.text.slice(n.start, n.end) === n.quote) return [n.start, n.end];
-  var i, best = -1, from = 0;
-  while ((i = tm.text.indexOf(n.quote, from)) >= 0) {
-    if (best < 0) best = i;
-    if (tm.text.slice(Math.max(0, i - n.prefix.length), i) === n.prefix) { best = i; break; }
-    from = i + 1;
+  if (!n.quote) return null;
+  if (tm.text.slice(n.start, n.end).replace(/\s+/g, ' ') === n.quote) return [n.start, n.end];
+  var rx = new RegExp(n.quote.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s+'), 'g'), m, best = null;
+  while ((m = rx.exec(tm.text))) {
+    var loc = [m.index, m.index + m[0].length];
+    if (!best) best = loc;
+    if (tm.text.slice(Math.max(0, m.index - n.prefix.length), m.index) === n.prefix) { best = loc; break; }
   }
-  return best < 0 ? null : [best, best + n.quote.length];
+  return best;
 }
 function paintNote(art, n){
   var tm = textMap(art), loc = locate(tm, n);
@@ -477,13 +489,15 @@ function openEditor(note, rect){
 function addNote(text){
   var a = pending, c = curLesson;
   if (!a || !c) return hidePop();
-  var n = {id: 'n' + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36), start: a.start, end: a.end, quote: a.quote, prefix: a.prefix, suffix: a.suffix, note: String(text || '').trim(), ts: Date.now()};
-  (S.notes[c.n] = S.notes[c.n] || []).push(n); save();
+  var n = {id: 'n' + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36), start: a.start, end: a.end, quote: a.quote, prefix: a.prefix, suffix: a.suffix, sec: a.sec || '', note: String(text || '').trim(), ts: Date.now()};
+  (S.notes[c.n] = S.notes[c.n] || []).push(n);
+  touch(c.n);
   paintNote(lessonArt(), n);
   window.getSelection().removeAllRanges(); pending = null; hidePop(); afterNotesChange(); say(tr('noteSaved'));
 }
+function chapterOfNote(n){ for (var c in S.notes) if (S.notes[c].some(function(x){ return x.id === n.id; })) return parseInt(c, 10); return null; }
 function updateNote(n, text){
-  n.note = String(text || '').trim(); save();
+  n.note = String(text || '').trim(); touch(chapterOfNote(n));
   Array.prototype.forEach.call(document.querySelectorAll('mark.hl[data-id="' + n.id + '"]'), function(m){
     m.classList.toggle('has-note', !!n.note);
     if (n.note) m.title = n.note; else m.removeAttribute('title');
@@ -492,13 +506,147 @@ function updateNote(n, text){
 }
 function removeNote(n){
   if (n.note && !window.confirm(tr('noteDeleteConfirm'))) return;
-  for (var c in S.notes) S.notes[c] = S.notes[c].filter(function(x){ return x.id !== n.id; });
-  save();
+  var ch = chapterOfNote(n);
+  for (var c in S.notes) { S.notes[c] = S.notes[c].filter(function(x){ return x.id !== n.id; }); if (!S.notes[c].length) delete S.notes[c]; }
+  S.gone[n.id] = 1;
+  touch(ch);
   if (lessonArt()) unpaint(lessonArt(), n.id);
   hidePop();
   if (tab === 'notes') render(); else afterNotesChange();
 }
 function afterNotesChange(){ drawTabs(); fillNotesCard(); }
+
+/* ----- the notes file (06-notes.md): the Markdown is the source of truth, the browser keeps a working copy ----- */
+var NOTES_FILE = '06-notes.md';
+var FSAPI = typeof window.showDirectoryPicker === 'function';
+var dirHandle = null, syncMsg = '', writeTimers = {};
+function fnv(text){
+  var b = new TextEncoder().encode(text), h = 0x811c9dc5;
+  for (var i = 0; i < b.length; i++) h = Math.imul(h ^ b[i], 0x01000193) >>> 0;
+  return ('00000000' + h.toString(16)).slice(-8);
+}
+function sortNotes(ns){ return ns.slice().sort(function(a, b){ return ((a.start || 0) - (b.start || 0)) || ((a.ts || 0) - (b.ts || 0)); }); }
+function metaJson(n){
+  var o = {};
+  ['id', 'start', 'end', 'prefix', 'suffix', 'ts'].forEach(function(k){ if (n[k] != null) o[k] = n[k]; });
+  return JSON.stringify(o).replace(/--/g, '-\\u002d');
+}
+function escLine(l){ return /^(#|>)/.test(l) ? '\\' + l : l; }
+function notesToMd(title, notes){
+  var out = ['# ' + title, '', D.notesIntro, ''];
+  sortNotes(notes).forEach(function(n, i){
+    out.push('## Note ' + (i + 1) + (n.sec ? ': ' + n.sec : ''));
+    out.push('', '> ' + n.quote.replace(/\s+/g, ' ').trim(), '');
+    if ((n.note || '').trim()) { n.note.trim().split('\n').forEach(function(l){ out.push(escLine(l)); }); out.push(''); }
+    out.push('<!-- note ' + metaJson(n) + ' -->', '');
+  });
+  return out.join('\n');
+}
+function parseNotes(text){
+  var notes = [];
+  text.replace(/\r\n/g, '\n').split(/^## /m).slice(1).forEach(function(part){
+    var nl = part.indexOf('\n'), head = nl < 0 ? part : part.slice(0, nl), body = nl < 0 ? '' : part.slice(nl + 1), meta = {};
+    var m = /<!--\s*note\s+(\{[\s\S]*?\})\s*-->/.exec(body);
+    if (m) { try { meta = JSON.parse(m[1]); } catch (e) { meta = {}; } body = body.replace(m[0], ''); }
+    var quote = [], rest = [];
+    body.split('\n').forEach(function(l){ (l.charAt(0) === '>' ? quote : rest).push(l); });
+    var q = quote.map(function(l){ return l.replace(/^>\s?/, ''); }).join(' ').replace(/\s+/g, ' ').trim();
+    if (!q) return;
+    var sec = /^Note\s+\d+\s*:\s*(.+)$/.exec(head.trim());
+    notes.push({id: meta.id || 'h' + fnv(q), quote: q, note: rest.map(function(l){ return /^\\(#|>)/.test(l) ? l.slice(1) : l; }).join('\n').trim(),
+      sec: sec ? sec[1].trim() : '', start: meta.start || 0, end: meta.end || 0, prefix: meta.prefix || '', suffix: meta.suffix || '', ts: meta.ts || 0});
+  });
+  return notes;
+}
+function chapterBy(n){ for (var i = 0; i < D.chapters.length; i++) if (D.chapters[i].n === n) return D.chapters[i]; return null; }
+function chapterMd(c){ return notesToMd(tr('notesTitle') + ': ' + tr('chTitle', {n: c.n, title: c.title}), notesFor(c.n)); }
+function copyNote(x){ var o = {}; for (var k in x) if (k !== 'orphan') o[k] = x[k]; return o; }
+/* bring the working copy in step with the file: the file wins unless the browser holds changes the file has not seen */
+function syncChapter(n, seeds, hash){
+  var c = chapterBy(n);
+  if (S.sync[n] === hash) return;
+  if (c && hash === fnv(chapterMd(c))) { S.sync[n] = hash; S.dirty[n] = false; return; }
+  var local = notesFor(n), dirty = S.dirty[n] || (S.sync[n] === undefined && local.length > 0);
+  if (!dirty) { if (seeds.length) S.notes[n] = seeds.map(copyNote); else delete S.notes[n]; }
+  else {
+    var have = {};
+    local.forEach(function(x){ have[x.id] = 1; });
+    seeds.forEach(function(x){ if (!have[x.id] && !S.gone[x.id]) { (S.notes[n] = S.notes[n] || []).push(copyNote(x)); have[x.id] = 1; } });
+    S.dirty[n] = true;
+  }
+  S.sync[n] = hash;
+}
+function touch(n){
+  if (n == null) return;
+  S.dirty[n] = true; save(); scheduleWrite(n);
+}
+function scheduleWrite(n){
+  if (!dirHandle) { drawSync(); return; }
+  clearTimeout(writeTimers[n]);
+  writeTimers[n] = setTimeout(function(){ writeChapter(n); }, 500);
+  drawSync();
+}
+function writeChapter(n){
+  var c = chapterBy(n), text = chapterMd(c), has = notesFor(n).length > 0;
+  return dirHandle.getDirectoryHandle(c.dir).then(function(d){
+    return d.getFileHandle(NOTES_FILE, {create: has}).then(function(f){
+      return f.createWritable().then(function(w){ return w.write(text).then(function(){ return w.close(); }); });
+    }, function(e){ if (!has && e && e.name === 'NotFoundError') return null; throw e; });
+  }).then(function(){
+    S.sync[n] = fnv(text); S.dirty[n] = false;
+    if (!Object.keys(S.dirty).some(function(k){ return S.dirty[k]; })) S.gone = {};
+    save(); syncMsg = tr('notesSavedAt', {t: new Date().toLocaleTimeString()}); drawSync();
+  }, function(){ syncMsg = tr('notesWriteFail'); drawSync(); });
+}
+function readChapterFile(c){
+  return dirHandle.getDirectoryHandle(c.dir).then(function(d){
+    return d.getFileHandle(NOTES_FILE).then(function(f){ return f.getFile(); }).then(function(f){ return f.text(); }, function(){ return ''; });
+  }, function(){ return null; });
+}
+function useFolder(h){
+  var seen = 0;
+  dirHandle = h;
+  return Promise.all(D.chapters.map(function(c){
+    return readChapterFile(c).then(function(text){
+      if (text == null) return;
+      seen++;
+      syncChapter(c.n, parseNotes(text), fnv(text));
+    });
+  })).then(function(){
+    if (!seen) { dirHandle = null; syncMsg = tr('notesFolderWrong', {d: D.chapters.slice(0, 2).map(function(c){ return c.dir; }).join(', ')}); drawSync(); return false; }
+    save();
+    return Promise.all(D.chapters.filter(function(c){ return S.dirty[c.n]; }).map(function(c){ return writeChapter(c.n); })).then(function(){ return true; });
+  });
+}
+function idb(){
+  return new Promise(function(res, rej){
+    var r = indexedDB.open('sgt-handles', 1);
+    r.onupgradeneeded = function(){ r.result.createObjectStore('h'); };
+    r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+  });
+}
+function storeHandle(h){ return idb().then(function(db){ db.transaction('h', 'readwrite').objectStore('h').put(h, D.id); }).catch(function(){}); }
+function storedHandle(){
+  return idb().then(function(db){ return new Promise(function(res){ var q = db.transaction('h').objectStore('h').get(D.id); q.onsuccess = function(){ res(q.result || null); }; q.onerror = function(){ res(null); }; }); }).catch(function(){ return null; });
+}
+function connectFolder(){
+  function adopt(h){ return useFolder(h).then(function(ok){ if (ok) { storeHandle(h); render(); } else drawSync(); }); }
+  function pick(){ return window.showDirectoryPicker({mode: 'readwrite'}).then(adopt); }
+  storedHandle().then(function(h){
+    if (!h || !h.requestPermission) return pick();
+    return h.requestPermission({mode: 'readwrite'}).then(function(p){ return p === 'granted' ? adopt(h) : pick(); }, pick);
+  }).catch(function(e){ if (!(e && e.name === 'AbortError')) { syncMsg = tr('notesNoApi'); drawSync(); } });
+}
+function syncEl(){ var box = h('div', {class:'syncbox small muted', id:'syncbox', style:'margin:8px 0'}); fillSync(box); return box; }
+function fillSync(box){
+  var pend = D.chapters.filter(function(c){ return S.dirty[c.n]; }).length;
+  box.innerHTML = '';
+  var msg = dirHandle ? (syncMsg || tr('notesConnected', {f: NOTES_FILE})) : (!FSAPI ? tr('notesNoApi') : pend ? tr('notesPending', {n: pend, f: NOTES_FILE}) : (syncMsg || tr('notesWhere', {f: NOTES_FILE})));
+  box.appendChild(h('span', null, esc(msg) + ' '));
+  if (FSAPI && !dirHandle) box.appendChild(h('button', {class:'btn small', id:'connectbtn', onclick: connectFolder}, esc(tr('notesConnect'))));
+}
+function drawSync(){ var box = document.getElementById('syncbox'); if (box) fillSync(box); }
+function flushNotes(){ return Promise.all(D.chapters.filter(function(c){ return S.dirty[c.n] && dirHandle; }).map(function(c){ clearTimeout(writeTimers[c.n]); return writeChapter(c.n); })); }
 function checkSelection(){
   if (tab !== 'lesson' || popMode === 'edit' || !curLesson || !lessonArt()) return false;
   var a = selectionAnchor(lessonArt());
@@ -509,6 +657,7 @@ function checkSelection(){
 }
 function noteItem(ch, n, inLesson){
   var li = h('li', {class:'note', 'data-id': n.id});
+  if (n.sec) li.appendChild(h('div', {class:'small muted'}, esc(trunc(n.sec, 80))));
   li.appendChild(h('blockquote', null, esc(trunc(n.quote, 240))));
   if (n.note) li.appendChild(h('p', {class:'notetext'}, esc(n.note)));
   if (inLesson && n.orphan) li.appendChild(h('p', {class:'small muted'}, esc(tr('noteOrphan'))));
@@ -537,16 +686,21 @@ function flashNote(id){
 function fillNotesCard(){
   var box = document.getElementById('chnotes');
   if (!box || !curLesson) return;
-  var ns = notesFor(curLesson.n);
+  var ns = sortNotes(notesFor(curLesson.n));
   box.innerHTML = '';
   box.appendChild(h('summary', null, esc(tr('notesChapter', {n: ns.length}))));
+  box.appendChild(syncEl());
   if (!ns.length) box.appendChild(h('p', {class:'muted small'}, esc(tr('notesHint'))));
-  else { var ul = h('ul', {class:'notelist'}); ns.forEach(function(n){ ul.appendChild(noteItem(curLesson, n, true)); }); box.appendChild(ul); }
+  else {
+    var ul = h('ul', {class:'notelist'}); ns.forEach(function(n){ ul.appendChild(noteItem(curLesson, n, true)); }); box.appendChild(ul);
+    var cur = curLesson;
+    box.appendChild(h('button', {class:'btn small', id:'notesdlch', onclick: function(){ downloadText(NOTES_FILE, chapterMd(cur), 'text/markdown'); }}, esc(tr('notesDownloadCh', {f: NOTES_FILE}))));
+  }
 }
 function notesMd(){
   var out = '# ' + D.title + ' - ' + tr('notesTitle') + '\n';
   D.chapters.forEach(function(c){
-    var ns = notesFor(c.n);
+    var ns = sortNotes(notesFor(c.n));
     if (!ns.length) return;
     out += '\n## ' + tr('chTitle', {n: c.n, title: c.title}) + '\n';
     ns.forEach(function(n){ out += '\n> ' + n.quote.replace(/\s*\n+\s*/g, ' ') + '\n'; if (n.note) out += '\n' + n.note + '\n'; });
@@ -561,16 +715,22 @@ function downloadText(name, text, type){
 function viewNotes(app){
   var card = h('div', {class:'card'});
   card.appendChild(h('h2', null, esc(tr('notesTitle'))));
+  card.appendChild(syncEl());
   var any = false;
   D.chapters.forEach(function(c){
-    var ns = notesFor(c.n);
+    var ns = sortNotes(notesFor(c.n));
     if (!ns.length) return;
     any = true;
     card.appendChild(h('h3', null, esc(tr('chTitle', {n: c.n, title: c.title}))));
     var ul = h('ul', {class:'notelist'}); ns.forEach(function(n){ ul.appendChild(noteItem(c, n, false)); }); card.appendChild(ul);
+    card.appendChild(h('button', {class:'btn small', onclick: function(){ downloadText(NOTES_FILE, chapterMd(c), 'text/markdown'); }}, esc(tr('notesDownloadCh', {f: NOTES_FILE}))));
   });
   if (!any) card.appendChild(h('p', {class:'muted'}, esc(tr('notesNone'))));
-  else card.appendChild(h('div', {class:'row', style:'margin-top:14px'}, '')).appendChild(h('button', {class:'btn primary', id:'notesdl', onclick: function(){ downloadText(D.id + '-notes.md', notesMd(), 'text/markdown'); }}, esc(tr('downloadNotes'))));
+  else {
+    var r = h('div', {class:'row', style:'margin-top:14px'});
+    r.appendChild(h('button', {class:'btn primary', id:'notesdl', onclick: function(){ downloadText(D.id + '-notes.md', notesMd(), 'text/markdown'); }}, esc(tr('notesDownloadAll'))));
+    card.appendChild(r);
+  }
   app.appendChild(card);
 }
 
@@ -1048,6 +1208,8 @@ document.addEventListener('keydown', function(ev){
 });
 
 /* ---------- start ---------- */
+D.chapters.forEach(function(c){ if (c.notesHash != null) syncChapter(c.n, c.notes || [], c.notesHash); });
+save();
 document.getElementById('title').textContent = D.title;
 document.documentElement.lang = D.lang || 'en';
 document.documentElement.dir = D.dir || 'ltr';
@@ -1055,7 +1217,7 @@ document.getElementById('tabs').setAttribute('aria-label', tr('studyModes'));
 var C = D.counts || {chapters: D.chapters.length, questions: allQuestions().length, cards: allCards().length, exam: D.exam ? D.exam.questions.length : 0};
 document.getElementById('subtitle').textContent = tr('subtitle', C) + (C.exam ? tr('subtitleExam', {n: C.exam}) : '');
 document.getElementById('foot').innerHTML = md(D.audience ? tr('footerAudience', {a: D.audience}) : tr('footerDefault'));
-window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, go: go, checkSelection: checkSelection, notesMd: notesMd, setTab: function(t){ tab = t; render(); }};
+window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, go: go, checkSelection: checkSelection, notesMd: notesMd, notesToMd: notesToMd, parseNotes: parseNotes, fnv: fnv, useFolder: useFolder, flush: flushNotes, chapterMd: chapterMd, setTab: function(t){ tab = t; render(); }};
 render();
 })();
 </script>

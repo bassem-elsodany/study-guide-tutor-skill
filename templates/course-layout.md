@@ -23,6 +23,7 @@ my-course/
 │   ├── 03-quiz.md
 │   ├── 04-answer-key.md           separate so the student can quiz without spoilers
 │   ├── 05-review.md               created only after grading
+│   ├── 06-notes.md                the student's own highlights and notes (written by the study player, never regenerated)
 │   └── 99-fact-ledger.md          every checkable fact with its source location
 └── chapter-02-short-slug/
 ```

@@ -32,6 +32,6 @@ This folder holds the files that cut across all <N> chapters of this unit (or of
 
 ## About the player
 
-Built from the lesson, quiz, key and flashcard files (the first tab shows the lessons, the same text as the `01-lesson.md` files); do not edit the HTML by hand (rebuild with `make_player.py`). Progress is saved in that browser only; In the Lesson tab you can select text to highlight it or add a note; the Notes tab lists them and downloads them as Markdown. "Download my results" saves a file (scores and notes) for your tutor. It works offline.
+Built from the lesson, quiz, key and flashcard files (the first tab shows the lessons, the same text as the `01-lesson.md` files); do not edit the HTML by hand (rebuild with `make_player.py`). Progress is saved in that browser only; In the Lesson tab you can select text to highlight it or add a note; the Notes tab lists them. They are saved as `06-notes.md` in the chapter folder (connect your course folder in Chrome or Edge, or download the file), and are yours: nothing regenerates them. "Download my results" saves a file (scores and notes) for your tutor. It works offline.
 
 Back to the [README](../README.md).
