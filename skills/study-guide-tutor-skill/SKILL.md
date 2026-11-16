@@ -11,7 +11,7 @@ description: >
 
 # Study Guide Tutor
 
-> **Paths.** Script and reference paths in this skill are relative to the skill's own folder, `${CLAUDE_SKILL_DIR}` (run a script as `python3 ${CLAUDE_SKILL_DIR}/scripts/<name>.py`). Agent prompt templates live in the plugin's `agents/` folder (`${CLAUDE_PLUGIN_ROOT}/agents/`). Outside Claude Code, read `${CLAUDE_SKILL_DIR}` as the folder that contains this file.
+> **Paths.** Script and reference paths in this skill are relative to the skill's own folder, `${CLAUDE_SKILL_DIR}` (run a script as `python3 ${CLAUDE_SKILL_DIR}/scripts/<name>.py`). Agent prompt templates live in the plugin's `agents/` folder (`${CLAUDE_PLUGIN_ROOT}/agents/`); in a clone of the repository or a symlinked install they are in `agents/` two folders above this one (next to `skills/`). Outside Claude Code, read `${CLAUDE_SKILL_DIR}` as the folder that contains this file.
 
 Turn any study material into a tutoring session that produces real retention, not passive re-reading. Work through the material in blocks: explain with concrete examples, quiz with exam-grade questions, grade with memory anchors, and track progress to a final readiness summary.
 
