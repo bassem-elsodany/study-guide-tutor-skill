@@ -1,6 +1,6 @@
 {
-  "name": "study-guide-tutor",
-  "version": "1.0.0",
+  "name": "study-guide-tutor-skill",
+  "version": "1.0.1",
   "description": "Turns study material (slides, lecture notes, PDFs, textbooks) into a source-checked tutoring course: learner intake, fact ledger, one lesson per chapter with pictures, tricky-part hints and traps, audited exam-style quizzes, grading with memory anchors, flashcards, domain exams and spaced revisits. Includes 8 quality gates and two agents.",
   "author": {
     "name": "bassem-elsodany"

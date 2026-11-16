@@ -38,11 +38,11 @@ flowchart LR
 
 ```
 /plugin marketplace add bassem-elsodany/study-guide-tutor-skill
-/plugin install study-guide-tutor@study-guide-tutor
+/plugin install study-guide-tutor-skill@study-guide-tutor-skill
 ```
 (Replace `bassem-elsodany/study-guide-tutor-skill` with the repository you cloned from.)
 
-**2. Reload and check**: run `/reload-plugins` (or start a new session), then `/plugin` → *Installed*: `study-guide-tutor` should be listed and enabled. Type `/study` and the commands appear (full names look like `/study-guide-tutor:study`).
+**2. Reload and check**: run `/reload-plugins` (or start a new session), then `/plugin` → *Installed*: `study-guide-tutor-skill` should be listed and enabled. Type `/study` and the commands appear (full names look like `/study-guide-tutor-skill:study`).
 
 **3. Try it**: put your slides, notes or a PDF in a folder and ask:
 
@@ -56,10 +56,10 @@ flowchart LR
 **4. Or use the commands:**
 
 ```text
-/study-guide-tutor:study ./lecture-notes.pdf      start a course from your material
-/study-guide-tutor:study-quiz 3                   quiz chapter 3
-/study-guide-tutor:study-quiz 3B 1D 2A            grade your answers
-/study-guide-tutor:study-check ./my-course        run every quality gate on a generated course
+/study-guide-tutor-skill:study ./lecture-notes.pdf      start a course from your material
+/study-guide-tutor-skill:study-quiz 3                   quiz chapter 3
+/study-guide-tutor-skill:study-quiz 3B 1D 2A            grade your answers
+/study-guide-tutor-skill:study-check ./my-course        run every quality gate on a generated course
 ```
 
 ---
@@ -87,7 +87,7 @@ Inside a Claude Code session:
 
 ```
 /plugin marketplace add bassem-elsodany/study-guide-tutor-skill
-/plugin install study-guide-tutor@study-guide-tutor
+/plugin install study-guide-tutor-skill@study-guide-tutor-skill
 /reload-plugins
 ```
 
@@ -95,7 +95,7 @@ or from your shell:
 
 ```bash
 claude plugin marketplace add bassem-elsodany/study-guide-tutor-skill
-claude plugin install study-guide-tutor@study-guide-tutor            # --scope user (default) | project | local
+claude plugin install study-guide-tutor-skill@study-guide-tutor-skill            # --scope user (default) | project | local
 ```
 
 `bassem-elsodany/study-guide-tutor-skill` can also be a full git URL (`https://github.com/bassem-elsodany/study-guide-tutor-skill.git`, GitLab, a self-hosted host) or an SSH address.
@@ -116,7 +116,7 @@ git clone https://github.com/bassem-elsodany/study-guide-tutor-skill.git ~/src/s
 
 # A) install it (persistent)
 claude plugin marketplace add ~/src/study-guide-tutor-skill
-claude plugin install study-guide-tutor@study-guide-tutor
+claude plugin install study-guide-tutor-skill@study-guide-tutor-skill
 
 # B) or load it for ONE session only, nothing installed
 claude --plugin-dir ~/src/study-guide-tutor-skill
@@ -138,7 +138,7 @@ Copy (or symlink) the folder `skills/study-guide-tutor/` to `~/.claude/skills/st
 
 ```bash
 claude plugin marketplace add bassem-elsodany/study-guide-tutor-skill --scope project
-claude plugin install study-guide-tutor@study-guide-tutor --scope project
+claude plugin install study-guide-tutor-skill@study-guide-tutor-skill --scope project
 git add .claude/settings.json && git commit -m "chore: enable study-guide-tutor for the team"
 ```
 
@@ -164,7 +164,7 @@ Restart the agent so it rediscovers the skill. **What was tested:** the installe
 
 | Symptom | Fix |
 |---|---|
-| `/study` says unknown command | commands are namespaced: `/study-guide-tutor:study`; type `/study` and pick from the menu; run `/reload-plugins` after installing |
+| `/study` says unknown command | commands are namespaced: `/study-guide-tutor-skill:study`; type `/study` and pick from the menu; run `/reload-plugins` after installing |
 | The skill never triggers | `/plugin` → *Errors* tab; make sure the plugin is enabled in this project's scope; say it explicitly: "use the study-guide-tutor skill to teach me this PDF" |
 | Text from a PDF is empty or garbled | install `pdftotext` (poppler); for scanned or image-only slides the skill transcribes each slide once (the cache is `<name>.slides.txt` beside the original) |
 | A script path shows a literal `${CLAUDE_SKILL_DIR}` | you installed the skill outside Claude Code: read it as the folder that contains `SKILL.md` |
@@ -179,7 +179,7 @@ Restart the agent so it rediscovers the skill. **What was tested:** the installe
 
 You mostly just talk. When you share material and ask to study it, the skill runs the intake (a handful of multiple-choice questions), saves a `learner-profile.md`, and adapts everything it generates to it. It never advances to the next chapter without your go-ahead.
 
-| Command (prefix `study-guide-tutor:`) | Does |
+| Command (prefix `study-guide-tutor-skill:`) | Does |
 |---|---|
 | `/study [material]` | start or continue a course: intake, ingest, chapter list, then teach block by block |
 | `/study-player [unit]` | build the interactive player: one HTML file with a click-through quiz, spaced flashcards, a timed exam, progress and a results download |
@@ -295,7 +295,7 @@ flowchart LR
 
 ## The interactive player
 
-`/study-guide-tutor:study-player <unit folder>` (or `python3 skills/study-guide-tutor/scripts/make_player.py <unit folder>`) turns the quiz, answer-key and flashcard files of a unit into **one HTML file** that opens by double-click: no install, no server, no network. Your progress is saved in the browser only.
+`/study-guide-tutor-skill:study-player <unit folder>` (or `python3 skills/study-guide-tutor/scripts/make_player.py <unit folder>`) turns the quiz, answer-key and flashcard files of a unit into **one HTML file** that opens by double-click: no install, no server, no network. Your progress is saved in the browser only.
 
 | Mode | What you get |
 |---|---|
@@ -365,7 +365,7 @@ Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) (authoring standards, what a go
 
 ## Status and limits
 
-- **Version 1.0.0**, single maintainer, opinionated by design.
+- **Version 1.0.1**, single maintainer, opinionated by design.
 - Built and refined on one real course (a professional-certification course of 43 chapters across four units, taught from lecture PDFs) and verified on the invented sample course. It has not yet been run on other kinds of material, such as video transcripts, books or code bootcamps.
 - The gates are **heuristics**: `check_findable.py` and `check_dump.py` compare words, so a paraphrase can false-alarm and a clever dump could pass. They nominate; a reader decides. The `student-reviewer` and fidelity-review prompts exist for that.
 - The scripts assume lecture-style material ("slides" and slide ranges in ledgers) and the `domain-*/chapter-NN-*` folder scheme; ledger IDs are `<letters><chapter number>-NNN`. English is the tested language.

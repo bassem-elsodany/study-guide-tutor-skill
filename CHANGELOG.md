@@ -2,6 +2,11 @@
 
 All notable changes to study-guide-tutor. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow SemVer.
 
+## [1.0.1] - 2026-11-16
+
+- The plugin and marketplace are now named `study-guide-tutor-skill`, the same as the repository, so every install command uses one name: `/plugin marketplace add bassem-elsodany/study-guide-tutor-skill` then `/plugin install study-guide-tutor-skill@study-guide-tutor-skill`. Slash commands are now `/study-guide-tutor-skill:study`, and so on. The skill folder keeps its name, `study-guide-tutor`.
+- The repository validator now checks that the plugin, the marketplace and its plugin entry share one name and one version.
+
 ## [1.0.0] - 2026-11-16
 
 First public release.

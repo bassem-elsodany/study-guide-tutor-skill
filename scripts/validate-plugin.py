@@ -56,6 +56,14 @@ def validate(root):
         try: j = json.load(open(p))
         except Exception as x: e(f'{m}: {x}'); continue
         if ver and j.get('version') != ver: e(f'{m}: version {j.get("version")} != VERSION {ver}')
+    try:
+        pj = json.load(open(os.path.join(root, '.claude-plugin/plugin.json')))
+        mj = json.load(open(os.path.join(root, '.claude-plugin/marketplace.json')))
+        entries = [x.get('name') for x in mj.get('plugins', [])]
+        if mj.get('name') != pj.get('name') or entries != [pj.get('name')]:
+            e(f'plugin name {pj.get("name")!r}, marketplace name {mj.get("name")!r} and entries {entries} must all be the same (one name to copy and paste)')
+    except Exception:
+        pass
     if os.path.exists(os.path.join(root, 'CLAUDE.md')): e('CLAUDE.md at the repository root (not loaded by plugins; use AGENTS.md)')
     sk = os.path.join(root, 'skills')
     for name in sorted(os.listdir(sk)) if os.path.isdir(sk) else []:
@@ -112,15 +120,15 @@ def self_test():
     try:
         for d in ('skills/x', 'agents', 'commands', '.claude-plugin'): os.makedirs(os.path.join(T, d))
         open(T + '/VERSION', 'w').write('1.0.0\n')
-        json.dump({'version': '9.9.9'}, open(T + '/.claude-plugin/plugin.json', 'w'))
-        json.dump({'version': '1.0.0'}, open(T + '/.claude-plugin/marketplace.json', 'w'))
+        json.dump({'version': '9.9.9', 'name': 'a'}, open(T + '/.claude-plugin/plugin.json', 'w'))
+        json.dump({'version': '1.0.0', 'name': 'b', 'plugins': [{'name': 'c'}]}, open(T + '/.claude-plugin/marketplace.json', 'w'))
         open(T + '/skills/x/SKILL.md', 'w').write('---\nname: y\ndescription: <bad> no trigger\n---\n')
         open(T + '/agents/a.md', 'w').write('---\nname: a\ndescription: d\ntools: Read, Grep\n---\n')
         open(T + '/commands/c.md', 'w').write('---\ndescription: d\n---\n')
         open(T + '/CLAUDE.md', 'w').write('x')
         open(T + '/README.md', 'w').write('see [gone](missing.md) and ' + '/' + 'Users/someone/x and a@gmail' + '.com\n')
         errs = '\n'.join(validate(T))
-        for needle in ('version 9.9.9', 'CLAUDE.md', 'name must equal', 'angle brackets', 'Use when', 'tools must be a YAML list', 'model missing', 'allowed-tools missing', 'broken link', 'absolute macOS', 'personal email'):
+        for needle in ('version 9.9.9', 'must all be the same', 'CLAUDE.md', 'name must equal', 'angle brackets', 'Use when', 'tools must be a YAML list', 'model missing', 'allowed-tools missing', 'broken link', 'absolute macOS', 'personal email'):
             if needle not in errs: print('SELF-TEST FAIL: did not catch:', needle); return 1
         print('self-test OK: every check fires on a broken tree'); return 0
     finally:
