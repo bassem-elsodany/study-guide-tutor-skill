@@ -25,7 +25,7 @@ The ideas below are well-known learning-science findings, cited as ideas and not
 | Tool | Licence | Used by |
 |---|---|---|
 | `pdftotext` (poppler) | GPL-2.0-or-later | `source_text.py`, when installed |
-| `mmdc` (Mermaid CLI) | MIT | `make_glance.py`, to validate diagrams, when installed |
+| `mmdc` (Mermaid CLI) | MIT | `make_glance.py` (validates diagrams) and `make_player.py` (draws them in the Lesson tab), when installed |
 | `pypdf` / `PyPDF2` / PyMuPDF | BSD / BSD / AGPL-3.0 | `source_text.py` fallback, when installed |
 
 They are invoked as separate programs or optional imports and are not distributed with this repository.

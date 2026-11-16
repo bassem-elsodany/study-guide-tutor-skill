@@ -10,7 +10,7 @@ The short version is in the [README](../README.md). This page has every option, 
 | `python3` 3.9 or newer (developed on 3.13; CI runs 3.11) | `python3 --version` | every script (standard library only) |
 | `git` | `git --version` | installing from a repository |
 | *Optional:* `pdftotext` (poppler) | `pdftotext -v` | extracting text from PDFs (`brew install poppler` / `apt install poppler-utils`); without it the scripts fall back to `pypdf`, `PyPDF2` or PyMuPDF if installed |
-| *Optional:* `mmdc` (Mermaid CLI) | `mmdc --version` | validating the diagrams in lessons (`npm i -g @mermaid-js/mermaid-cli`); without it diagrams are written but not validated |
+| *Optional:* `mmdc` (Mermaid CLI) | `mmdc --version` | validating the diagrams in lessons and drawing them in the practice page's Lesson tab (`npm i -g @mermaid-js/mermaid-cli`); without it diagrams are written but not validated |
 
 Tested on macOS (Apple silicon) with Claude Code. Linux is expected to work. Windows is untested: use WSL. Image-only slides cannot be read by `pdftotext`: the skill transcribes them once and caches the result.
 

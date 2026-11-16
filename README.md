@@ -2,9 +2,9 @@
 
 **Hand your AI assistant a PDF, a slide deck or your notes. It teaches you what is in them, quizzes you until it sticks, and shows you exactly what to revisit.**
 
-![The practice page the tutor builds for you: you picked the wrong answer, the right one is green, and every option comes with the reason it is wrong and the slide it comes from](docs/images/player-quiz.png)
+![The practice page the tutor builds for you: it opens on the lesson, with a bar of section tabs, a drawn diagram and a yellow highlight; the other tabs are Quiz, Flashcards, Exam, Progress and Notes](docs/images/player-hero.png)
 
-*The practice page the tutor builds for you (a real screenshot). Here: a 10-slide PDF about the water cycle.*
+*The practice page the tutor builds for you (a real screenshot): the lesson, the quiz, the flashcards, the exam and your own notes in one file. Here: a 10-slide PDF about the water cycle.*
 
 [![CI](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/bassem-elsodany/study-guide-tutor-skill)](https://github.com/bassem-elsodany/study-guide-tutor-skill/releases)
 
@@ -73,24 +73,30 @@ Every lesson is a plain Markdown file, so you can read it in any editor or on Gi
 
 That is the page in the picture at the top: one file you open by double-clicking it, no install needed. It opens on the lesson, so reading, quizzing and flashcards live in one place.
 
-![The first tab of the practice page: the chapter picker, the three-minute summary with a drawn diagram, tables, and a yellow Tricky part box](docs/images/player-lesson.png)
-
 | Tab | What it does |
 |---|---|
 | **Lesson** | the chapter you picked, as a page: the diagram, tables and warnings, a bar of section tabs that follows you down the page, an "I have read this chapter" box, and buttons to that chapter's quiz and flashcards. It is the same text as the Markdown file, which a link on the page opens. Select any text to **highlight** it or **add a note** (see below). |
-| **Quiz** | click an answer; the right one turns green at once, and you see why every wrong option is wrong. Hints are optional and shown only when you ask. |
+| **Quiz** | click an answer; the right one turns green at once, and you see why every wrong option is wrong (screenshot below). Hints are optional and shown only when you ask. |
 | **Flashcards** | flip, then "knew it" or "missed it". A card you miss comes back today; one you know comes back after 1, 3, 7, then 14 days. |
 | **Exam** | a timed mock exam with no feedback until you finish, then a list of the chapters to revisit. |
 | **Progress** | your scores, the questions you still miss, and a button to save your results. |
 | **Notes** | every highlight and note you made, by chapter, with a button that jumps back to the spot in the lesson, a button to connect your course folder so the notes are saved as `06-notes.md`, and downloads (one chapter, or all). |
 
+![The quiz: you picked the wrong answer, the right one is green, and every option comes with the reason it is wrong and the slide it comes from](docs/images/player-quiz.png)
+
+**Highlights and notes.** Select any text in a lesson and a small box lets you highlight it or type a note:
+
 ![Selecting text in the lesson: the passage is highlighted in yellow and a small box lets you type a note; the bar of section tabs is above the lesson](docs/images/player-notes.png)
+
+The Notes tab collects them, chapter by chapter:
+
+![The Notes tab: each highlight with your note beside it, a button to jump back to the lesson, a button to connect your course folder, and downloads](docs/images/player-notes-tab.png)
 
 *Your notes are saved to `06-notes.md` in the chapter folder, next to `01-lesson.md`. In Chrome or Edge, press "Connect my course folder" once and the player writes that file for you as you type; in other browsers, download the file and drop it in the chapter folder. Rebuild the player and your notes are right where you left them. The file is plain Markdown, so you can also write a note there by hand.*
 
 ### 6. Afterwards
 
-Save your results and send the file to the tutor. It writes a short review of what you missed, adds those points to your revisit list, and plans when to come back to them.
+Save your results and send the file to the tutor (your notes go with it). It writes a short review of what you missed, adds those points to your revisit list, and plans when to come back to them.
 
 **Want to see the real thing?** Open [`examples/water-cycle/course/`](examples/water-cycle/course/README.md): the whole course the tutor made from that PDF. Download `00-overview/09-study-player.html` and double-click it to try the practice page yourself.
 
@@ -113,7 +119,7 @@ Using another AI tool, a team setup, or something not working? See [docs/install
 |---|---|
 | "Teach me this PDF" | intake, plan, then lessons one chapter at a time |
 | "Quiz me on chapter 2" | questions with instant reasons, saved results |
-| "Make me the practice page" | the clickable page: quiz, flashcards, exam, progress |
+| "Make me the practice page" | the clickable page: lessons, quiz, flashcards, exam, progress, notes |
 | "I only have an hour before the exam" | a short recap of what matters, flashcards, one quiz on the weak spots |
 | "Quiz me on what I missed" | fresh questions on your misses until they clear |
 | "Check everything" | the tutor checks the course for mistakes and tells you what it found |
@@ -127,7 +133,7 @@ One plugin installs everything below. Nothing runs in the background: no hooks, 
 | **Skill** | `study-guide-tutor-skill` | The tutor itself: asks about you, reads your material, writes the lessons, quizzes you, grades you and plans your revisits | starts by itself when you ask to study, learn, be quizzed or prepare for an exam |
 | **Command** | `/study-guide-tutor-skill:study` | Start or continue a course from your material | `/study-guide-tutor-skill:study my-notes.pdf` |
 | **Command** | `/study-guide-tutor-skill:study-quiz` | Quiz a chapter (or a whole unit), or grade the answers you give | `/study-guide-tutor-skill:study-quiz 2` |
-| **Command** | `/study-guide-tutor-skill:study-player` | Build the clickable practice page: quiz, flashcards, exam, progress | `/study-guide-tutor-skill:study-player` |
+| **Command** | `/study-guide-tutor-skill:study-player` | Build the clickable practice page: lessons, quiz, flashcards, exam, progress, notes | `/study-guide-tutor-skill:study-player` |
 | **Command** | `/study-guide-tutor-skill:study-cram` | Cram mode for a short deadline: a recap of what matters, flashcards, one quiz | `/study-guide-tutor-skill:study-cram 2 hours` |
 | **Command** | `/study-guide-tutor-skill:study-weak` | Re-quiz what you keep missing, with fresh questions, until it clears | `/study-guide-tutor-skill:study-weak` |
 | **Command** | `/study-guide-tutor-skill:study-check` | Check a finished course for mistakes and report what it found | `/study-guide-tutor-skill:study-check` |
@@ -138,7 +144,7 @@ That is 1 skill, 6 commands and 2 helpers. You never have to type a command: say
 
 ## Questions
 
-**Does my material leave my computer?** The skill itself makes no network calls and keeps everything in your folder. Like any AI assistant, the text you give it is processed by the AI service you use, under that service's terms.
+**Does my material leave my computer?** The skill itself makes no network calls and keeps everything in your folder. The practice page makes none either; the only thing it ever writes to disk is your notes file, and only in the folder you pick. Like any AI assistant, the text you give it is processed by the AI service you use, under that service's terms.
 
 **Do I need to be technical?** You need an AI assistant that supports plugins, such as Claude Code, and two commands to paste. After that it is a conversation and a web page.
 
@@ -156,6 +162,9 @@ That is 1 skill, 6 commands and 2 helpers. You never have to type a command: say
 - Word and PowerPoint files are read as text only: tables, charts and pictures inside them are not understood. A scanned page needs the tutor to look at it.
 - The quizzes check facts that are in your material. They do not bring in outside knowledge, on purpose, because exams test the course's version.
 - The checks behind the scenes are automatic but not perfect; a careful reader still beats them.
+- Diagrams in the practice page are drawn when it is built, which needs the optional `mmdc` ([Mermaid CLI](https://github.com/mermaid-js/mermaid-cli)); without it each diagram shows its text instead. The Markdown lessons are unaffected.
+- Saving notes straight into your folder works in Chrome and Edge only (other browsers get a download button). That path has been tested with a stand-in folder in an automatic test, not by hand in every browser, so check the file appears the first time you use it.
+- A note finds its place by the text you selected. If the tutor later rewrites that passage, the note is kept but cannot be shown on the lesson.
 
 ## For the curious
 
