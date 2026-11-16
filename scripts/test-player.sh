@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# test-player - build the interactive study player from the sample courses (the flat course, one module of the grouped
-# course, the Spanish course, and the Spanish course set to Arabic to check right-to-left) with the scripted self-test appended,
+# test-player - build the interactive study player for one unit of every example and fixture course (flat, by module,
+# by week, nested term/week, Spanish by unidad, and the Spanish course set to Arabic to check right-to-left) with the
+# scripted self-test appended,
 # open it in a headless Chrome/Chromium, and fail unless every scripted click-through check passes.
 # Skips (exit 0) when no Chrome/Chromium is installed. Writes only to a temporary directory.
 set -euo pipefail
@@ -13,7 +14,7 @@ done
 if [[ -z "$CH" ]]; then echo "SKIP: no Chrome or Chromium found (the player self-test needs one)"; exit 0; fi
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 run_one() {  # run_one NAME UNIT_DIR [EXPECTED_HTML_TAG_TEXT]
-  python3 "$ROOT/skills/study-guide-tutor/scripts/make_player.py" "$2" --out "$T/$1.html" --selftest >/dev/null
+  python3 "$ROOT/skills/study-guide-tutor-skill/scripts/make_player.py" "$2" --out "$T/$1.html" --selftest >/dev/null
   OUT="$("$CH" --headless=new --disable-gpu --no-sandbox --virtual-time-budget=6000 --dump-dom "file://$T/$1.html" 2>/dev/null || true)"
   RES="$(printf '%s' "$OUT" | python3 -c "
 import sys,re,html
@@ -23,14 +24,16 @@ print(html.unescape(m.group(1)) if m else 'NO SELFTEST OUTPUT')")"
   [[ "${RES%%$'\n'*}" == "SELFTEST OK" ]] || { echo "FAIL: first line was not SELFTEST OK"; return 1; }
   if [[ -n "${3:-}" ]]; then [[ "$OUT" == *"$3"* ]] || { echo "FAIL expected $3 in the page"; return 1; }; echo "ok   page has $3"; fi
 }
-run_one flat "$ROOT/tests/fixtures/sample-course"
-run_one grouped-module "$ROOT/tests/fixtures/sample-grouped-course/module-2"
-run_one spanish "$ROOT/tests/fixtures/sample-spanish-course" 'lang="es" dir="ltr"'
+run_one flat-course "$ROOT/examples/water-cycle/course"
+run_one by-module "$ROOT/tests/fixtures/by-module/module-1"
+run_one by-week "$ROOT/tests/fixtures/by-week-and-lecture/week-02"
+run_one nested-terms "$ROOT/tests/fixtures/nested-terms/term-1/week-01"
+run_one spanish "$ROOT/tests/fixtures/spanish-course/unidad-1" 'lang="es" dir="ltr"'
 # the same course declared as Arabic must flip the page to right-to-left
-cp -R "$ROOT/tests/fixtures/sample-spanish-course" "$T/arabic-course"
+cp -R "$ROOT/tests/fixtures/spanish-course" "$T/arabic-course"
 python3 - "$T/arabic-course/course.json" <<'PY'
 import json, sys
 p = sys.argv[1]; j = json.load(open(p, encoding='utf-8')); j['language'] = 'ar'
 json.dump(j, open(p, 'w', encoding='utf-8'), ensure_ascii=False)
 PY
-run_one arabic-direction "$T/arabic-course" 'lang="ar" dir="rtl"'
+run_one arabic-direction "$T/arabic-course/unidad-1" 'lang="ar" dir="rtl"'

@@ -1,4 +1,4 @@
-# Contributing to study-guide-tutor
+# Contributing to study-guide-tutor-skill
 
 Thanks for helping. The skill is refined by real use: if a lesson came out as a slide dump, a quiz leaked its answer, a gate misreported, or the intake asked the wrong question, fixing that is the most valuable contribution.
 
@@ -26,9 +26,9 @@ Thanks for helping. The skill is refined by real use: if a lesson came out as a 
 scripts/quality-check.sh && python3 -I scripts/validate-plugin.py --self-test && python3 -I scripts/validate-plugin.py .
 ```
 
-`quality-check.sh` compiles every script, runs each with `--help`, and runs the gates against the sample course in `tests/fixtures/sample-course`. If you have the Claude Code CLI: `claude plugin validate . --strict`.
+`quality-check.sh` compiles every script, runs each with `--help`, and runs the gates against the example and fixture courses (`examples/` and `tests/fixtures/`). If you have the Claude Code CLI: `claude plugin validate . --strict`.
 
-Diagrams in the README are Mermaid: edit `docs/diagrams/*.mmd`, paste into the README, and keep them in sync.
+Diagrams in `docs/how-it-works.md` are Mermaid: edit `docs/diagrams/*.mmd`, paste into that page, and keep them in sync.
 
 ## Proposing a change to the method
 

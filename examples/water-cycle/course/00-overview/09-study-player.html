@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Water Cycle</title>
+<style>
+:root{--bg:#f6f6f2;--card:#ffffff;--ink:#1c2125;--muted:#58626b;--line:#d9dde1;--accent:#2457c5;--accent-ink:#ffffff;
+--ok:#0f6e50;--okbg:#e3f4ec;--bad:#a8231b;--badbg:#fcebea;--warn:#7a4f00;--warnbg:#fff3d6;--shadow:0 1px 2px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#121518;--card:#1b2024;--ink:#e7e9ec;--muted:#9aa4ad;--line:#323a41;--accent:#8ab4ff;--accent-ink:#0b1220;
+--ok:#6bd6a9;--okbg:#12342a;--bad:#ff9d95;--badbg:#391a18;--warn:#f0c36c;--warnbg:#382d11;--shadow:none}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header,main,footer{max-width:820px;margin:0 auto;padding:0 16px}
+header{padding-top:18px}
+h1{font-size:1.25rem;margin:0 0 2px}
+.sub{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+nav{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:16px}
+nav button{font:inherit;background:transparent;border:1px solid transparent;color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer}
+nav button[aria-selected=true]{background:var(--card);border-color:var(--line);color:var(--ink);font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 auto}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+button.btn{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px}
+button.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+button.btn:disabled{opacity:.5;cursor:default}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+select{width:100%}
+select,input[type=number]{font:inherit;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;max-width:100%}
+label{display:inline-flex;gap:6px;align-items:center}
+.stem{font-size:1.05rem;margin:0 0 14px}
+.opts{display:grid;gap:8px}
+button.opt{font:inherit;text-align:start;display:flex;gap:10px;width:100%;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+button.opt:hover:not(:disabled){border-color:var(--accent)}
+button.opt .L{font-weight:700;min-width:1.4em;color:var(--muted)}
+button.opt.sel{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+button.opt.ok{background:var(--okbg);border-color:var(--ok)}
+button.opt.bad{background:var(--badbg);border-color:var(--bad)}
+button.opt:disabled{cursor:default}
+.panel{border-radius:10px;padding:12px 14px;margin-top:12px}
+.panel.ok{background:var(--okbg);border:1px solid var(--ok)}
+.panel.bad{background:var(--badbg);border:1px solid var(--bad)}
+.panel.hint{background:var(--warnbg);border:1px solid var(--warn);color:var(--ink)}
+.panel h3{margin:0 0 4px;font-size:1rem}
+.why{margin:8px 0 0;padding-left:0;list-style:none}
+.why li{margin:4px 0}
+.tag{display:inline-block;font-size:.78rem;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);margin-right:6px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent)}
+table{border-collapse:collapse;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:start;font-size:.92rem}
+.flash{min-height:150px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.15rem;padding:18px}
+.grid{display:flex;gap:6px;flex-wrap:wrap}
+.grid button{min-width:36px;padding:4px 8px}
+.grid button.done{background:var(--okbg);border-color:var(--ok)}
+.grid button.cur{outline:2px solid var(--accent)}
+.big{font-size:2rem;font-weight:700;margin:0}
+.weak{color:var(--bad);font-weight:600}
+.strong{color:var(--ok);font-weight:600}
+code{background:rgba(127,127,127,.15);border-radius:4px;padding:0 4px;font-size:.92em}
+footer{padding:18px 16px 40px;color:var(--muted);font-size:.85rem}
+.sr{position:absolute;left:-9999px}
+@media (max-width:520px){body{font-size:15.5px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title"></h1>
+  <p class="sub" id="subtitle"></p>
+  <nav id="tabs" role="tablist" aria-label="Study modes"></nav>
+</header>
+<main id="app" tabindex="-1"></main>
+<div class="sr" id="live" aria-live="polite" role="status"></div>
+<footer id="foot"></footer>
+
+<script type="application/json" id="data">{"id": "water-cycle-course-the-water-cycle", "title": "The Water Cycle", "counts": {"chapters": 2, "questions": 8, "cards": 9, "exam": 6}, "audience": "a beginner to the topic with no technical background, studying for general understanding with no deadline", "chapters": [{"n": 1, "title": "The four stages", "questions": [{"id": "c1q1", "n": 1, "ch": 1, "label": "Medium", "stem": "A puddle in the school yard is gone by afternoon on a hot day. Which statement describes the stage that removed it?", "opts": {"A": "Water vapour cools and turns into tiny droplets that form clouds, which is why the yard dried out so quickly", "B": "Water falls from clouds as rain, snow, sleet or hail, which is why the yard dried out so quickly", "C": "Liquid water turns into water vapour, driven by heat from the sun, which is why the yard dried out", "D": "Water gathers in oceans, lakes, rivers and underground, which is why the yard dried out so quickly"}, "key": "C", "explanation": "Evaporation: liquid water turns into water vapour, driven by heat from the sun.", "why": {"A": "That describes condensation, which turns vapour into droplets.", "B": "That describes precipitation, which is water falling from clouds.", "D": "That describes collection, which is where fallen water ends up."}, "hint": "the sun supplies the heat.", "source": "Slide 3", "fixed": false}, {"id": "c1q2", "n": 2, "ch": 1, "label": "Hard", "stem": "Which sequence lists the four stages of the water cycle in order?", "opts": {"A": "Evaporation, then condensation, then precipitation, then collection, after which the cycle begins again", "B": "Evaporation, then precipitation, then condensation, then collection, after which the cycle begins again", "C": "Condensation, then evaporation, then collection, then precipitation, after which the cycle begins again", "D": "Collection, then precipitation, then evaporation, then condensation, after which the cycle begins again"}, "key": "A", "explanation": "The order is evaporation, condensation, precipitation, collection.", "why": {"B": "Swaps condensation and precipitation; clouds must form before water falls.", "C": "Starts with condensation and puts collection before precipitation.", "D": "Starts at collection, which is the last stage."}, "hint": "water has to rise before it can fall.", "source": "Slide 2", "fixed": false}, {"id": "c1q3", "n": 3, "ch": 1, "label": "Medium", "stem": "Warm air from a hot shower meets a cold bathroom mirror and fine droplets appear on the glass. Which stage does this match?", "opts": {"A": "Evaporation, in which liquid water turns into water vapour, driven by heat from the sun", "B": "Condensation, in which water vapour cools and turns into tiny droplets that form clouds", "C": "Precipitation, in which water falls from clouds as rain, snow, sleet or hail", "D": "Collection, in which water gathers in oceans, lakes, rivers and underground"}, "key": "B", "explanation": "Condensation: water vapour cools and turns into tiny droplets that form clouds (here the cold mirror plays the part of the cold air).", "why": {"A": "Evaporation goes the other way, from liquid to vapour.", "C": "Precipitation is water falling from clouds, not droplets forming on glass.", "D": "Collection is where fallen water gathers."}, "hint": "warm vapour meets something cold.", "source": "Slide 4", "fixed": false}, {"id": "c1q4", "n": 4, "ch": 1, "label": "Hard", "stem": "Rain is falling from a grey cloud onto a lake. Which pairing of the two stages involved is correct?", "opts": {"A": "Precipitation is water gathering in oceans, lakes, rivers and underground; collection is water falling from clouds as rain, snow, sleet or hail", "B": "Precipitation is water turning into water vapour by the sun's heat; collection is water falling from clouds as rain, snow, sleet or hail", "C": "Precipitation is water cooling into tiny droplets that form clouds; collection is water gathering in oceans, lakes, rivers and underground", "D": "Precipitation is water falling from clouds as rain, snow, sleet or hail; collection is water gathering in oceans, lakes, rivers and underground"}, "key": "D", "explanation": "Precipitation is water falling from clouds as rain, snow, sleet or hail; collection is water gathering in oceans, lakes, rivers and underground.", "why": {"A": "Swaps the two stages.", "B": "The sun's heat turning water into vapour is evaporation.", "C": "Cooling into tiny droplets is condensation."}, "hint": "one is falling, the other is gathering.", "source": "Slides 5-6", "fixed": false}], "cards": [{"q": "What are the four stages in order?", "a": "Evaporation, condensation, precipitation, collection."}, {"q": "What is evaporation?", "a": "Liquid water turning into water vapour, driven by heat from the sun."}, {"q": "What is condensation?", "a": "Water vapour cooling into tiny droplets that form clouds."}, {"q": "What is precipitation?", "a": "Water falling from clouds as rain, snow, sleet or hail."}, {"q": "What is collection?", "a": "Water gathering in oceans, lakes, rivers and underground."}]}, {"n": 2, "title": "Where the water goes", "questions": [{"id": "c2q1", "n": 1, "ch": 2, "label": "Medium", "stem": "A forest releases moisture into the air on a warm morning. Which pairing of term and meaning is correct?", "opts": {"A": "Condensation: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration", "B": "Transpiration: ice turns directly into vapour, and with evaporation it is called evapotranspiration", "C": "Precipitation: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration", "D": "Transpiration: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration"}, "key": "D", "explanation": "Transpiration is plants releasing water vapour through their leaves; with evaporation it is evapotranspiration.", "why": {"A": "Condensation is vapour turning into droplets, not a plant process.", "B": "Ice turning directly into vapour is sublimation.", "C": "Precipitation is water falling from clouds."}, "hint": "think of leaves.", "source": "Slide 7", "fixed": false}, {"id": "c2q2", "n": 2, "ch": 2, "label": "Hard", "stem": "Which statement about where Earth's water is found matches the lecture?", "opts": {"A": "About 3% of Earth's water is salt water in the oceans, and the rest is fresh water in lakes", "B": "About 97% of Earth's water is salt water in the oceans, and the rest is fresh water, ice and vapour", "C": "About 97% of Earth's water is fresh water in lakes, and the rest is salt water in the oceans", "D": "About 50% of Earth's water is salt water in the oceans, and the rest is fresh water and ice"}, "key": "B", "explanation": "About 97% of Earth's water is salt water in the oceans.", "why": {"A": "Swaps the percentage: salt water is the large share, not 3%.", "C": "Calls the large share fresh water, but it is salt water.", "D": "50% is not the figure the lecture gives."}, "hint": "most of the planet's water is in the oceans.", "source": "Slide 8", "fixed": false}, {"id": "c2q3", "n": 3, "ch": 2, "label": "Medium", "stem": "Rain lands on a hillside; some water streams down into a river and some disappears into the soil. Which pairing of terms is correct?", "opts": {"A": "Runoff is water flowing over land into streams and rivers; infiltration is water soaking into the ground and becoming groundwater", "B": "Runoff is water soaking into the ground and becoming groundwater; infiltration is water flowing over land into streams or rivers", "C": "Runoff is water turning directly into vapour; infiltration is water falling from clouds as rain", "D": "Runoff is water gathering in oceans only; infiltration is water cooling into droplets that form clouds"}, "key": "A", "explanation": "Runoff flows over land into streams and rivers; infiltration soaks into the ground and becomes groundwater.", "why": {"B": "Swaps the two terms.", "C": "Turning directly into vapour is sublimation; falling from clouds is precipitation.", "D": "Collection is where water gathers; condensation forms clouds."}, "hint": "one stays on top, one goes down.", "source": "Slide 9", "fixed": false}, {"id": "c2q4", "n": 4, "ch": 2, "label": "Hard", "stem": "Snow on a cold, dry mountain slope disappears without ever forming a pool of liquid water. Which term fits?", "opts": {"A": "Condensation, in which water vapour cools and turns into tiny droplets that form clouds", "B": "Infiltration, in which water soaks into the ground and becomes groundwater", "C": "Sublimation, in which ice turns directly into vapour without becoming liquid first", "D": "Collection, in which water gathers in oceans, lakes, rivers and underground"}, "key": "C", "explanation": "Sublimation: ice turns directly into vapour without becoming liquid first.", "why": {"A": "Condensation needs vapour to cool into droplets, which is the opposite direction.", "B": "Infiltration is water soaking into the ground.", "D": "Collection is water gathering in oceans, lakes, rivers and underground."}, "hint": "no liquid stage.", "source": "Slide 10", "fixed": false}], "cards": [{"q": "What is transpiration?", "a": "Plants releasing water vapour through their leaves; with evaporation it is called evapotranspiration."}, {"q": "How much of Earth's water is salt water in the oceans?", "a": "About 97%."}, {"q": "Runoff or infiltration?", "a": "Runoff flows over land into streams and rivers; infiltration soaks into the ground and becomes groundwater."}, {"q": "What is sublimation?", "a": "Ice turning directly into vapour without becoming liquid first."}]}], "final": null, "exam": {"minutes": 10, "questions": [{"id": "x1", "n": 1, "ch": 1, "label": "Hard", "stem": "Which sequence lists the four stages of the water cycle in order?", "opts": {"A": "Evaporation, then condensation, then precipitation, then collection, after which the cycle begins again", "B": "Evaporation, then precipitation, then condensation, then collection, after which the cycle begins again", "C": "Condensation, then evaporation, then collection, then precipitation, after which the cycle begins again", "D": "Collection, then precipitation, then evaporation, then condensation, after which the cycle begins again"}, "key": "A", "explanation": "The order is evaporation, condensation, precipitation, collection.", "why": {"B": "Swaps condensation and precipitation; clouds must form before water falls.", "C": "Starts with condensation and puts collection before precipitation.", "D": "Starts at collection, which is the last stage."}, "hint": "water has to rise before it can fall.", "source": "Slide 2", "fixed": false}, {"id": "x2", "n": 2, "ch": 2, "label": "Hard", "stem": "Which statement about where Earth's water is found matches the lecture?", "opts": {"A": "About 3% of Earth's water is salt water in the oceans, and the rest is fresh water in lakes", "B": "About 97% of Earth's water is salt water in the oceans, and the rest is fresh water, ice and vapour", "C": "About 97% of Earth's water is fresh water in lakes, and the rest is salt water in the oceans", "D": "About 50% of Earth's water is salt water in the oceans, and the rest is fresh water and ice"}, "key": "B", "explanation": "About 97% of Earth's water is salt water in the oceans.", "why": {"A": "Swaps the percentage: salt water is the large share, not 3%.", "C": "Calls the large share fresh water, but it is salt water.", "D": "50% is not the figure the lecture gives."}, "hint": "most of the planet's water is in the oceans.", "source": "Slide 8", "fixed": false}, {"id": "x3", "n": 3, "ch": 2, "label": "Medium", "stem": "A forest releases moisture into the air on a warm morning. Which pairing of term and meaning is correct?", "opts": {"A": "Condensation: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration", "B": "Transpiration: ice turns directly into vapour, and with evaporation it is called evapotranspiration", "C": "Precipitation: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration", "D": "Transpiration: plants release water vapour through their leaves, and with evaporation it is called evapotranspiration"}, "key": "D", "explanation": "Transpiration is plants releasing water vapour through their leaves; with evaporation it is evapotranspiration.", "why": {"A": "Condensation is vapour turning into droplets, not a plant process.", "B": "Ice turning directly into vapour is sublimation.", "C": "Precipitation is water falling from clouds."}, "hint": "think of leaves.", "source": "Slide 7", "fixed": false}, {"id": "x4", "n": 4, "ch": 1, "label": "Hard", "stem": "Rain is falling from a grey cloud onto a lake. Which pairing of the two stages involved is correct?", "opts": {"A": "Precipitation is water gathering in oceans, lakes, rivers and underground; collection is water falling from clouds as rain, snow, sleet or hail", "B": "Precipitation is water turning into water vapour by the sun's heat; collection is water falling from clouds as rain, snow, sleet or hail", "C": "Precipitation is water cooling into tiny droplets that form clouds; collection is water gathering in oceans, lakes, rivers and underground", "D": "Precipitation is water falling from clouds as rain, snow, sleet or hail; collection is water gathering in oceans, lakes, rivers and underground"}, "key": "D", "explanation": "Precipitation is water falling from clouds as rain, snow, sleet or hail; collection is water gathering in oceans, lakes, rivers and underground.", "why": {"A": "Swaps the two stages.", "B": "The sun's heat turning water into vapour is evaporation.", "C": "Cooling into tiny droplets is condensation."}, "hint": "one is falling, the other is gathering.", "source": "Slides 5-6", "fixed": false}, {"id": "x5", "n": 5, "ch": 2, "label": "Hard", "stem": "Snow on a cold, dry mountain slope disappears without ever forming a pool of liquid water. Which term fits?", "opts": {"A": "Condensation, in which water vapour cools and turns into tiny droplets that form clouds", "B": "Infiltration, in which water soaks into the ground and becomes groundwater", "C": "Sublimation, in which ice turns directly into vapour without becoming liquid first", "D": "Collection, in which water gathers in oceans, lakes, rivers and underground"}, "key": "C", "explanation": "Sublimation: ice turns directly into vapour without becoming liquid first.", "why": {"A": "Condensation needs vapour to cool into droplets, which is the opposite direction.", "B": "Infiltration is water soaking into the ground.", "D": "Collection is water gathering in oceans, lakes, rivers and underground."}, "hint": "no liquid stage.", "source": "Slide 10", "fixed": false}, {"id": "x6", "n": 6, "ch": 1, "label": "Medium", "stem": "Warm air from a hot shower meets a cold bathroom mirror and fine droplets appear on the glass. Which stage does this match?", "opts": {"A": "Evaporation, in which liquid water turns into water vapour, driven by heat from the sun", "B": "Condensation, in which water vapour cools and turns into tiny droplets that form clouds", "C": "Precipitation, in which water falls from clouds as rain, snow, sleet or hail", "D": "Collection, in which water gathers in oceans, lakes, rivers and underground"}, "key": "B", "explanation": "Condensation: water vapour cools and turns into tiny droplets that form clouds (here the cold mirror plays the part of the cold air).", "why": {"A": "Evaporation goes the other way, from liquid to vapour.", "C": "Precipitation is water falling from clouds, not droplets forming on glass.", "D": "Collection is where fallen water gathers."}, "hint": "warm vapour meets something cold.", "source": "Slide 4", "fixed": false}]}, "lang": "en", "dir": "ltr", "ui": {}}</script>
+<script>
+(function(){
+"use strict";
+var D = JSON.parse(document.getElementById('data').textContent);
+var KEY = 'sgt:' + D.id;
+var DAY = 86400000;
+var STR = {
+  "tabQuiz": "Quiz",
+  "tabCards": "Flashcards",
+  "tabExam": "Exam",
+  "tabProgress": "Progress",
+  "studyModes": "Study modes",
+  "chShort": "Ch. {n}",
+  "chTitle": "Ch. {n} {title}",
+  "setAll": "All chapters, mixed (questions: {n})",
+  "setCh": "Ch. {n} {title} ({k})",
+  "setFinal": "Checkpoint across all chapters (questions: {n})",
+  "setMisses": "My misses ({n})",
+  "quizPick": "Pick what to practise",
+  "quizSetLabel": "Question set",
+  "shufOpts": "Shuffle answer order",
+  "shufQs": "Shuffle question order",
+  "quizHelp": "Answer with a click or with the keys A to D. Hints are optional and are marked in your score. After every answer you see why each wrong option is wrong and where the fact comes from.",
+  "start": "Start",
+  "quit": "Quit",
+  "answerOptions": "Answer options",
+  "qOf": "Question {i} of {n}",
+  "hintShow": "Show a hint",
+  "hintShown": "Hint shown",
+  "hintWord": "Hint:",
+  "correct": "Correct",
+  "notQuite": "Not quite",
+  "yourPick": "(your pick)",
+  "source": "Source: {s}",
+  "nextQ": "Next question",
+  "seeResults": "See results",
+  "results": "Results: {label}",
+  "hintedN": "Answered with a hint: {n}.",
+  "noHints": "No hints used.",
+  "toRevisit": "To revisit",
+  "cleanSweep": "Clean sweep.",
+  "answerLbl": "Answer:",
+  "retakeLabel": "Retake of your misses",
+  "retakeBtn": "Retake the misses",
+  "backSets": "Back to sets",
+  "deckLabel": "Deck",
+  "deckAll": "All chapters ({n} cards)",
+  "deckCh": "Ch. {n} {title} ({k})",
+  "cardInfo": "Due now: {due} (new: {fresh}). A card you miss comes back today; a card you know waits 1, 3, 7, then 14 days.",
+  "studyDue": "Study the due cards ({n})",
+  "studyAnyway": "Nothing due: study 10 anyway",
+  "cardOf": "Card {i} of {n} · {ch} · box {b}",
+  "showAnswer": "Show answer",
+  "missedIt": "Missed it",
+  "knewIt": "Knew it",
+  "cardKeys": "Keys: Space shows the answer · 1 or ← missed it · 2 or → knew it",
+  "sessionDone": "Session done",
+  "knownN": "{got} / {n} known",
+  "missedToday": "Missed today (they come back today)",
+  "againMisses": "Go again on the misses",
+  "backDecks": "Back to decks",
+  "examIntro": "Questions: {n}, from every chapter, mixed and unlabeled. Suggested time (minutes): {minutes}. No hints and no feedback until you submit; you can move back and forth and change answers.",
+  "lastAttempt": "Last attempt: {score} / {total} ({pct}%) on {date}.",
+  "startExam": "Start the exam",
+  "overBy": "over by {t}",
+  "goToQ": "Go to question {n}",
+  "prev": "Previous",
+  "next": "Next",
+  "submitExam": "Submit exam",
+  "unanswered": "Unanswered questions count as wrong (unanswered: {n}). Submit anyway?",
+  "examResults": "Exam results",
+  "timeUsed": "Time used: {used} of {minutes} (minutes).",
+  "thChapter": "Chapter",
+  "thCorrect": "Correct",
+  "revisit": "revisit",
+  "solid": "solid",
+  "reviewMisses": "Review your misses",
+  "youChose": "You chose:",
+  "practiseMisses": "Practise my misses",
+  "back": "Back",
+  "yourProgress": "Your progress",
+  "thQuizLast": "Quiz last",
+  "thBest": "Best",
+  "thTries": "Tries",
+  "otherSets": "Other quiz sets",
+  "thSet": "Set",
+  "thLast": "Last",
+  "setAllShort": "All chapters, mixed",
+  "setFinalShort": "Checkpoint",
+  "setMissesShort": "My misses",
+  "setRetakeShort": "Retakes of misses",
+  "cardsStarted": "Cards started: {seen} of {total} · due now: {due} · boxes 1 to 5: {boxes}",
+  "stillMiss": "Questions you still miss",
+  "missCount": "Questions missed: {n}. Use the \"My misses\" set in Quiz.",
+  "noMiss": "None. Nice.",
+  "examAttempts": "Exam attempts",
+  "thDate": "Date",
+  "thScore": "Score",
+  "thTime": "Time",
+  "downloadBtn": "Download my results (JSON)",
+  "resetBtn": "Reset progress",
+  "resetConfirm": "Erase all saved progress for this course in this browser?",
+  "savedOnly": "Progress is saved only in this browser",
+  "blocked": " (saving is blocked here, so it will be lost when you close the page)",
+  "sendTutor": ". Send the downloaded file to your tutor so it can write the review and plan your revisits.",
+  "footerAudience": "Written for {a}. Your progress stays in this browser only.",
+  "footerDefault": "Built from your course files. Your progress stays in this browser only.",
+  "subtitle": "Chapters: {chapters} · Practice questions: {questions} · Flashcards: {cards}",
+  "subtitleExam": " · Exam: {n} questions"
+};
+function tr(k, v){
+  var s = (D.ui && D.ui[k] != null) ? D.ui[k] : (STR[k] != null ? STR[k] : k);
+  if (v) for (var n in v) s = s.split('{' + n + '}').join(String(v[n]));
+  return s;
+}
+
+var INTERVALS = [0, 1, 3, 7, 14];      // days until a card in box 1..5 is due again
+
+/* ---------- storage ---------- */
+function blank(){ return {cards:{}, quiz:{}, misses:{}, exams:[]}; }
+function load(){
+  try { var o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o) { var b = blank(); for (var k in b) if (!(k in o)) o[k] = b[k]; return o; } } catch(e) {}
+  return blank();
+}
+var S = load();
+var memoryOnly = false;
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) { memoryOnly = true; } }
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function md(s){
+  var t = esc(s);
+  t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+  t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:!?]|$)/g, '$1<em>$2</em>');
+  return t.replace(/\n/g, '<br>');
+}
+function h(tag, attrs, html){
+  var e = document.createElement(tag);
+  if (attrs) for (var k in attrs) {
+    if (attrs[k] == null) continue;
+    if (k === 'class') e.className = attrs[k];
+    else if (k.slice(0,2) === 'on') e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  if (html != null) e.innerHTML = html;
+  return e;
+}
+function shuffle(a){ a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function say(msg){ document.getElementById('live').textContent = msg; }
+function pct(a, b){ return b ? Math.round(100 * a / b) : 0; }
+function fmtTime(sec){ sec = Math.max(0, Math.round(sec)); var m = Math.floor(sec / 60), s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+function today(){ return Date.now(); }
+function dayStr(ts){ return new Date(ts).toISOString().slice(0, 10); }
+var LETTERS = ['A','B','C','D'];
+
+/* ---------- data access ---------- */
+function allQuestions(){
+  var out = [];
+  D.chapters.forEach(function(c){ c.questions.forEach(function(q){ out.push(q); }); });
+  return out;
+}
+function byId(id){
+  var all = allQuestions().concat(D.final ? D.final.questions : [], D.exam ? D.exam.questions : []);
+  for (var i = 0; i < all.length; i++) if (all[i].id === id) return all[i];
+  return null;
+}
+function chapterTitle(n){ for (var i = 0; i < D.chapters.length; i++) if (D.chapters[i].n === n) return tr('chTitle', {n: n, title: D.chapters[i].title}); return tr('chShort', {n: n}); }
+function allCards(){
+  var out = [];
+  D.chapters.forEach(function(c){ c.cards.forEach(function(cd, i){ out.push({id: 'c' + c.n + ':' + i, ch: c.n, q: cd.q, a: cd.a}); }); });
+  return out;
+}
+
+/* ---------- shell ---------- */
+var tab = 'quiz';
+var TABS = [['quiz','tabQuiz'],['cards','tabCards'],['exam','tabExam'],['progress','tabProgress']];
+var state = {quiz: null, cards: null, exam: null};
+function drawTabs(){
+  var nav = document.getElementById('tabs'); nav.innerHTML = '';
+  TABS.forEach(function(t){
+    if (t[0] === 'exam' && !D.exam) return;
+    var b = h('button', {role:'tab', 'aria-selected': String(tab === t[0]), onclick: function(){ tab = t[0]; render(); }}, tr(t[1]));
+    nav.appendChild(b);
+  });
+}
+function render(){
+  drawTabs();
+  var app = document.getElementById('app'); app.innerHTML = '';
+  if (tab === 'quiz') viewQuiz(app);
+  else if (tab === 'cards') viewCards(app);
+  else if (tab === 'exam') viewExam(app);
+  else viewProgress(app);
+}
+
+/* ---------- quiz ---------- */
+function quizSets(){
+  var sets = [{id:'all', label: tr('setAll', {n: allQuestions().length}), qs: allQuestions(), mix: true}];
+  D.chapters.forEach(function(c){ sets.push({id:'c' + c.n, label: tr('setCh', {n: c.n, title: c.title, k: c.questions.length}), qs: c.questions, mix: false}); });
+  if (D.final) sets.push({id:'final', label: tr('setFinal', {n: D.final.questions.length}), qs: D.final.questions, mix: true});
+  var missIds = Object.keys(S.misses);
+  var missQs = missIds.map(byId).filter(Boolean);
+  if (missQs.length) sets.push({id:'misses', label: tr('setMisses', {n: missQs.length}), qs: missQs, mix: true});
+  return sets;
+}
+function viewQuiz(app){
+  if (state.quiz && state.quiz.done) return quizSummary(app);
+  if (state.quiz) return quizQuestion(app);
+  var sets = quizSets();
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('quizPick'))));
+  var sel = h('select', {id:'qset', 'aria-label': tr('quizSetLabel')});
+  sets.forEach(function(s){ sel.appendChild(h('option', {value:s.id}, esc(s.label))); });
+  card.appendChild(sel);
+  var opts = h('div', {class:'row', style:'margin:12px 0'});
+  opts.appendChild(h('label', null, '<input type="checkbox" id="qshuf" checked> ' + esc(tr('shufOpts'))));
+  opts.appendChild(h('label', null, '<input type="checkbox" id="qmix"> ' + esc(tr('shufQs'))));
+  card.appendChild(opts);
+  card.appendChild(h('p', {class:'muted small'}, tr('quizHelp')));
+  card.appendChild(h('button', {class:'btn primary', id:'qstart', onclick: function(){
+    var set = sets.filter(function(s){ return s.id === sel.value; })[0];
+    var qs = set.qs.slice();
+    if (document.getElementById('qmix').checked || set.mix) qs = shuffle(qs);
+    state.quiz = {set:set, list:qs, i:0, shuffleOpts:document.getElementById('qshuf').checked, score:0, hinted:0, wrong:[], answered:false, hintShown:false, order:null};
+    render();
+  }}, tr('start')));
+  app.appendChild(card);
+}
+function orderFor(q, shuffleOpts){
+  var base = LETTERS.filter(function(L){ return q.opts[L] != null; });
+  return (shuffleOpts && !q.fixed) ? shuffle(base) : base;
+}
+function quizQuestion(app){
+  var Z = state.quiz, q = Z.list[Z.i];
+  if (!Z.order) Z.order = orderFor(q, Z.shuffleOpts);
+  var card = h('div', {class:'card'});
+  var top = h('div', {class:'row'});
+  top.appendChild(h('span', {class:'muted small grow'}, esc(tr('qOf', {i: Z.i + 1, n: Z.list.length})) + (q.ch ? ' · ' + esc(chapterTitle(q.ch)) : '') + ' · ' + esc(q.label || '')));
+  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.quiz = null; render(); }}, tr('quit')));
+  card.appendChild(top);
+  card.appendChild(h('div', {class:'bar', style:'margin:8px 0 14px'}, '<i style="width:' + pct(Z.i, Z.list.length) + '%"></i>'));
+  card.appendChild(h('p', {class:'stem'}, md(q.stem)));
+  var box = h('div', {class:'opts', role:'group', 'aria-label': tr('answerOptions')});
+  Z.order.forEach(function(orig, idx){
+    var b = h('button', {class:'opt', 'data-orig':orig, 'data-idx':idx, disabled: Z.answered ? 'disabled' : null, onclick: function(){ answerQuiz(idx); }},
+      '<span class="L">' + LETTERS[idx] + '</span><span>' + md(q.opts[orig]) + '</span>');
+    if (!Z.answered) b.removeAttribute('disabled');
+    if (Z.answered) {
+      b.disabled = true;
+      if (orig === q.key) b.classList.add('ok');
+      else if (idx === Z.chosen) b.classList.add('bad');
+    }
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+  if (!Z.answered) {
+    var r = h('div', {class:'row', style:'margin-top:12px'});
+    if (q.hint) r.appendChild(h('button', {class:'btn small', id:'hintbtn', onclick: function(){ Z.hintShown = true; render(); }}, Z.hintShown ? tr('hintShown') : tr('hintShow')));
+    card.appendChild(r);
+    if (Z.hintShown && q.hint) card.appendChild(h('div', {class:'panel hint'}, '<strong>' + esc(tr('hintWord')) + '</strong> ' + md(q.hint)));
+  } else {
+    var right = Z.order[Z.chosen] === q.key;
+    var p = h('div', {class:'panel ' + (right ? 'ok' : 'bad'), id:'feedback'});
+    p.appendChild(h('h3', null, right ? tr('correct') : tr('notQuite')));
+    var correctIdx = Z.order.indexOf(q.key);
+    p.appendChild(h('div', null, '<strong>' + LETTERS[correctIdx] + ':</strong> ' + md(q.explanation || q.opts[q.key])));
+    var ul = h('ul', {class:'why'});
+    Z.order.forEach(function(orig, idx){
+      if (orig === q.key) return;
+      var w = q.why && q.why[orig];
+      if (!w) return;
+      ul.appendChild(h('li', null, '<strong>' + LETTERS[idx] + (idx === Z.chosen ? ' ' + esc(tr('yourPick')) : '') + ':</strong> ' + md(w)));
+    });
+    if (ul.children.length) p.appendChild(ul);
+    if (q.source) p.appendChild(h('div', {class:'small muted', style:'margin-top:8px'}, esc(tr('source', {s: q.source}))));
+    card.appendChild(p);
+    card.appendChild(h('div', {class:'row', style:'margin-top:12px'},
+      '<button class="btn primary" id="nextbtn">' + (Z.i + 1 < Z.list.length ? esc(tr('nextQ')) : esc(tr('seeResults'))) + '</button>'));
+    card.querySelector('#nextbtn').addEventListener('click', nextQuiz);
+  }
+  app.appendChild(card);
+  if (Z.answered) { var nb = document.getElementById('nextbtn'); if (nb) nb.focus({preventScroll: true}); }
+}
+function answerQuiz(idx){
+  var Z = state.quiz; if (!Z || Z.answered) return;
+  var q = Z.list[Z.i];
+  Z.chosen = idx; Z.answered = true;
+  var right = Z.order[idx] === q.key;
+  if (right) Z.score++; else Z.wrong.push(q);
+  if (Z.hintShown) Z.hinted++;
+  if (right) { if (S.misses[q.id]) delete S.misses[q.id]; }
+  else { S.misses[q.id] = (S.misses[q.id] || 0) + 1; }
+  save(); say(right ? tr('correct') : tr('notQuite'));
+  render();
+}
+function nextQuiz(){
+  var Z = state.quiz;
+  if (Z.i + 1 < Z.list.length) { Z.i++; Z.answered = false; Z.hintShown = false; Z.order = null; Z.chosen = null; }
+  else {
+    Z.done = true;
+    var rec = S.quiz[Z.set.id] || {attempts: 0, best: 0};
+    rec.attempts++; rec.last = pct(Z.score, Z.list.length); rec.best = Math.max(rec.best, rec.last); rec.total = Z.list.length; rec.date = dayStr(today());
+    S.quiz[Z.set.id] = rec; save();
+  }
+  render();
+}
+function quizSummary(app){
+  var Z = state.quiz, n = Z.list.length;
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, tr('results', {label: esc(Z.set.label)})));
+  card.appendChild(h('p', {class:'big'}, Z.score + ' / ' + n + ' (' + pct(Z.score, n) + '%)'));
+  card.appendChild(h('p', {class:'muted'}, Z.hinted ? tr('hintedN', {n: Z.hinted}) : tr('noHints')));
+  if (Z.wrong.length) {
+    card.appendChild(h('h3', null, esc(tr('toRevisit'))));
+    var ul = h('ul', {class:'why'});
+    Z.wrong.forEach(function(q){ ul.appendChild(h('li', null, '<strong>' + md(q.stem.length > 140 ? q.stem.slice(0, 140) + '…' : q.stem) + '</strong><br><span class="muted">' + esc(tr('answerLbl')) + ' ' + md(q.opts[q.key]) + '</span>')); });
+    card.appendChild(ul);
+  } else card.appendChild(h('p', {class:'strong'}, tr('cleanSweep')));
+  var r = h('div', {class:'row', style:'margin-top:12px'});
+  if (Z.wrong.length) r.appendChild(h('button', {class:'btn primary', onclick: function(){
+    var qs = shuffle(Z.wrong);
+    state.quiz = {set:{id:'misses-retake', label: tr('retakeLabel'), qs:qs, mix:true}, list:qs, i:0, shuffleOpts:true, score:0, hinted:0, wrong:[], answered:false, hintShown:false, order:null};
+    render();
+  }}, tr('retakeBtn')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.quiz = null; render(); }}, tr('backSets')));
+  card.appendChild(r);
+  app.appendChild(card);
+}
+
+/* ---------- flashcards ---------- */
+function cardRec(id){ return S.cards[id] || {box: 1, due: 0, seen: 0}; }
+function isDue(c){ return cardRec(c.id).due <= today(); }
+function viewCards(app){
+  if (state.cards && state.cards.done) return cardsSummary(app);
+  if (state.cards) return cardsFace(app);
+  var cards = allCards();
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('tabCards'))));
+  var sel = h('select', {id:'cset', 'aria-label': tr('deckLabel')});
+  sel.appendChild(h('option', {value:'all'}, esc(tr('deckAll', {n: cards.length}))));
+  D.chapters.forEach(function(c){ if (c.cards.length) sel.appendChild(h('option', {value:String(c.n)}, esc(tr('deckCh', {n: c.n, title: c.title, k: c.cards.length})))); });
+  card.appendChild(sel);
+  var info = h('p', {class:'muted small', id:'cinfo', style:'margin:10px 0'});
+  card.appendChild(info);
+  function pick(){
+    var v = sel.value; return cards.filter(function(c){ return v === 'all' || String(c.ch) === v; });
+  }
+  function upd(){
+    var set = pick(), due = set.filter(isDue).length, fresh = set.filter(function(c){ return !S.cards[c.id]; }).length;
+    info.textContent = tr('cardInfo', {due: due, fresh: fresh});
+    start.disabled = false; start.textContent = due ? tr('studyDue', {n: Math.min(due, 20)}) : tr('studyAnyway');
+  }
+  var start = h('button', {class:'btn primary', id:'cstart', onclick: function(){
+    var set = pick(), due = shuffle(set.filter(isDue));
+    var list = due.length ? due.slice(0, 20) : shuffle(set).slice(0, 10);
+    state.cards = {list:list, i:0, shown:false, got:0, missed:[]}; render();
+  }}, tr('start'));
+  card.appendChild(start);
+  sel.addEventListener('change', upd); upd();
+  app.appendChild(card);
+}
+function cardsFace(app){
+  var Z = state.cards, c = Z.list[Z.i];
+  var card = h('div', {class:'card'});
+  var top = h('div', {class:'row'});
+  top.appendChild(h('span', {class:'muted small grow'}, esc(tr('cardOf', {i: Z.i + 1, n: Z.list.length, ch: chapterTitle(c.ch), b: cardRec(c.id).box}))));
+  top.appendChild(h('button', {class:'btn small', onclick: function(){ state.cards = null; render(); }}, tr('quit')));
+  card.appendChild(top);
+  card.appendChild(h('div', {class:'bar', style:'margin:8px 0 14px'}, '<i style="width:' + pct(Z.i, Z.list.length) + '%"></i>'));
+  card.appendChild(h('div', {class:'flash card'}, md(Z.shown ? c.a : c.q)));
+  var r = h('div', {class:'row'});
+  if (!Z.shown) r.appendChild(h('button', {class:'btn primary', id:'revealbtn', onclick: function(){ Z.shown = true; render(); }}, tr('showAnswer')));
+  else {
+    r.appendChild(h('button', {class:'btn', id:'missbtn', onclick: function(){ gradeCard(false); }}, tr('missedIt')));
+    r.appendChild(h('button', {class:'btn primary', id:'gotbtn', onclick: function(){ gradeCard(true); }}, tr('knewIt')));
+  }
+  card.appendChild(r);
+  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, tr('cardKeys')));
+  app.appendChild(card);
+}
+function gradeCard(got){
+  var Z = state.cards, c = Z.list[Z.i], rec = cardRec(c.id);
+  rec.seen = (rec.seen || 0) + 1;
+  if (got) { rec.box = Math.min(5, rec.box + 1); Z.got++; }
+  else { rec.box = 1; Z.missed.push(c); }
+  rec.due = today() + INTERVALS[rec.box - 1] * DAY;
+  if (!got) rec.due = today();
+  S.cards[c.id] = rec; save();
+  if (Z.i + 1 < Z.list.length) { Z.i++; Z.shown = false; } else Z.done = true;
+  render();
+}
+function cardsSummary(app){
+  var Z = state.cards, card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('sessionDone'))));
+  card.appendChild(h('p', {class:'big'}, tr('knownN', {got: Z.got, n: Z.list.length})));
+  if (Z.missed.length) {
+    card.appendChild(h('h3', null, esc(tr('missedToday'))));
+    var ul = h('ul', {class:'why'});
+    Z.missed.forEach(function(c){ ul.appendChild(h('li', null, '<strong>' + md(c.q) + '</strong><br><span class="muted">' + md(c.a) + '</span>')); });
+    card.appendChild(ul);
+  }
+  var r = h('div', {class:'row', style:'margin-top:12px'});
+  if (Z.missed.length) r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.cards = {list:shuffle(Z.missed), i:0, shown:false, got:0, missed:[]}; render(); }}, tr('againMisses')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.cards = null; render(); }}, tr('backDecks')));
+  card.appendChild(r); app.appendChild(card);
+}
+
+/* ---------- exam ---------- */
+var timer = null;
+function viewExam(app){
+  var E = D.exam;
+  if (state.exam && state.exam.done) return examResults(app);
+  if (state.exam) return examQuestion(app);
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('tabExam'))));
+  card.appendChild(h('p', null, esc(tr('examIntro', {n: E.questions.length, minutes: E.minutes}))));
+  var last = S.exams.length ? S.exams[S.exams.length - 1] : null;
+  if (last) card.appendChild(h('p', {class:'muted small'}, esc(tr('lastAttempt', {score: last.score, total: last.total, pct: last.pct, date: last.date}))));
+  card.appendChild(h('button', {class:'btn primary', id:'examstart', onclick: function(){
+    state.exam = {i:0, answers:{}, started:today(), minutes:E.minutes, order: shuffle(E.questions.map(function(q){ return q.id; })), opt:{}};
+    E.questions.forEach(function(q){ state.exam.opt[q.id] = orderFor(q, true); });
+    startTimer(); render();
+  }}, tr('startExam')));
+  app.appendChild(card);
+}
+function startTimer(){
+  if (timer) clearInterval(timer);
+  timer = setInterval(function(){
+    var X = state.exam; if (!X || X.done) { clearInterval(timer); return; }
+    var el = document.getElementById('timer'); if (el) el.textContent = timeLeft(X);
+  }, 1000);
+}
+function timeLeft(X){ var left = X.minutes * 60 - (today() - X.started) / 1000; return left < 0 ? tr('overBy', {t: fmtTime(Math.abs(left))}) : fmtTime(Math.abs(left)); }
+function examById(id){ for (var i = 0; i < D.exam.questions.length; i++) if (D.exam.questions[i].id === id) return D.exam.questions[i]; return null; }
+function examQuestion(app){
+  var X = state.exam, id = X.order[X.i], q = examById(id), order = X.opt[id];
+  var card = h('div', {class:'card'});
+  var top = h('div', {class:'row'});
+  top.appendChild(h('span', {class:'grow muted small'}, esc(tr('qOf', {i: X.i + 1, n: X.order.length}))));
+  top.appendChild(h('span', {class:'tag', id:'timer'}, timeLeft(X)));
+  card.appendChild(top);
+  var grid = h('div', {class:'grid', style:'margin:10px 0 14px'});
+  X.order.forEach(function(qid, k){
+    var b = h('button', {class:'btn' + (X.answers[qid] ? ' done' : '') + (k === X.i ? ' cur' : ''), 'aria-label': tr('goToQ', {n: k + 1}), onclick: function(){ X.i = k; render(); }}, String(k + 1));
+    grid.appendChild(b);
+  });
+  card.appendChild(grid);
+  card.appendChild(h('p', {class:'stem'}, md(q.stem)));
+  var box = h('div', {class:'opts', role:'group', 'aria-label': tr('answerOptions')});
+  order.forEach(function(orig, idx){
+    var b = h('button', {class:'opt' + (X.answers[id] === orig ? ' sel' : ''), 'data-orig':orig, onclick: function(){ X.answers[id] = orig; render(); }},
+      '<span class="L">' + LETTERS[idx] + '</span><span>' + md(q.opts[orig]) + '</span>');
+    box.appendChild(b);
+  });
+  card.appendChild(box);
+  var r = h('div', {class:'row', style:'margin-top:14px'});
+  r.appendChild(h('button', {class:'btn', disabled: X.i === 0 ? 'disabled' : null, onclick: function(){ X.i--; render(); }}, tr('prev')));
+  r.appendChild(h('button', {class:'btn', disabled: X.i + 1 >= X.order.length ? 'disabled' : null, onclick: function(){ X.i++; render(); }}, tr('next')));
+  r.appendChild(h('span', {class:'grow'}));
+  r.appendChild(h('button', {class:'btn primary', id:'examsubmit', onclick: submitExam}, tr('submitExam')));
+  card.appendChild(r);
+  Array.prototype.forEach.call(card.querySelectorAll('button'), function(b){ if (b.getAttribute('disabled') == null) b.removeAttribute('disabled'); });
+  app.appendChild(card);
+}
+function submitExam(){
+  var X = state.exam, unanswered = X.order.filter(function(id){ return !X.answers[id]; }).length;
+  if (unanswered && !window.confirm(tr('unanswered', {n: unanswered}))) return;
+  X.done = true; X.seconds = Math.round((today() - X.started) / 1000);
+  var byCh = {}, score = 0, wrong = [];
+  D.exam.questions.forEach(function(q){
+    var ok = X.answers[q.id] === q.key, c = q.ch || 0;
+    byCh[c] = byCh[c] || {right: 0, total: 0}; byCh[c].total++;
+    if (ok) { score++; byCh[c].right++; if (S.misses[q.id]) delete S.misses[q.id]; }
+    else { wrong.push(q); S.misses[q.id] = (S.misses[q.id] || 0) + 1; }
+  });
+  X.score = score; X.byCh = byCh; X.wrong = wrong;
+  S.exams.push({date: dayStr(today()), score: score, total: D.exam.questions.length, pct: pct(score, D.exam.questions.length), seconds: X.seconds, byChapter: byCh});
+  save(); clearInterval(timer); render();
+}
+function examResults(app){
+  var X = state.exam, n = D.exam.questions.length;
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('examResults'))));
+  card.appendChild(h('p', {class:'big'}, X.score + ' / ' + n + ' (' + pct(X.score, n) + '%)'));
+  card.appendChild(h('p', {class:'muted'}, tr('timeUsed', {used: fmtTime(X.seconds), minutes: X.minutes})));
+  var rows = Object.keys(X.byCh).map(Number).sort(function(a, b){ return a - b; });
+  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th><th>' + esc(tr('thCorrect')) + '</th><th></th></tr>';
+  rows.forEach(function(c){
+    var v = X.byCh[c], p = pct(v.right, v.total);
+    t += '<tr><td>' + esc(chapterTitle(c)) + '</td><td>' + v.right + ' / ' + v.total + '</td><td class="' + (p < 70 ? 'weak' : 'strong') + '">' + esc(p < 70 ? tr('revisit') : tr('solid')) + '</td></tr>';
+  });
+  card.appendChild(h('div', null, t + '</table>'));
+  if (X.wrong.length) {
+    card.appendChild(h('h3', null, esc(tr('reviewMisses'))));
+    X.wrong.forEach(function(q){
+      var mine = X.answers[q.id];
+      var d = h('details', {style:'margin:8px 0'});
+      d.appendChild(h('summary', null, md(q.stem.length > 130 ? q.stem.slice(0, 130) + '…' : q.stem)));
+      var inner = '<p><strong>' + esc(tr('answerLbl')) + '</strong> ' + md(q.opts[q.key]) + '</p>';
+      if (mine) inner += '<p><strong>' + esc(tr('youChose')) + '</strong> ' + md(q.opts[mine]) + '</p>';
+      if (q.explanation) inner += '<p>' + md(q.explanation) + '</p>';
+      if (mine && q.why && q.why[mine]) inner += '<p class="muted">' + md(q.why[mine]) + '</p>';
+      if (q.source) inner += '<p class="small muted">' + esc(tr('source', {s: q.source})) + '</p>';
+      d.appendChild(h('div', null, inner)); card.appendChild(d);
+    });
+  } else card.appendChild(h('p', {class:'strong'}, tr('cleanSweep')));
+  var r = h('div', {class:'row', style:'margin-top:12px'});
+  r.appendChild(h('button', {class:'btn primary', onclick: function(){ state.exam = null; tab = 'quiz'; state.quiz = null; render(); }}, tr('practiseMisses')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ state.exam = null; render(); }}, tr('back')));
+  card.appendChild(r); app.appendChild(card);
+}
+
+/* ---------- progress ---------- */
+function viewProgress(app){
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('yourProgress'))));
+  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th><th>' + esc(tr('thQuizLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
+  D.chapters.forEach(function(c){
+    var r = S.quiz['c' + c.n];
+    t += '<tr><td>' + esc(tr('chTitle', {n: c.n, title: c.title})) + '</td><td>' + (r ? r.last + '%' : '-') + '</td><td>' + (r ? r.best + '%' : '-') + '</td><td>' + (r ? r.attempts : 0) + '</td></tr>';
+  });
+  card.appendChild(h('div', null, t + '</table>'));
+  var others = [['all', tr('setAllShort')], ['final', tr('setFinalShort')], ['misses', tr('setMissesShort')], ['misses-retake', tr('setRetakeShort')]].filter(function(x){ return S.quiz[x[0]]; });
+  if (others.length) {
+    var o = '<h3>' + esc(tr('otherSets')) + '</h3><table><tr><th>' + esc(tr('thSet')) + '</th><th>' + esc(tr('thLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
+    others.forEach(function(x){ var r = S.quiz[x[0]]; o += '<tr><td>' + esc(x[1]) + '</td><td>' + r.last + '%</td><td>' + r.best + '%</td><td>' + r.attempts + '</td></tr>'; });
+    card.appendChild(h('div', null, o + '</table>'));
+  }
+  var cards = allCards(), boxes = [0,0,0,0,0], seen = 0, due = 0;
+  cards.forEach(function(c){ var r = S.cards[c.id]; if (r) { boxes[r.box - 1]++; seen++; } if (isDue(c)) due++; });
+  card.appendChild(h('h3', null, esc(tr('tabCards'))));
+  card.appendChild(h('p', null, esc(tr('cardsStarted', {seen: seen, total: cards.length, due: due, boxes: boxes.join(' / ')}))));
+  card.appendChild(h('h3', null, esc(tr('stillMiss'))));
+  var ids = Object.keys(S.misses);
+  card.appendChild(h('p', null, esc(ids.length ? tr('missCount', {n: ids.length}) : tr('noMiss'))));
+  if (S.exams.length) {
+    card.appendChild(h('h3', null, esc(tr('examAttempts'))));
+    var e = '<table><tr><th>' + esc(tr('thDate')) + '</th><th>' + esc(tr('thScore')) + '</th><th>' + esc(tr('thTime')) + '</th></tr>';
+    S.exams.forEach(function(x){ e += '<tr><td>' + esc(x.date) + '</td><td>' + x.score + ' / ' + x.total + ' (' + x.pct + '%)</td><td>' + fmtTime(x.seconds) + '</td></tr>'; });
+    card.appendChild(h('div', null, e + '</table>'));
+  }
+  var r = h('div', {class:'row', style:'margin-top:14px'});
+  r.appendChild(h('button', {class:'btn primary', id:'exportbtn', onclick: exportResults}, tr('downloadBtn')));
+  r.appendChild(h('button', {class:'btn', onclick: function(){ if (window.confirm(tr('resetConfirm'))) { S = blank(); save(); state = {quiz:null, cards:null, exam:null}; render(); } }}, tr('resetBtn')));
+  card.appendChild(r);
+  card.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, esc(tr('savedOnly') + (memoryOnly ? tr('blocked') : '') + tr('sendTutor'))));
+  app.appendChild(card);
+}
+function exportResults(){
+  var out = {course: D.title, exportedAt: new Date().toISOString(), quiz: S.quiz, exams: S.exams,
+    misses: Object.keys(S.misses).map(function(id){ var q = byId(id); return {id: id, count: S.misses[id], chapter: q && q.ch || null, question: q ? q.stem.slice(0, 160) : ''}; }),
+    flashcards: Object.keys(S.cards).map(function(id){ return {id: id, box: S.cards[id].box, due: dayStr(S.cards[id].due), seen: S.cards[id].seen}; })};
+  var blob = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = D.id + '-results.json';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* ---------- keyboard ---------- */
+document.addEventListener('keydown', function(ev){
+  if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  var tag = (ev.target && ev.target.tagName) || '';
+  if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
+  var k = ev.key, KL = k.length === 1 ? k.toLowerCase() : k;
+  if (tab === 'quiz' && state.quiz && !state.quiz.done) {
+    var Z = state.quiz;
+    var idx = 'abcd'.indexOf(KL); if (idx < 0 && '1234'.indexOf(KL) >= 0) idx = '1234'.indexOf(KL);
+    if (!Z.answered && idx >= 0 && idx < Z.order.length) { ev.preventDefault(); answerQuiz(idx); }
+    else if (Z.answered && (k === 'Enter' || k === ' ' || k === 'ArrowRight')) { ev.preventDefault(); nextQuiz(); }
+  } else if (tab === 'cards' && state.cards && !state.cards.done) {
+    var C = state.cards;
+    if (!C.shown && (k === ' ' || k === 'Enter')) { ev.preventDefault(); C.shown = true; render(); }
+    else if (C.shown && (KL === '1' || k === 'ArrowLeft')) { ev.preventDefault(); gradeCard(false); }
+    else if (C.shown && (KL === '2' || k === 'ArrowRight')) { ev.preventDefault(); gradeCard(true); }
+  } else if (tab === 'exam' && state.exam && !state.exam.done) {
+    var X = state.exam, id = X.order[X.i], i2 = 'abcd'.indexOf(KL);
+    if (i2 >= 0 && i2 < X.opt[id].length) { ev.preventDefault(); X.answers[id] = X.opt[id][i2]; render(); }
+    else if (k === 'ArrowRight' && X.i + 1 < X.order.length) { X.i++; render(); }
+    else if (k === 'ArrowLeft' && X.i > 0) { X.i--; render(); }
+  }
+});
+
+/* ---------- start ---------- */
+document.getElementById('title').textContent = D.title;
+document.documentElement.lang = D.lang || 'en';
+document.documentElement.dir = D.dir || 'ltr';
+document.getElementById('tabs').setAttribute('aria-label', tr('studyModes'));
+var C = D.counts || {chapters: D.chapters.length, questions: allQuestions().length, cards: allCards().length, exam: D.exam ? D.exam.questions.length : 0};
+document.getElementById('subtitle').textContent = tr('subtitle', C) + (C.exam ? tr('subtitleExam', {n: C.exam}) : '');
+document.getElementById('foot').innerHTML = md(D.audience ? tr('footerAudience', {a: D.audience}) : tr('footerDefault'));
+window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, setTab: function(t){ tab = t; render(); }};
+render();
+})();
+</script>
+
+</body>
+</html>

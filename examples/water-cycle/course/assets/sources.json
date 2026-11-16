@@ -1,0 +1,11 @@
+{
+  "water-cycle.pdf": {
+    "sha256": "2b9f11b4c014b65ee4a7979d0fd6ab39ad3f6939e3d2da19383b09eb20c49d59",
+    "units": 10,
+    "unit_word": "slide",
+    "slides": 10,
+    "cache": "water-cycle.slides.txt",
+    "method": "pypdf",
+    "needs_visual_read": []
+  }
+}

@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# quality-check - compile every script, run each with --help, and run the gates on both sample courses
-# (a flat course with no units, a course grouped into modules, and a Spanish course with its own labels).
+# quality-check - compile every script, run each with --help, and run the gates on every example and fixture course
+# (a flat course, a course grouped by module, one grouped by week with lecture folders, one nested term/week/session,
+# and a Spanish course grouped by unidad with its own labels).
 # Read-only except for a temporary copy of the sample course. Works with macOS bash 3.2 and Linux.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SK="$ROOT/skills/study-guide-tutor/scripts"
+SK="$ROOT/skills/study-guide-tutor-skill/scripts"
 fail=0
 step() { echo "== $*"; }
 
@@ -29,18 +30,36 @@ if python3 -I "$ROOT/tests/test-labels.py" >/tmp/sgt-lab.out 2>&1; then echo "ok
 rm -f /tmp/sgt-lab.out
 if python3 -I "$ROOT/scripts/gen-course-template.py" --check; then :; else fail=1; fi
 
-step "layout discovery: flat course, grouped course, and a chapter folder in another language"
-UN="$(python3 -I -c "
-import sys; sys.path.insert(0, '$SK'); import _layout, os
-F = '$ROOT/tests/fixtures/'
-f = _layout.find_units(F + 'sample-course'); g = _layout.find_units(F + 'sample-grouped-course'); s = _layout.find_units(F + 'sample-spanish-course')
-names = lambda us: ' '.join(os.path.basename(c) for u in us for c in _layout.chapters_of(u))
-print(len(f), len(g), len(s), '|', names(g), '|', names(s))")"
-if [[ "$UN" == "1 2 1 | chapter-01-the-water-cycle lecture-1-the-water-cycle | capitulo-01-el-ciclo-del-agua" ]]; then echo "ok   flat=1 unit, grouped=2 units; chapter folders found by content under any name (chapter-01-..., lecture-1-..., capitulo-01-...)"; else echo "FAIL unit/chapter discovery: $UN"; fail=1; fi
+step "player data: independent of build order, example counts"
+if python3 -I "$ROOT/tests/test-player-data.py" >/tmp/sgt-pd.out 2>&1; then echo "ok   $(grep -c '^PASS' /tmp/sgt-pd.out) player data checks passed"; else cat /tmp/sgt-pd.out; fail=1; fi
+rm -f /tmp/sgt-pd.out
 
-for FIX in sample-course sample-grouped-course sample-spanish-course; do
-  step "gates pass on tests/fixtures/$FIX"
-  SRC="$ROOT/tests/fixtures/$FIX"
+step "layout discovery: five different folder structures, found by content"
+python3 -I - "$ROOT" "$SK" <<'PY' || fail=1
+import os, sys
+root, sk = sys.argv[1], sys.argv[2]
+sys.path.insert(0, sk)
+import _layout
+want = {  # course -> {unit (relative): [chapter folders]}
+    'examples/water-cycle/course': {'.': ['chapter-01-the-four-stages', 'chapter-02-where-the-water-goes']},
+    'tests/fixtures/by-module': {'module-1': ['chapter-01-the-four-stages'], 'module-2': ['chapter-01-where-the-water-goes']},
+    'tests/fixtures/by-week-and-lecture': {'week-01': ['lecture-01-the-four-stages'], 'week-02': ['lecture-01-where-the-water-goes']},
+    'tests/fixtures/nested-terms': {'term-1/week-01': ['session-1-the-four-stages'], 'term-1/week-02': ['session-1-where-the-water-goes']},
+    'tests/fixtures/spanish-course': {'unidad-1': ['capitulo-01-el-ciclo-del-agua']},
+}
+bad = 0
+for course, expect in want.items():
+    base = os.path.join(root, course)
+    got = {os.path.relpath(u, base): [os.path.basename(c) for c in _layout.chapters_of(u)] for u in _layout.find_units(base)}
+    ok = got == expect
+    print(('ok   ' if ok else 'FAIL ') + course + ': ' + ', '.join(f'{k} -> {len(v)} chapter(s)' for k, v in got.items()))
+    bad += not ok
+sys.exit(1 if bad else 0)
+PY
+
+for FIX in examples/water-cycle/course tests/fixtures/by-module tests/fixtures/by-week-and-lecture tests/fixtures/nested-terms tests/fixtures/spanish-course; do
+  step "gates pass on $FIX"
+  SRC="$ROOT/$FIX"
   T="$(mktemp -d)"; cp -R "$SRC" "$T/course"; C="$T/course"
   for g in "add_toc.py $C --check" "audit_quiz.py $C" "check_bundle.py $C" "check_dump.py $C" "check_tricky.py $C" "check_findable.py $C"; do
     # shellcheck disable=SC2086

@@ -13,7 +13,7 @@ model: inherit
 
 # Teacher-writer agent (prompt template)
 
-Fill the placeholders and pass this to the `teacher-writer` agent (or a general-purpose agent), one chapter per agent. Placeholders: {SKILL_DIR} (the folder that holds the skill's SKILL.md, `${CLAUDE_PLUGIN_ROOT}/skills/study-guide-tutor`) {CHAPTER_DIR} {PROFILE} {SOURCE_TEXT} {SLIDE_RANGE} {EXEMPLAR}.
+Fill the placeholders and pass this to the `teacher-writer` agent (or a general-purpose agent), one chapter per agent. Placeholders: {SKILL_DIR} (the folder that holds the skill's SKILL.md, `${CLAUDE_PLUGIN_ROOT}/skills/study-guide-tutor-skill`) {CHAPTER_DIR} {PROFILE} {SOURCE_TEXT} {SLIDE_RANGE} {EXEMPLAR}.
 
 ---
 

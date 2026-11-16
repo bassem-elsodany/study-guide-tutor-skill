@@ -9,7 +9,7 @@ refused with a helpful message. Standard library only. Exit code 1 on any failur
 import base64, json, os, subprocess, sys, tempfile, zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-TOOL = os.path.join(ROOT, 'skills', 'study-guide-tutor', 'scripts', 'source_text.py')
+TOOL = os.path.join(ROOT, 'skills', 'study-guide-tutor-skill', 'scripts', 'source_text.py')
 PNG = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
 fails = []
 

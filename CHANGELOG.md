@@ -10,7 +10,10 @@ All notable changes to study-guide-tutor. Format: [Keep a Changelog](https://kee
 - **Source readers.** `source_text.py` now reads pdf, pptx, docx, md, txt, html, epub, srt and vtt files, an image, or a folder of images, one numbered unit per slide, page, section or time segment, and records the unit word (slide, page, section, segment). Cache manifests written by earlier versions still work.
 - **Chapters are found by content, not by folder name** (`chapter-03-x`, `lecture-3-x`, `capitulo-01-x` all work), and `build_chapter.py` takes `--source`, `--unit-word` and `--block-word`.
 - **Language.** An optional `course.json` carries `language`, `labels` (the structural words the gates look for), `footer_checks` and `ui` (the player's text). The tricky-parts, dump, findable, quiz-audit and bundle gates, the exam builder, the contents builder, the audience note and the player all read it; Arabic, Hebrew, Persian and Urdu flip the player to right-to-left. English is the default, so existing courses are unchanged. `templates/course.json` lists every key.
-- The sample course is now three fixtures (flat, module-grouped, Spanish), each with its gates run in CI, plus tests for every source reader, for the label mechanism and for right-to-left direction.
+- **One name everywhere.** The skill folder and skill name are now `study-guide-tutor-skill`, the same as the repository, the plugin and the marketplace (it was `study-guide-tutor`).
+- **A worked example.** `examples/water-cycle/` holds a 10-slide PDF and the full course made from it (two chapters, an exam, a ready-to-open practice page).
+- **A plain-language README.** The technical material moved to `docs/how-it-works.md` and `docs/installation.md`.
+- The sample courses are now five differently structured courses (flat; by module; by week with lecture folders; nested term/week/session; Spanish by unidad), each with its gates run in CI, plus tests for every source reader, for the label mechanism and for right-to-left direction.
 
 ## [1.0.1] - 2026-11-16
 

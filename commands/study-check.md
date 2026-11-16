@@ -6,10 +6,10 @@ allowed-tools: Read, Grep, Glob, Bash(python3:*)
 
 # /study-check
 
-Run the gates of the `study-guide-tutor` skill on the course folder `${ARGUMENTS:-.}`, in this order, and report each result plainly (fix nothing unless asked):
+Run the gates of the `study-guide-tutor-skill` skill on the course folder `${ARGUMENTS:-.}`, in this order, and report each result plainly (fix nothing unless asked):
 
 ```bash
-S=${CLAUDE_PLUGIN_ROOT}/skills/study-guide-tutor/scripts
+S=${CLAUDE_PLUGIN_ROOT}/skills/study-guide-tutor-skill/scripts
 python3 $S/add_toc.py <root> --check
 python3 $S/audit_quiz.py <root>
 python3 $S/check_bundle.py <root>

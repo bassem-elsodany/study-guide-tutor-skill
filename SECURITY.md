@@ -1,6 +1,6 @@
 # Security policy
 
-`study-guide-tutor` is a set of Markdown guidance files, Python helper scripts and two agent prompts. It has no hooks and makes no network calls. The scripts read the folder you point them at and write only generated study files (and, for `source_text.py`, a text cache beside your source).
+`study-guide-tutor-skill` is a set of Markdown guidance files, Python helper scripts and two agent prompts. It has no hooks and makes no network calls. The scripts read the folder you point them at and write only generated study files (and, for `source_text.py`, a text cache beside your source).
 
 ## Reporting a vulnerability
 

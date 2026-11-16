@@ -25,10 +25,10 @@ jobs:
         run: |
           T=$(mktemp -d); mkdir -p "$T/proj"; cd "$T/proj"
           "$GITHUB_WORKSPACE/scripts/install-agents.sh" --agents-md >/dev/null
-          test -f .agents/skills/study-guide-tutor/SKILL.md && grep -q "study-guide-tutor:start" AGENTS.md
+          test -f .agents/skills/study-guide-tutor-skill/SKILL.md && grep -q "study-guide-tutor-skill:start" AGENTS.md
           "$GITHUB_WORKSPACE/scripts/install-agents.sh" --agents-md --uninstall >/dev/null
-          test -z "$(ls .agents/skills)" && ! grep -q "study-guide-tutor:start" AGENTS.md
+          test -z "$(ls .agents/skills)" && ! grep -q "study-guide-tutor-skill:start" AGENTS.md
           HOME="$T/home" "$GITHUB_WORKSPACE/scripts/install-agents.sh" --scope user --mode copy >/dev/null
-          test -f "$T/home/.agents/skills/study-guide-tutor/scripts/audit_quiz.py"
+          test -f "$T/home/.agents/skills/study-guide-tutor-skill/scripts/audit_quiz.py"
       - name: JSON manifests parse
-        run: python3 -c "import json;[json.load(open(f)) for f in ['.claude-plugin/plugin.json','.claude-plugin/marketplace.json','skills/study-guide-tutor/references/banner-texts.json']]"
+        run: python3 -c "import json;[json.load(open(f)) for f in ['.claude-plugin/plugin.json','.claude-plugin/marketplace.json','skills/study-guide-tutor-skill/references/banner-texts.json']]"

@@ -1,4 +1,4 @@
-# Using study-guide-tutor with other coding agents
+# Using study-guide-tutor-skill with other coding agents
 
 > What carries over: the **skill** (decision guide, references, scripts). What does not: Claude Code's **slash commands** and **agent definitions** (the two agent prompts are plain Markdown you can paste into any sub-agent). There are no hooks to lose.
 
@@ -17,7 +17,7 @@ Restart (or reload skills in) the agent. Remove everything the script created wi
 | Option | Meaning |
 |---|---|
 | `--scope project` (default) / `user` | `./.agents/skills` or `~/.agents/skills` |
-| `--mode link` (default) / `copy` | symlink the skill into the clone (keep the clone in place) / copy the skill folder, and the agent prompts and templates into `<dest>/../study-guide-tutor-bundle` |
+| `--mode link` (default) / `copy` | symlink the skill into the clone (keep the clone in place) / copy the skill folder, and the agent prompts and templates into `<dest>/../study-guide-tutor-skill-bundle` |
 | `--kiro` | also install into `.kiro/skills` (Kiro's location) |
 | `--agents-md [FILE]` | write (or refresh) a managed block telling the agent where the skill and the agent prompts are |
 | `--dry-run` / `--uninstall` | preview / remove only what this script created |
@@ -26,7 +26,7 @@ The script never overwrites a path it did not create. It was tested by the maint
 
 ## Why a script and not just a copy?
 
-The skill folder is self-contained: `SKILL.md`, `references/` and `scripts/` live inside `skills/study-guide-tutor/`. A plain copy of that folder works. The script adds the safe link/copy/uninstall handling, the managed `AGENTS.md` block, and copies the two agent prompts and the templates, which sit outside the skill folder.
+The skill folder is self-contained: `SKILL.md`, `references/` and `scripts/` live inside `skills/study-guide-tutor-skill/`. A plain copy of that folder works. The script adds the safe link/copy/uninstall handling, the managed `AGENTS.md` block, and copies the two agent prompts and the templates, which sit outside the skill folder.
 
 ## Per tool: where skills are discovered
 

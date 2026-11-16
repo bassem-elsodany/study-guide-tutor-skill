@@ -9,11 +9,11 @@ course passes with its course.json and FAILS the tricky-parts gate without it.
 import json, os, shutil, subprocess, sys, tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SK = os.path.join(ROOT, 'skills', 'study-guide-tutor', 'scripts')
+SK = os.path.join(ROOT, 'skills', 'study-guide-tutor-skill', 'scripts')
 sys.path.insert(0, SK)
 import _layout, make_player  # noqa: E402
 
-ES = os.path.join(ROOT, 'tests', 'fixtures', 'sample-spanish-course')
+ES = os.path.join(ROOT, 'tests', 'fixtures', 'spanish-course')
 fails = []
 
 
@@ -57,7 +57,7 @@ def main():
     check('the same course FAILS check_tricky without course.json (English markers expected)', code != 0 and 'callouts' in out, out[-200:])
     code, out = gate('audit_quiz.py', bare)
     check('and FAILS audit_quiz (Spanish difficulty words are not English ones)', code != 0 and 'difficulty label' in out, out[-300:])
-    data, problems = make_player.build(ES)
+    data, problems = make_player.build(os.path.join(ES, 'unidad-1'))
     check('player data carries language, text overrides and the audience statement', data['lang'] == 'es' and data['ui'].get('start') == 'Empezar' and data['audience'].startswith('una persona'))
     print('RESULT: OK' if not fails else f'RESULT: {len(fails)} failed: {fails}')
     sys.exit(1 if fails else 0)

@@ -1,6 +1,6 @@
 # Notices
 
-`study-guide-tutor` is released under the MIT licence (see `LICENSE`).
+`study-guide-tutor-skill` is released under the MIT licence (see `LICENSE`).
 
 ## Third-party content
 
@@ -8,7 +8,7 @@ None. The skill, references, scripts, agents, commands and the sample course und
 
 ## Methods the skill draws on
 
-The ideas below are well-known learning-science findings, cited as ideas and not as copied text: retrieval practice (active recall), spaced repetition, interleaving, and worked-example teaching. See `skills/study-guide-tutor/references/learning-science.md`.
+The ideas below are well-known learning-science findings, cited as ideas and not as copied text: retrieval practice (active recall), spaced repetition, interleaving, and worked-example teaching. See `skills/study-guide-tutor-skill/references/learning-science.md`.
 
 ## Optional tools the scripts can call (not bundled)
 
