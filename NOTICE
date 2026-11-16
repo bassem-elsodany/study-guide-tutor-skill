@@ -1,10 +1,20 @@
-# Notices
+study-guide-tutor-skill
+Copyright 2026 bassem-elsodany
+https://github.com/bassem-elsodany/study-guide-tutor-skill
 
-`study-guide-tutor-skill` is released under the MIT licence (see `LICENSE`).
+This product includes study-guide-tutor-skill, created by bassem-elsodany.
+
+If you redistribute this work, or a modified version of it, the Apache License 2.0 (see LICENSE) asks you to:
+  - keep the LICENSE file and this NOTICE file, including the attribution above;
+  - state clearly which files you changed;
+  - not use the name or marks of the author to endorse your version without permission.
+A link to the original repository in your own README is the friendliest way to meet the spirit of this.
+
+# Notices
 
 ## Third-party content
 
-None. The skill, references, scripts, agents, commands and the sample course under `tests/fixtures/` are original work.
+None. The skill, references, scripts, agents, commands and the example and test courses under `examples/` and `tests/fixtures/` are original work.
 
 ## Methods the skill draws on
 

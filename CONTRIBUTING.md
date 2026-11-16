@@ -6,7 +6,7 @@ Thanks for helping. The skill is refined by real use: if a lesson came out as a 
 
 - **English only**, one idea per file, tables over prose, every claim checkable.
 - **Generic by construction.** The skill must work for any subject and any learner. No course names, no personal details, no absolute paths, no machine or account names (`scripts/validate-plugin.py` fails on them). Examples in docs use neutral topics.
-- **Original text only.** Do not copy third-party text unless its licence allows it; list reused material in `NOTICE.md`. Never commit someone's lecture slides or a generated course built from them.
+- **Original text only.** Do not copy third-party text unless its licence allows it; list reused material in `NOTICE`. Never commit someone's lecture slides or a generated course built from them.
 - **Scripts**: Python standard library only, macOS and Linux, read-only or dry-run where they can destroy data, never write outside the folder they are given, `--help` that works, a docstring that starts with a one-line summary.
 - **No AI attribution trailers** in commits unless the maintainer asks; use conventional commits (`feat(quiz): ...`).
 
@@ -38,4 +38,4 @@ Open an issue first with: the situation where the skill produced weak study mate
 
 Include: the prompt or command, the script or reference file involved, what you expected, what happened, your OS and `python3 --version`. Security problems: see [SECURITY.md](SECURITY.md).
 
-By contributing you agree your contribution is licensed under the repository's MIT licence.
+By contributing you agree your contribution is licensed under the repository's Apache License 2.0 (see `LICENSE`).

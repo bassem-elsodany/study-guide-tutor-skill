@@ -6,7 +6,7 @@
 
 *The practice page the tutor builds for you (a real screenshot). Here: a 10-slide PDF about the water cycle.*
 
-[![CI](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/bassem-elsodany/study-guide-tutor-skill)](https://github.com/bassem-elsodany/study-guide-tutor-skill/releases)
+[![CI](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml) [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/bassem-elsodany/study-guide-tutor-skill)](https://github.com/bassem-elsodany/study-guide-tutor-skill/releases)
 
 ## What you get
 
@@ -153,4 +153,4 @@ That is 1 skill, 6 commands and 2 helpers. You never have to type a command: say
 
 ## Licence
 
-MIT: see [LICENSE](LICENSE). Notes on optional tools and on the study material you add are in [NOTICE.md](NOTICE.md).
+Apache License 2.0: see [LICENSE](LICENSE). You are free to use, change and share it. If you redistribute it or a modified version, keep the `LICENSE` and `NOTICE` files (they credit this repository) and say what you changed. Notes on optional tools and on the study material you add are in [NOTICE](NOTICE).

@@ -12,7 +12,7 @@
       "description": "Teach-me-this-material skill: intake, fact ledger, teacher-written lessons with tricky-part hints, audited quizzes, grading with memory anchors, flashcards, exams, spaced revisits, plus gates that fail slide dumps and unfindable quiz answers.",
       "source": "./",
       "category": "education",
-      "license": "MIT",
+      "license": "Apache-2.0",
       "keywords": [
         "education",
         "exam-preparation",
