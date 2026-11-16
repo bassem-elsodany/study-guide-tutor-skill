@@ -20,8 +20,8 @@ import sys,re,html
 d=sys.stdin.read(); m=re.search(r'<pre id=\"selftest\">(.*?)</pre>',d,re.S)
 print(html.unescape(m.group(1)) if m else 'NO SELFTEST OUTPUT')")"
   echo "== $1"; echo "$RES"
-  printf '%s' "$RES" | head -1 | grep -q "SELFTEST OK"
-  if [[ -n "${3:-}" ]]; then printf '%s' "$OUT" | grep -q "$3" || { echo "FAIL expected $3 in the page"; return 1; }; echo "ok   page has $3"; fi
+  [[ "${RES%%$'\n'*}" == "SELFTEST OK" ]] || { echo "FAIL: first line was not SELFTEST OK"; return 1; }
+  if [[ -n "${3:-}" ]]; then [[ "$OUT" == *"$3"* ]] || { echo "FAIL expected $3 in the page"; return 1; }; echo "ok   page has $3"; fi
 }
 run_one flat "$ROOT/tests/fixtures/sample-course"
 run_one grouped-module "$ROOT/tests/fixtures/sample-grouped-course/module-2"
