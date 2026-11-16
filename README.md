@@ -6,7 +6,7 @@
 
 *The interactive player that the skill builds for every course: click an answer and see at once why each wrong option is wrong, with its source. Shown on the invented sample course in `tests/fixtures/`.*
 
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/bassem-elsodany/study-guide-tutor-skill/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Release](https://img.shields.io/github/v/release/bassem-elsodany/study-guide-tutor-skill)](https://github.com/bassem-elsodany/study-guide-tutor-skill/releases)
 
 One skill, two agents, six slash commands, seventeen scripts, an interactive study player and a set of quality gates that make an agent *ask about the learner first*, *read all of the material before teaching*, *check every fact against a ledger*, *write lessons a teacher would write*, *warn where students get confused*, *audit every quiz*, and *grade with a memory anchor for every miss*. Built for [Claude Code](https://claude.com/claude-code); the skill is plain Markdown plus standard-library Python, so other agents can use it too.
 
