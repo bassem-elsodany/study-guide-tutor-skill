@@ -12,6 +12,8 @@
 
 - **A tutor that asks about you first.** Your level, your goal, how much time you have. Everything it writes is written for you.
 - **Lessons that teach.** Short and clear, with a "tricky part" warning wherever people usually get confused, not slides re-typed into bullet points.
+- **One page for everything.** Read the lesson, take the quiz, flip the cards and sit the exam in a single file. Section tabs follow you down the page, so you can jump to any part. The lessons are still plain Markdown files you can open in any editor, whichever you prefer.
+- **Highlight and take notes as you read.** Select any text to highlight it or write yourself a note. Everything you marked is listed by chapter, can be downloaded as a Markdown file, and goes to the tutor with your results, so it can see where you got stuck.
 - **Practice that gives the reason.** Click an answer and see at once why each wrong option is wrong and which slide the fact came from.
 - **Flashcards and a mock exam.** Cards come back just when you are about to forget them; a timed exam shows which chapters to go back to.
 - **It works with what you have.** PDFs, PowerPoint, Word, notes, web pages, lecture transcripts, scanned pages; in any language; however your material is organised.
@@ -65,16 +67,26 @@ A three-minute summary comes first, then the story, with a warning wherever peop
 
 Try the hint first. Then open the box for the rule and a memory hook. Each chapter ends with the traps people fall into.
 
+Every lesson is a plain Markdown file, so you can read it in any editor or on GitHub. The practice page below shows the same lessons as its first tab, so you never have to leave it.
+
 ### 5. Then you practise
 
-That is the page in the picture at the top: one file you open by double-clicking it, no install needed.
+That is the page in the picture at the top: one file you open by double-clicking it, no install needed. It opens on the lesson, so reading, quizzing and flashcards live in one place.
+
+![The first tab of the practice page: the chapter picker, the three-minute summary with a drawn diagram, tables, and a yellow Tricky part box](docs/images/player-lesson.png)
 
 | Tab | What it does |
 |---|---|
+| **Lesson** | the chapter you picked, as a page: the diagram, tables and warnings, a bar of section tabs that follows you down the page, an "I have read this chapter" box, and buttons to that chapter's quiz and flashcards. It is the same text as the Markdown file, which a link on the page opens. Select any text to **highlight** it or **add a note** (see below). |
 | **Quiz** | click an answer; the right one turns green at once, and you see why every wrong option is wrong. Hints are optional and shown only when you ask. |
 | **Flashcards** | flip, then "knew it" or "missed it". A card you miss comes back today; one you know comes back after 1, 3, 7, then 14 days. |
 | **Exam** | a timed mock exam with no feedback until you finish, then a list of the chapters to revisit. |
 | **Progress** | your scores, the questions you still miss, and a button to save your results. |
+| **Notes** | every highlight and note you made, by chapter, with a button that jumps back to the spot in the lesson and one that downloads them all as a Markdown file. |
+
+![Selecting text in the lesson: the passage is highlighted in yellow and a small box lets you type a note; the bar of section tabs is above the lesson](docs/images/player-notes.png)
+
+*Highlights and notes stay in your browser. Your notes are included in the results file you send the tutor, so it can see what confused you.*
 
 ### 6. Afterwards
 

@@ -37,6 +37,7 @@ After any generation or edit run, in order: `make_exam.py` (if quizzes changed) 
 | `skills/study-guide-tutor-skill/SKILL.md` | the decision guide (under 500 lines) |
 | `skills/study-guide-tutor-skill/references/` | depth, loaded on demand: intake, question design, source fidelity, teaching design, grading files, learning science, lifecycle, artifacts |
 | `skills/study-guide-tutor-skill/scripts/` | the gates and builders (Python standard library only) |
+| `skills/study-guide-tutor-skill/scripts/_md.py` | the small safe Markdown-to-HTML renderer behind the player's Lesson tab |
 | `skills/study-guide-tutor-skill/assets/player.html` | the template of the interactive study player (filled by `make_player.py`) |
 | `agents/` | `teacher-writer` (one chapter lesson), `student-reviewer` (plays the learner) |
 | `commands/` | `/study`, `/study-quiz`, `/study-player`, `/study-cram`, `/study-weak`, `/study-check` |

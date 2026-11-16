@@ -2,6 +2,10 @@
 
 All notable changes to study-guide-tutor-skill. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow SemVer.
 
+## [Unreleased]
+
+**A Lesson tab in the player.** The study player now opens on the lesson: every chapter's `01-lesson.md` rendered as a page (tables, the "Tricky part" and open-and-close boxes, Mermaid diagrams drawn as pictures), with a chapter picker, an "on this page" list, an estimated reading time, an "I have read this chapter" box (shown in Progress), buttons to the quiz and flashcards of that chapter, and an "Open the Markdown file" link. The Markdown files stay the source and still read on their own; the player is a view built from them. Diagrams are drawn at build time with mermaid-cli when it is installed (cached, about a second for a whole domain) and shown as their Mermaid text otherwise. A sticky bar of section tabs follows the student down the page and marks the current section. Selecting lesson text offers **Highlight** and **Add note** (also H and N); highlights are painted back on every visit, listed under the lesson and in a new **Notes** tab, downloadable as Markdown, and included in the results file so the tutor can see where the student got stuck. New `--no-lessons` and `--no-diagrams` options, a small safe renderer (`scripts/_md.py`) with its own unit test, and new player strings in `templates/course.json`.
+
 ## [1.0.0] - 2026-11-17
 
 First release. (Builds published earlier the same day under the same name were withdrawn; this is the one release.)

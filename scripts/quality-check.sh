@@ -30,6 +30,10 @@ if python3 -I "$ROOT/tests/test-labels.py" >/tmp/sgt-lab.out 2>&1; then echo "ok
 rm -f /tmp/sgt-lab.out
 if python3 -I "$ROOT/scripts/gen-course-template.py" --check; then :; else fail=1; fi
 
+step "lesson renderer: markdown to safe html"
+if python3 -I "$ROOT/tests/test-markdown.py" >/tmp/sgt-md.out 2>&1; then echo "ok   $(grep -c '^ok' /tmp/sgt-md.out) lesson renderer checks passed"; else cat /tmp/sgt-md.out; fail=1; fi
+rm -f /tmp/sgt-md.out
+
 step "player data: independent of build order, example counts"
 if python3 -I "$ROOT/tests/test-player-data.py" >/tmp/sgt-pd.out 2>&1; then echo "ok   $(grep -c '^PASS' /tmp/sgt-pd.out) player data checks passed"; else cat /tmp/sgt-pd.out; fail=1; fi
 rm -f /tmp/sgt-pd.out

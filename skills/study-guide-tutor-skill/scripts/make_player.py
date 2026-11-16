@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build one self-contained interactive study player (a single HTML file) from a generated course.
 
-Usage: make_player.py UNIT_DIR [--out FILE] [--title TEXT] [--selftest]
+Usage: make_player.py UNIT_DIR [--out FILE] [--title TEXT] [--no-diagrams] [--no-lessons] [--selftest]
 
 UNIT_DIR is any folder that directly holds chapter-NN-slug/ folders (and optionally 00-overview/): the course
 folder of a flat course, or one module, week, part, domain ... of a grouped one. Build one player per unit. For every chapter it
@@ -9,7 +9,13 @@ reads 03-quiz.md + 04-answer-key.md (questions, the key, a "why each wrong optio
 the source location) and 02-flashcards.csv; from 00-overview/ it reads the exam (07-exam.md + 08-exam-key.md; the older 07-unit-exam / 07-domain-exam names too) and the checkpoint
 quiz (03 + 04) when present. The result opens by double-click in any browser: no install, no server, no network.
 
-The player has four modes: Quiz (click or press A-D, instant feedback with the reason every wrong option is wrong,
+The player has five tabs. Lesson comes first: every chapter's 01-lesson.md, rendered as a page (headings, tables,
+the Tricky-part boxes, the open-and-close boxes, the Mermaid diagrams drawn as pictures) with a chapter picker, an "on
+this page" list, a "mark as read" box, and buttons to the quiz and flashcards of that chapter. The Markdown files stay
+the source: the player is a view built from them, so the student can read either, and rebuilding the player after an edit
+refreshes it. Diagrams are drawn at build time with mermaid-cli (mmdc) when it is installed, cached under
+~/.cache/study-guide-tutor/diagrams (or $SGT_CACHE_DIR); without it the diagram shows its Mermaid text instead.
+The other four modes: Quiz (click or press A-D, instant feedback with the reason every wrong option is wrong,
 optional hint, source location, retake of misses), Flashcards (flip, "knew it / missed it", spaced boxes with due
 dates), Exam (timed, no feedback until submit, results by chapter, review of misses) and Progress (scores, boxes,
 misses, "Download my results" as JSON for the tutor). Progress lives only in the browser (localStorage).
@@ -18,9 +24,10 @@ Default output: UNIT_DIR/00-overview/09-study-player.html (or UNIT_DIR/study-pla
 --selftest appends a scripted click-through to the page (for tests only; do not ship that file).
 Questions that refer to other options by letter ("both A and B", "all of the above") are never reshuffled.
 """
-import argparse, csv, glob, json, os, re, sys
+import argparse, base64, csv, glob, hashlib, json, math, os, re, shutil, subprocess, sys, tempfile, urllib.parse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _layout
+import _md
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, '..', 'assets', 'player.html')
@@ -118,13 +125,114 @@ def audience_statement(root):
     return ''
 
 
+MERMAID = re.compile(r'^```mermaid[ \t]*\n(.*?)\n```', re.S | re.M)
+IMAGE_TYPES = {'.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.webp': 'image/webp', '.svg': 'image/svg+xml'}
+
+
+def diagram_cache():
+    return os.environ.get('SGT_CACHE_DIR') or os.path.join(os.path.expanduser('~'), '.cache', 'study-guide-tutor', 'diagrams')
+
+
+def render_diagrams(codes):
+    """-> {mermaid source: SVG text} for every diagram mermaid-cli could draw. Cached by content, drawn in one batch."""
+    out, todo = {}, []
+    cache = diagram_cache()
+    for c in dict.fromkeys(codes):
+        key = hashlib.sha256(('neutral\n' + c).encode('utf-8')).hexdigest()[:20]
+        f = os.path.join(cache, key + '.svg')
+        if os.path.exists(f):
+            out[c] = (key, read(f))
+        else:
+            todo.append((c, key, f))
+    mmdc = shutil.which('mmdc') if todo else None
+    if not mmdc:
+        return out
+    with tempfile.TemporaryDirectory() as d:
+        cfg = os.path.join(d, 'p.json'); open(cfg, 'w').write('{"args": ["--no-sandbox"]}')
+
+        def run(src, dst):
+            try:
+                return subprocess.run([mmdc, '-i', src, '-o', dst, '-e', 'svg', '-t', 'neutral', '-b', 'transparent', '-p', cfg, '-q'],
+                                      capture_output=True, text=True, timeout=900).returncode == 0
+            except (OSError, subprocess.TimeoutExpired):
+                return False
+        src = os.path.join(d, 'all.md')
+        open(src, 'w', encoding='utf-8').write('\n\n'.join('```mermaid\n' + c + '\n```' for c, _, _ in todo))
+        run(src, os.path.join(d, 'all-out.md'))
+        for i, (c, key, f) in enumerate(todo, 1):
+            svg = os.path.join(d, 'all-out-%d.svg' % i)
+            if not os.path.exists(svg):   # one bad diagram can stop the batch: draw the rest one by one
+                one, dst = os.path.join(d, 'one-%d.mmd' % i), os.path.join(d, 'one-%d.svg' % i)
+                open(one, 'w', encoding='utf-8').write(c)
+                if run(one, dst): svg = dst
+            if os.path.exists(svg):
+                text = read(svg)
+                out[c] = (key, text)
+                try:
+                    os.makedirs(cache, exist_ok=True); open(f, 'w', encoding='utf-8').write(text)
+                except OSError:
+                    pass
+    return out
+
+
+def diagram_html(code, drawn):
+    got = drawn.get(code)
+    if got:
+        key, svg = got
+        svg = svg.replace('my-svg', 'mmd' + key[:10])
+        svg = re.sub(r'^<\?xml[^>]*\?>\s*', '', svg)
+        return '<div class="diagram" role="img" aria-label="Diagram">%s</div>' % svg
+    return '<div class="diagram"><p class="muted small" data-t="diagramMissing"></p><pre>%s</pre></div>' % _md.esc(code)
+
+
+def lesson_html(chdir, text, chapter_dirs, out_dir, drawn):
+    """-> {html, toc, minutes, md} for one 01-lesson.md, links and images resolved against this chapter's folder."""
+    def link(href):
+        path, _, frag = href.partition('#')
+        if not path:
+            return ('text', None)
+        target = os.path.normpath(os.path.join(chdir, urllib.parse.unquote(path)))
+        if not os.path.exists(target):
+            return ('text', None)
+        n = chapter_dirs.get(os.path.dirname(target))
+        base = os.path.basename(target)
+        if n is not None:
+            if base == '01-lesson.md': return ('go', 'lesson:%d' % n)
+            if base in ('03-quiz.md', '04-answer-key.md'): return ('go', 'quiz:%d' % n)
+            if base == '02-flashcards.csv': return ('go', 'cards:%d' % n)
+        return ('href', urllib.parse.quote(os.path.relpath(target, out_dir).replace(os.sep, '/')))
+
+    def image(src, alt):
+        f = os.path.normpath(os.path.join(chdir, urllib.parse.unquote(src)))
+        ext = os.path.splitext(f)[1].lower()
+        if ext in IMAGE_TYPES and os.path.isfile(f) and os.path.getsize(f) <= 1500000:
+            return 'data:%s;base64,%s' % (IMAGE_TYPES[ext], base64.b64encode(open(f, 'rb').read()).decode('ascii'))
+        return None
+    ctx = {'prefix': 'l%d-' % chapter_dirs[os.path.normpath(chdir)], 'link': link, 'image': image,
+           'diagram': lambda code: diagram_html(code, drawn)}
+    html, title, heads = _md.render(text, ctx)
+    html = re.sub(r'<h1[^>]*>.*?</h1>\s*', '', html, count=1, flags=re.S)
+    words = len(re.sub(r'<!--.*?-->|```mermaid.*?```', '', text, flags=re.S).split())
+    return {'html': html, 'toc': [[lv, tx, hid] for lv, tx, hid in heads],
+            'minutes': max(1, math.ceil(words / 200 + 0.3 * len(MERMAID.findall(text)))),
+            'md': urllib.parse.quote(os.path.relpath(os.path.join(chdir, '01-lesson.md'), out_dir).replace(os.sep, '/'))}
+
+
 def slug(s):
     return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-') or 'course'
 
 
-def build(unit, title=None):
+def default_out(unit):
+    return os.path.join(unit, '00-overview', '09-study-player.html') if os.path.isdir(os.path.join(unit, '00-overview')) else os.path.join(unit, 'study-player.html')
+
+
+def build(unit, title=None, out=None, diagrams=True, lessons=True):
     global LABELS
     unitdir = os.path.abspath(unit)
+    out_dir = os.path.dirname(os.path.abspath(out or default_out(unit)))
+    chapter_dirs = {os.path.normpath(c): int(os.path.basename(c).split('-')[1]) for c in _layout.chapters_of(unitdir)}
+    lesson_text = {c: read(os.path.join(c, '01-lesson.md')) for c in chapter_dirs} if lessons else {}
+    drawn = render_diagrams([code for tx in lesson_text.values() for code in MERMAID.findall(tx)]) if (lessons and diagrams) else {}
     LABELS = _layout.labels(unitdir)
     cfg = _layout.course_config(unitdir)
     lang, direction = _layout.language(unitdir)
@@ -141,7 +249,11 @@ def build(unit, title=None):
                 for r in csv.reader(f):
                     if len(r) >= 2 and r[0].strip().lower() != 'question':
                         cards.append({'q': r[0].strip(), 'a': r[1].strip()})
-        chapters.append({'n': n, 'title': lesson_title(chdir, n), 'questions': qs, 'cards': cards})
+        ch = {'n': n, 'title': lesson_title(chdir, n), 'questions': qs, 'cards': cards}
+        tx = lesson_text.get(os.path.normpath(chdir), '')
+        if tx.strip():
+            ch['lesson'] = lesson_html(os.path.normpath(chdir), tx, chapter_dirs, out_dir, drawn)
+        chapters.append(ch)
     ov = os.path.join(unitdir, '00-overview')
     final = exam = None
     fq, fk = parse_quiz(os.path.join(ov, '03-final-quiz.md')), parse_key(os.path.join(ov, '04-final-quiz-key.md'))
@@ -177,8 +289,78 @@ function click(el){ el.click(); }
 try {
   var A = window.__sgt, D = A.D;
   check('data has chapters', D.chapters.length > 0);
-  check('tabs rendered', $$('#tabs button').length >= 3);
+  check('tabs rendered', $$('#tabs button').length >= 4);
+  // lesson tab comes first and shows the chapter's Markdown as a page
+  var hasLessons = D.chapters.some(function(c){ return !!c.lesson; });
+  if (hasLessons) {
+    var lessonCh = D.chapters.filter(function(c){ return c.lesson; });
+    check('lesson is the first tab and selected', $$('#tabs button')[0].textContent === A.t('tabLesson') && $$('#tabs button')[0].getAttribute('aria-selected') === 'true');
+    check('lesson text shown', !!$('#lesson h2') && $('#lesson').textContent.length > 200);
+    check('lesson has a chapter picker', !!$('#lchap') && $('#lchap').options.length === lessonCh.length);
+    check('lesson tables are wrapped for narrow screens', $$('#lesson .tablewrap table').length >= 1);
+    check('lesson has a diagram or its text fallback', $$('#lesson .diagram').length >= 1);
+    check('lesson boxes are native details', $$('#lesson details > summary').length >= 1);
+    check('no script or handler in lesson html', !$('#lesson script') && !$('#lesson [onclick]'));
+    check('open-markdown link present', !!$('#openmd') && $('#openmd').getAttribute('href').indexOf('01-lesson.md') >= 0);
+    $('#markread').click();
+    check('mark as read saved', !!A.S().read[lessonCh[0].n]);
+    click($('#quizthis'));
+    check('quiz-this-chapter opens Quiz with the chapter preselected', !!$('#qset') && $('#qset').value === 'c' + lessonCh[0].n);
+    A.setTab('lesson');
+    var links = $$('#lesson a[data-go]');
+    if (links.length) {
+      var kind = links[0].getAttribute('data-go').split(':')[0];
+      click(links[0]);
+      check('a link inside the lesson switches tab (' + kind + ')', (kind === 'quiz' && !!$('#qset')) || (kind === 'cards' && !!$('#cset')) || (kind === 'lesson' && !!$('#lesson')));
+    }
+    A.setTab('lesson');
+    if (lessonCh.length > 1) { click($('#nextch')); check('next chapter shows another lesson', A.S().lesson === lessonCh[1].n && !!$('#lesson')); }
+    // section tabs: one per section, the clicked one is current
+    A.setTab('lesson');
+    var h2n = $$('#lesson h2').length;
+    check('a section tab for every section', h2n < 2 || $$('#secnav a').length === h2n);
+    if ($$('#secnav a').length > 1) { click($$('#secnav a')[1]); check('a clicked section tab becomes current', $$('#secnav a')[1].getAttribute('aria-current') === 'true'); }
+    // highlights and notes
+    window.confirm = function(){ return true; };
+    function textNodes(){
+      var w = document.createTreeWalker($('#lesson'), NodeFilter.SHOW_TEXT), n, out = [];
+      while ((n = w.nextNode())) if (n.nodeValue.trim().length >= 30 && !(n.parentNode.closest && n.parentNode.closest('.diagram, mark, summary'))) out.push(n);
+      return out;
+    }
+    function selectText(node, a, b){ var r = document.createRange(); r.setStart(node, a); r.setEnd(node, b); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); return r.toString(); }
+    var cur = $('#lchap').value, first = textNodes()[0], quote1 = selectText(first, 0, 12).trim();
+    check('selecting lesson text shows the highlight toolbar', A.checkSelection() && !!$('#nphl') && !!$('#npnote'));
+    click($('#nphl'));
+    check('a highlight is saved and painted', (A.S().notes[cur] || []).length === 1 && A.S().notes[cur][0].quote === quote1 && $$('#lesson mark.hl').length >= 1);
+    var tn = textNodes(), last = tn[tn.length - 1];
+    selectText(last, 0, 14);
+    check('toolbar shows again for new text', A.checkSelection());
+    click($('#npnote'));
+    check('note editor opens with a text box', !!$('#nptext') && !!$('#npsave'));
+    $('#nptext').value = 'my test note'; click($('#npsave'));
+    check('a note is saved, painted and listed', A.S().notes[cur].length === 2 && A.S().notes[cur][1].note === 'my test note' && $$('#lesson mark.has-note').length >= 1 && $('#chnotes').textContent.indexOf('my test note') >= 0);
+    var m0 = $('#lesson mark.hl');
+    selectText(m0.firstChild, 0, m0.firstChild.nodeValue.length);
+    check('selecting already highlighted text offers nothing', !A.checkSelection() && !$('#notepop'));
+    window.getSelection().removeAllRanges();
+    A.setTab('notes');
+    check('Notes tab lists the notes and offers a download', $('#app').textContent.indexOf('my test note') >= 0 && !!$('#notesdl') && A.notesMd().indexOf('my test note') >= 0);
+    check('Notes tab label shows the count', $$('#tabs button').some(function(b){ return b.textContent.indexOf('(2)') >= 0; }));
+    click($$('.notelist li')[0].querySelector('button'));
+    check('Show in lesson opens the lesson with the highlights painted', !!$('#lesson') && $$('#lesson mark.hl').length >= 2);
+    A.render();
+    check('highlights come back after a redraw', $$('#lesson mark.hl').length >= 2);
+    var li0 = $$('#chnotes .notelist li')[1], b0 = li0.querySelectorAll('button');
+    click(b0[0]);
+    check('Edit opens the editor with the saved note', !!$('#nptext') && $('#nptext').value === 'my test note');
+    $('#nptext').value = 'changed note'; click($('#npsave'));
+    check('an edited note is saved', A.S().notes[cur][1].note === 'changed note');
+    var li1 = $$('#chnotes .notelist li')[0], b1 = li1.querySelectorAll('button');
+    click(b1[b1.length - 1]);
+    check('deleting a note removes it and its highlight', A.S().notes[cur].length === 1 && $$('#lesson mark.hl').every(function(m){ return m.getAttribute('data-id') === A.S().notes[cur][0].id; }));
+  }
   // quiz: start first chapter set
+  A.setTab('quiz'); A.state().quiz = null; A.render();
   var sel = $('#qset'); sel.value = 'c' + D.chapters[0].n; click($('#qstart'));
   check('question shown', !!$('.stem') && $$('button.opt').length >= 2);
   check('options enabled', $$('button.opt').every(function(b){ return !b.disabled; }));
@@ -248,6 +430,7 @@ try {
   // progress + export
   A.setTab('progress');
   check('progress table', $$('table').length >= 1 && !!$('#exportbtn'));
+  if (hasLessons) check('progress shows the lesson column', $('#app').textContent.indexOf(A.t('thLesson')) >= 0 && $('#app').textContent.indexOf(A.t('readYes')) >= 0);
   check('progress lists the mixed quiz set', $('#app').textContent.indexOf(A.t('otherSets')) >= 0 && $('#app').textContent.indexOf(A.t('setAllShort')) >= 0);
   check('page language and direction set', document.documentElement.lang === (A.D.lang || 'en') && document.documentElement.dir === (A.D.dir || 'ltr'));
   var persisted = JSON.parse(localStorage.getItem('sgt:' + D.id) || 'null');
@@ -264,21 +447,26 @@ document.body.appendChild(pre);
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('unit'); ap.add_argument('--out'); ap.add_argument('--title'); ap.add_argument('--selftest', action='store_true')
+    ap.add_argument('--no-diagrams', action='store_true', help='do not draw Mermaid diagrams (show their text instead)')
+    ap.add_argument('--no-lessons', action='store_true', help='leave the Lesson tab out')
     a = ap.parse_args()
-    data, problems = build(a.unit, a.title)
+    out = a.out or default_out(a.unit)
+    data, problems = build(a.unit, a.title, out, diagrams=not a.no_diagrams, lessons=not a.no_lessons)
     for p in problems:
         print('WARN', p, file=sys.stderr)
     if not any(c['questions'] for c in data['chapters']):
         sys.exit('no questions found: is this a unit folder whose chapter folders hold 03-quiz.md and 04-answer-key.md?')
     blob = json.dumps(data, ensure_ascii=False).replace('</', '<\\/').replace('<!--', '<\\!--')
     page = read(TEMPLATE).replace('__TITLE__', re.sub(r'[<>&]', '', data['title'])).replace('__DATA__', blob).replace('__SELFTEST__', SELFTEST if a.selftest else '')
-    out = a.out or (os.path.join(a.unit, '00-overview', '09-study-player.html') if os.path.isdir(os.path.join(a.unit, '00-overview')) else os.path.join(a.unit, 'study-player.html'))
     open(out, 'w', encoding='utf-8').write(page)
     nq = sum(len(c['questions']) for c in data['chapters'])
     extra = []
     if data['final']: extra.append(f'{len(data["final"]["questions"])} checkpoint')
     if data['exam']: extra.append(f'{len(data["exam"]["questions"])} exam questions')
-    print(f'wrote {out}: {len(data["chapters"])} chapters, {nq} questions, '
+    nl = sum(1 for c in data['chapters'] if c.get('lesson'))
+    nd = sum(c['lesson']['html'].count('<svg') for c in data['chapters'] if c.get('lesson'))
+    nm = sum(c['lesson']['html'].count('data-t="diagramMissing"') for c in data['chapters'] if c.get('lesson'))
+    print(f'wrote {out}: {len(data["chapters"])} chapters, {nl} lessons ({nd} diagrams drawn' + (f', {nm} shown as text: install mermaid-cli to draw them' if nm else '') + f'), {nq} questions, '
           f'{sum(len(c["cards"]) for c in data["chapters"])} flashcards' + ''.join(', ' + e for e in extra)
           + (f'; {len(problems)} warning(s)' if problems else ''))
 

@@ -93,14 +93,18 @@ flowchart LR
 
 ## The interactive player
 
-`/study-guide-tutor-skill:study-player <unit folder>` (or `python3 skills/study-guide-tutor-skill/scripts/make_player.py <unit folder>`) turns the quiz, answer-key and flashcard files of a unit into **one HTML file** that opens by double-click: no install, no server, no network. Your progress is saved in the browser only.
+`/study-guide-tutor-skill:study-player <unit folder>` (or `python3 skills/study-guide-tutor-skill/scripts/make_player.py <unit folder>`) turns the lessons, quiz, answer-key and flashcard files of a unit into **one HTML file** that opens by double-click: no install, no server, no network. Your progress is saved in the browser only.
 
 | Mode | What you get |
 |---|---|
+| **Lesson** | the first tab: each chapter's `01-lesson.md` as a page, with tables, the "Tricky part" boxes, drawn diagrams, a chapter picker, a bar of section tabs that stays in view and follows you as you scroll, a read-time estimate, an "I have read this chapter" box and one-click buttons to that chapter's quiz and flashcards |
+| **Notes** | every highlight and note, by chapter. In the Lesson tab, select any text (or press H / N with text selected) to highlight it or add a note; click a highlight to edit or delete it. Notes are anchored to the quoted text, so they survive a rebuild of the player (if you rewrite the passage itself, the note is kept and marked as not shown). They are saved in the browser, listed under each lesson and here, downloadable as Markdown, and included in the results JSON |
 | **Quiz** | click an option or press A to D; the right answer turns green at once; every wrong option comes with the reason it is wrong, the source location and the explanation; an optional hint (marked in your score); answer order is shuffled; "Retake the misses" |
 | **Flashcards** | flip, then "knew it" or "missed it"; a missed card returns today, a known card waits 1, 3, 7, then 14 days (five boxes); due counts per deck |
 | **Exam** | the timed exam: no feedback until you submit, free navigation, results by chapter with "revisit" flags, review of every miss |
 | **Progress** | last and best score per chapter, flashcard boxes, the questions you still miss, exam attempts, and **Download my results (JSON)** to send back to the tutor |
+
+The Markdown stays the source of truth. The Lesson tab is a view built from the lesson files, each page links to its `.md` file, and the same text reads fine in any Markdown viewer; after you edit a lesson, rebuild the player to refresh it. Diagrams are drawn when the player is built, with [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) if it is installed (drawn pictures are cached in `~/.cache/study-guide-tutor/diagrams`); without it a diagram shows its Mermaid text.
 
 The tutor turns a results file into `05-review.md` (graded misses with memory anchors), a score-tracker update and a revisit list. The player reads the same Markdown the gates check, so it cannot show a question that failed the audit. `scripts/test-player.sh` drives it in headless Chrome as a click-through test. Questions that refer to options by letter ("both A and B") are never reshuffled.
 

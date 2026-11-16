@@ -6,9 +6,9 @@
 <title>__TITLE__</title>
 <style>
 :root{--bg:#f6f6f2;--card:#ffffff;--ink:#1c2125;--muted:#58626b;--line:#d9dde1;--accent:#2457c5;--accent-ink:#ffffff;
---ok:#0f6e50;--okbg:#e3f4ec;--bad:#a8231b;--badbg:#fcebea;--warn:#7a4f00;--warnbg:#fff3d6;--shadow:0 1px 2px rgba(0,0,0,.06)}
+--ok:#0f6e50;--okbg:#e3f4ec;--bad:#a8231b;--badbg:#fcebea;--warn:#7a4f00;--warnbg:#fff3d6;--shadow:0 1px 2px rgba(0,0,0,.06);--hl:#ffe27a;--hlink:#1c2125}
 @media (prefers-color-scheme:dark){:root{--bg:#121518;--card:#1b2024;--ink:#e7e9ec;--muted:#9aa4ad;--line:#323a41;--accent:#8ab4ff;--accent-ink:#0b1220;
---ok:#6bd6a9;--okbg:#12342a;--bad:#ff9d95;--badbg:#391a18;--warn:#f0c36c;--warnbg:#382d11;--shadow:none}}
+--ok:#6bd6a9;--okbg:#12342a;--bad:#ff9d95;--badbg:#391a18;--warn:#f0c36c;--warnbg:#382d11;--shadow:none;--hl:#6b5a14;--hlink:#fff3c4}}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
@@ -63,7 +63,51 @@ th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:start;font-
 code{background:rgba(127,127,127,.15);border-radius:4px;padding:0 4px;font-size:.92em}
 footer{padding:18px 16px 40px;color:var(--muted);font-size:.85rem}
 .sr{position:absolute;left:-9999px}
-@media (max-width:520px){body{font-size:15.5px}.card{padding:14px}}
+.lesson{padding:6px 22px 18px}
+.lesson h1{font-size:1.4rem;margin:.8em 0 .3em}
+.lesson h2{font-size:1.25rem;margin:1.7em 0 .5em;padding-top:1em;border-top:1px solid var(--line)}
+.lesson h2:first-child{border-top:0;margin-top:.8em;padding-top:0}
+.lesson h3{font-size:1.06rem;margin:1.4em 0 .4em}
+.lesson p{margin:.6em 0}
+.lesson ul,.lesson ol{padding-inline-start:1.4em;margin:.5em 0}
+.lesson li{margin:.2em 0}
+.lesson a{color:var(--accent)}
+.lesson img{max-width:100%;height:auto}
+.lesson hr{border:0;border-top:1px solid var(--line);margin:1.6em 0}
+.lesson pre{overflow-x:auto;background:rgba(127,127,127,.12);padding:10px 12px;border-radius:8px;font-size:.88rem}
+.lesson pre code{background:none;padding:0}
+.tablewrap{overflow-x:auto;margin:.8em 0}
+.lesson th{background:rgba(127,127,127,.1);font-weight:600}
+.lesson blockquote{margin:1em 0;padding:.5em 1em;border-inline-start:4px solid var(--line);background:rgba(127,127,127,.06);border-radius:6px}
+.lesson blockquote p{margin:.3em 0}
+.lesson blockquote.callout{background:var(--warnbg);border-color:var(--warn)}
+.lesson blockquote.audience{font-size:.84rem;color:var(--muted);background:none;border-color:var(--line)}
+.lesson details{border:1px solid var(--line);border-radius:8px;padding:.45em .9em;margin:.7em 0}
+.lesson details[open]{padding-bottom:.6em}
+.lesson summary{cursor:pointer;font-weight:600}
+.diagram{background:#fff;color:#1c2125;border:1px solid var(--line);border-radius:10px;padding:12px;margin:1em 0;overflow-x:auto}
+.diagram svg{max-width:100%;height:auto;display:block;margin:0 auto}
+.diagram pre{background:none;color:inherit;margin:6px 0 0}
+.deadlink{color:var(--muted);border-bottom:1px dotted var(--muted)}
+.secnav{position:sticky;top:0;z-index:6;display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;padding:8px 2px;margin:0 0 12px;background:var(--bg);border-bottom:1px solid var(--line);scrollbar-width:thin}
+.secnav a{flex:0 0 auto;font-size:.85rem;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);text-decoration:none;background:var(--card);white-space:nowrap}
+.secnav a[aria-current=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.lesson h2,.lesson h3{scroll-margin-top:64px}
+mark.hl{background:var(--hl);color:var(--hlink);border-radius:3px;padding:0 1px;cursor:pointer}
+mark.hl.has-note{border-bottom:2px solid var(--warn)}
+mark.hl.flash{outline:3px solid var(--accent)}
+#notepop{position:absolute;z-index:30;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.28);padding:8px;display:flex;flex-direction:column;gap:6px;width:max-content;max-width:min(380px,calc(100vw - 16px))}
+#notepop.tb{flex-direction:row}
+#notepop textarea{width:min(360px,calc(100vw - 40px));min-height:92px;font:inherit;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;resize:vertical}
+.notelist{list-style:none;padding:0;margin:8px 0 0}
+.notelist li{border-top:1px solid var(--line);padding:10px 0}
+.notelist blockquote{margin:0 0 6px;padding:2px 10px;border-inline-start:4px solid var(--hl);color:var(--muted);font-size:.92rem}
+.notetext{white-space:pre-wrap;margin:4px 0 8px}
+details.notes>summary{cursor:pointer;font-weight:600}
+.lessonbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.lessonbar select{width:auto;flex:1 1 260px}
+.lessonbar a{color:var(--accent)}
+@media (max-width:520px){body{font-size:15.5px}.card{padding:14px}.lesson{padding:2px 12px 14px}}
 </style>
 </head>
 <body>
@@ -84,10 +128,12 @@ var D = JSON.parse(document.getElementById('data').textContent);
 var KEY = 'sgt:' + D.id;
 var DAY = 86400000;
 var STR = {
+  "tabLesson": "Lesson",
   "tabQuiz": "Quiz",
   "tabCards": "Flashcards",
   "tabExam": "Exam",
   "tabProgress": "Progress",
+  "tabNotes": "Notes",
   "studyModes": "Study modes",
   "chShort": "Ch. {n}",
   "chTitle": "Ch. {n} {title}",
@@ -178,14 +224,45 @@ var STR = {
   "thTime": "Time",
   "downloadBtn": "Download my results (JSON)",
   "resetBtn": "Reset progress",
-  "resetConfirm": "Erase all saved progress for this course in this browser?",
+  "resetConfirm": "Erase all saved progress and notes for this course in this browser?",
   "savedOnly": "Progress is saved only in this browser",
   "blocked": " (saving is blocked here, so it will be lost when you close the page)",
   "sendTutor": ". Send the downloaded file to your tutor so it can write the review and plan your revisits.",
   "footerAudience": "Written for {a}. Your progress stays in this browser only.",
   "footerDefault": "Built from your course files. Your progress stays in this browser only.",
   "subtitle": "Chapters: {chapters} · Practice questions: {questions} · Flashcards: {cards}",
-  "subtitleExam": " · Exam: {n} questions"
+  "subtitleExam": " · Exam: {n} questions",
+  "lessonChapter": "Chapter",
+  "sections": "Sections of this lesson",
+  "readTime": "About {n} minutes to read",
+  "openMd": "Open the Markdown file",
+  "mdNote": "This page shows the lesson file {f}. You can read that file on its own; it holds the same text.",
+  "markRead": "I have read this chapter",
+  "quizThis": "Quiz me on this chapter",
+  "cardsThis": "Flashcards for this chapter",
+  "prevCh": "Previous chapter",
+  "nextCh": "Next chapter",
+  "thLesson": "Lesson",
+  "readYes": "read",
+  "readNo": "not yet",
+  "notesTitle": "My notes",
+  "notesHint": "Select any text in the lesson to highlight it or add a note. With text selected, press H to highlight or N to add a note.",
+  "selectHint": "Select text to highlight it or add a note.",
+  "notesNone": "No notes yet. Open a lesson, select some text, and choose Highlight or Add note.",
+  "notesChapter": "My notes in this chapter ({n})",
+  "noteHighlight": "Highlight",
+  "noteAdd": "Add note",
+  "noteSave": "Save",
+  "noteCancel": "Cancel",
+  "noteDelete": "Delete",
+  "noteDeleteConfirm": "Delete this note?",
+  "notePlaceholder": "Your note (optional)",
+  "noteShow": "Show in lesson",
+  "noteEdit": "Edit",
+  "noteOrphan": "The lesson text changed, so this highlight is not shown, but your note is kept.",
+  "noteSaved": "Saved",
+  "downloadNotes": "Download my notes (Markdown)",
+  "diagramMissing": "This diagram could not be drawn here. Its description is below; the picture is in the Markdown lesson if your viewer draws Mermaid."
 };
 function tr(k, v){
   var s = (D.ui && D.ui[k] != null) ? D.ui[k] : (STR[k] != null ? STR[k] : k);
@@ -196,7 +273,7 @@ function tr(k, v){
 var INTERVALS = [0, 1, 3, 7, 14];      // days until a card in box 1..5 is due again
 
 /* ---------- storage ---------- */
-function blank(){ return {cards:{}, quiz:{}, misses:{}, exams:[]}; }
+function blank(){ return {cards:{}, quiz:{}, misses:{}, exams:[], read:{}, lesson:0, notes:{}}; }
 function load(){
   try { var o = JSON.parse(localStorage.getItem(KEY) || 'null'); if (o) { var b = blank(); for (var k in b) if (!(k in o)) o[k] = b[k]; return o; } } catch(e) {}
   return blank();
@@ -252,25 +329,330 @@ function allCards(){
 }
 
 /* ---------- shell ---------- */
-var tab = 'quiz';
-var TABS = [['quiz','tabQuiz'],['cards','tabCards'],['exam','tabExam'],['progress','tabProgress']];
+var HAS_LESSONS = D.chapters.some(function(c){ return !!c.lesson; });
+var tab = HAS_LESSONS ? 'lesson' : 'quiz';
+var preset = {};      // a chapter picked by a link inside a lesson: used once by the Quiz or Flashcards chooser
+var TABS = [['lesson','tabLesson'],['quiz','tabQuiz'],['cards','tabCards'],['exam','tabExam'],['progress','tabProgress'],['notes','tabNotes']];
 var state = {quiz: null, cards: null, exam: null};
 function drawTabs(){
   var nav = document.getElementById('tabs'); nav.innerHTML = '';
   TABS.forEach(function(t){
     if (t[0] === 'exam' && !D.exam) return;
-    var b = h('button', {role:'tab', 'aria-selected': String(tab === t[0]), onclick: function(){ tab = t[0]; render(); }}, tr(t[1]));
+    if ((t[0] === 'lesson' || t[0] === 'notes') && !HAS_LESSONS) return;
+    var label = tr(t[1]) + (t[0] === 'notes' && countNotes() ? ' (' + countNotes() + ')' : '');
+    var b = h('button', {role:'tab', 'aria-selected': String(tab === t[0]), onclick: function(){ tab = t[0]; render(); }}, esc(label));
     nav.appendChild(b);
   });
 }
 function render(){
+  hidePop();
+  if (spy) { spy.disconnect(); spy = null; }
   drawTabs();
   var app = document.getElementById('app'); app.innerHTML = '';
-  if (tab === 'quiz') viewQuiz(app);
+  if (tab === 'lesson') viewLesson(app);
+  else if (tab === 'notes') viewNotes(app);
+  else if (tab === 'quiz') viewQuiz(app);
   else if (tab === 'cards') viewCards(app);
   else if (tab === 'exam') viewExam(app);
   else viewProgress(app);
 }
+
+/* ---------- lesson ---------- */
+var curLesson = null, spy = null, pop = null, popMode = '', pending = null, selTimer = null;
+function lessonChapters(){ return D.chapters.filter(function(c){ return !!c.lesson; }); }
+function lessonIndex(){
+  var L = lessonChapters(), i = 0;
+  L.forEach(function(c, k){ if (c.n === S.lesson) i = k; });
+  return i;
+}
+function trunc(s, n){ s = String(s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+function go(kind, n, noteId){
+  n = parseInt(n, 10);
+  if (kind === 'lesson') { S.lesson = n; save(); tab = 'lesson'; preset.note = noteId || null; }
+  else if (kind === 'quiz') { preset.quiz = 'c' + n; tab = 'quiz'; }
+  else if (kind === 'cards') { preset.cards = String(n); tab = 'cards'; }
+  render();
+  if (!(kind === 'lesson' && noteId)) window.scrollTo(0, 0);
+}
+
+/* ----- notes and highlights: stored as the selected text plus where it sits, and painted back onto the lesson ----- */
+function notesFor(n){ return S.notes[n] || []; }
+function countNotes(){ var k = 0; for (var c in S.notes) k += S.notes[c].length; return k; }
+function textMap(root){
+  var nodes = [], text = '';
+  var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {acceptNode: function(t){
+    for (var p = t.parentNode; p && p !== root; p = p.parentNode) if (p.nodeType === 1 && (p.classList.contains('diagram') || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+    return NodeFilter.FILTER_ACCEPT;
+  }});
+  var t;
+  while ((t = w.nextNode())) { nodes.push({node: t, start: text.length}); text += t.nodeValue; }
+  return {nodes: nodes, text: text};
+}
+function selectionAnchor(art){
+  var sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) return null;
+  var r = sel.getRangeAt(0);
+  if (!art.contains(r.commonAncestorContainer)) return null;
+  var tm = textMap(art), s = -1, e = -1;
+  tm.nodes.forEach(function(en){
+    if (!r.intersectsNode(en.node)) return;
+    var a = en.node === r.startContainer ? r.startOffset : 0;
+    var b = en.node === r.endContainer ? r.endOffset : en.node.nodeValue.length;
+    if (b <= a) return;
+    if (s < 0) s = en.start + a;
+    e = en.start + b;
+  });
+  if (s < 0) return null;
+  while (s < e && /\s/.test(tm.text.charAt(s))) s++;
+  while (e > s && /\s/.test(tm.text.charAt(e - 1))) e--;
+  if (e - s < 2) return null;
+  return {start: s, end: e, quote: tm.text.slice(s, e), prefix: tm.text.slice(Math.max(0, s - 30), s), suffix: tm.text.slice(e, e + 30), rect: r.getBoundingClientRect()};
+}
+function locate(tm, n){
+  if (tm.text.slice(n.start, n.end) === n.quote) return [n.start, n.end];
+  var i, best = -1, from = 0;
+  while ((i = tm.text.indexOf(n.quote, from)) >= 0) {
+    if (best < 0) best = i;
+    if (tm.text.slice(Math.max(0, i - n.prefix.length), i) === n.prefix) { best = i; break; }
+    from = i + 1;
+  }
+  return best < 0 ? null : [best, best + n.quote.length];
+}
+function paintNote(art, n){
+  var tm = textMap(art), loc = locate(tm, n);
+  n.orphan = !loc;
+  if (!loc) return;
+  n.start = loc[0]; n.end = loc[1];
+  tm.nodes.forEach(function(en){
+    var len = en.node.nodeValue.length, a = Math.max(loc[0], en.start) - en.start, b = Math.min(loc[1], en.start + len) - en.start;
+    if (b <= a) return;
+    var node = en.node;
+    if (b < len) node.splitText(b);
+    if (a > 0) node = node.splitText(a);
+    var m = document.createElement('mark');
+    m.className = 'hl' + (n.note ? ' has-note' : '');
+    m.setAttribute('data-id', n.id); m.tabIndex = 0;
+    if (n.note) m.title = n.note;
+    node.parentNode.insertBefore(m, node); m.appendChild(node);
+  });
+}
+function unpaint(art, id){
+  Array.prototype.forEach.call(art.querySelectorAll('mark.hl[data-id="' + id + '"]'), function(m){
+    var p = m.parentNode;
+    while (m.firstChild) p.insertBefore(m.firstChild, m);
+    p.removeChild(m); p.normalize();
+  });
+}
+function lessonArt(){ return document.getElementById('lesson'); }
+function hidePop(){ if (pop && pop.parentNode) pop.parentNode.removeChild(pop); pop = null; popMode = ''; }
+function placePop(rect){
+  var w = pop.offsetWidth, vw = document.documentElement.clientWidth;
+  pop.style.left = Math.min(Math.max(8 + window.scrollX, rect.left + window.scrollX), window.scrollX + vw - w - 8) + 'px';
+  pop.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+}
+function showToolbar(a){
+  hidePop(); pending = a;
+  pop = h('div', {id:'notepop', class:'tb', role:'toolbar', 'aria-label': tr('notesTitle')});
+  pop.addEventListener('mousedown', function(ev){ if (ev.target.tagName !== 'TEXTAREA') ev.preventDefault(); });
+  pop.appendChild(h('button', {class:'btn small', id:'nphl', onclick: function(){ addNote(''); }}, esc(tr('noteHighlight') + ' (H)')));
+  pop.appendChild(h('button', {class:'btn small primary', id:'npnote', onclick: function(){ openEditor(null); }}, esc(tr('noteAdd') + ' (N)')));
+  document.body.appendChild(pop); popMode = 'tb'; placePop(a.rect);
+}
+function openEditor(note, rect){
+  var r = rect || (pending && pending.rect);
+  if (!r) return;
+  hidePop();
+  pop = h('div', {id:'notepop', role:'dialog', 'aria-label': tr('noteAdd')}); popMode = 'edit';
+  pop.appendChild(h('div', {class:'small muted'}, esc(trunc(note ? note.quote : pending.quote, 140))));
+  var ta = h('textarea', {id:'nptext', rows:'4', placeholder: tr('notePlaceholder'), 'aria-label': tr('noteAdd')});
+  ta.value = note ? note.note : '';
+  pop.appendChild(ta);
+  var row = h('div', {class:'row'});
+  row.appendChild(h('button', {class:'btn small primary', id:'npsave', onclick: function(){ if (note) updateNote(note, ta.value); else addNote(ta.value); }}, esc(tr('noteSave'))));
+  row.appendChild(h('button', {class:'btn small', id:'npcancel', onclick: hidePop}, esc(tr('noteCancel'))));
+  if (note) row.appendChild(h('button', {class:'btn small', id:'npdel', onclick: function(){ removeNote(note); }}, esc(tr('noteDelete'))));
+  pop.appendChild(row);
+  document.body.appendChild(pop); placePop(r); ta.focus();
+}
+function addNote(text){
+  var a = pending, c = curLesson;
+  if (!a || !c) return hidePop();
+  var n = {id: 'n' + Date.now().toString(36) + Math.floor(Math.random() * 46656).toString(36), start: a.start, end: a.end, quote: a.quote, prefix: a.prefix, suffix: a.suffix, note: String(text || '').trim(), ts: Date.now()};
+  (S.notes[c.n] = S.notes[c.n] || []).push(n); save();
+  paintNote(lessonArt(), n);
+  window.getSelection().removeAllRanges(); pending = null; hidePop(); afterNotesChange(); say(tr('noteSaved'));
+}
+function updateNote(n, text){
+  n.note = String(text || '').trim(); save();
+  Array.prototype.forEach.call(document.querySelectorAll('mark.hl[data-id="' + n.id + '"]'), function(m){
+    m.classList.toggle('has-note', !!n.note);
+    if (n.note) m.title = n.note; else m.removeAttribute('title');
+  });
+  hidePop(); afterNotesChange(); say(tr('noteSaved'));
+}
+function removeNote(n){
+  if (n.note && !window.confirm(tr('noteDeleteConfirm'))) return;
+  for (var c in S.notes) S.notes[c] = S.notes[c].filter(function(x){ return x.id !== n.id; });
+  save();
+  if (lessonArt()) unpaint(lessonArt(), n.id);
+  hidePop();
+  if (tab === 'notes') render(); else afterNotesChange();
+}
+function afterNotesChange(){ drawTabs(); fillNotesCard(); }
+function checkSelection(){
+  if (tab !== 'lesson' || popMode === 'edit' || !curLesson || !lessonArt()) return false;
+  var a = selectionAnchor(lessonArt());
+  var overlaps = a && notesFor(curLesson.n).some(function(n){ return a.start < n.end && a.end > n.start; });
+  if (!a || overlaps) { if (popMode === 'tb') hidePop(); return false; }
+  if (popMode === 'tb' && pending && pending.start === a.start && pending.end === a.end) return true;
+  showToolbar(a); return true;
+}
+function noteItem(ch, n, inLesson){
+  var li = h('li', {class:'note', 'data-id': n.id});
+  li.appendChild(h('blockquote', null, esc(trunc(n.quote, 240))));
+  if (n.note) li.appendChild(h('p', {class:'notetext'}, esc(n.note)));
+  if (inLesson && n.orphan) li.appendChild(h('p', {class:'small muted'}, esc(tr('noteOrphan'))));
+  var r = h('div', {class:'row'});
+  if (inLesson) {
+    r.appendChild(h('button', {class:'btn small', onclick: function(){
+      var m = document.querySelector('mark.hl[data-id="' + n.id + '"]');
+      if (m) m.scrollIntoView({block:'center'});
+      var rect = (m || li).getBoundingClientRect();
+      openEditor(n, rect);
+    }}, esc(tr('noteEdit'))));
+    r.appendChild(h('button', {class:'btn small', onclick: function(){ flashNote(n.id); }}, esc(tr('noteShow'))));
+  } else {
+    r.appendChild(h('button', {class:'btn small', onclick: function(){ go('lesson', ch.n, n.id); }}, esc(tr('noteShow'))));
+  }
+  r.appendChild(h('button', {class:'btn small', onclick: function(){ removeNote(n); }}, esc(tr('noteDelete'))));
+  li.appendChild(r);
+  return li;
+}
+function flashNote(id){
+  var ms = document.querySelectorAll('mark.hl[data-id="' + id + '"]');
+  if (!ms.length) return;
+  ms[0].scrollIntoView({block:'center'});
+  Array.prototype.forEach.call(ms, function(m){ m.classList.add('flash'); setTimeout(function(){ m.classList.remove('flash'); }, 1600); });
+}
+function fillNotesCard(){
+  var box = document.getElementById('chnotes');
+  if (!box || !curLesson) return;
+  var ns = notesFor(curLesson.n);
+  box.innerHTML = '';
+  box.appendChild(h('summary', null, esc(tr('notesChapter', {n: ns.length}))));
+  if (!ns.length) box.appendChild(h('p', {class:'muted small'}, esc(tr('notesHint'))));
+  else { var ul = h('ul', {class:'notelist'}); ns.forEach(function(n){ ul.appendChild(noteItem(curLesson, n, true)); }); box.appendChild(ul); }
+}
+function notesMd(){
+  var out = '# ' + D.title + ' - ' + tr('notesTitle') + '\n';
+  D.chapters.forEach(function(c){
+    var ns = notesFor(c.n);
+    if (!ns.length) return;
+    out += '\n## ' + tr('chTitle', {n: c.n, title: c.title}) + '\n';
+    ns.forEach(function(n){ out += '\n> ' + n.quote.replace(/\s*\n+\s*/g, ' ') + '\n'; if (n.note) out += '\n' + n.note + '\n'; });
+  });
+  return out;
+}
+function downloadText(name, text, type){
+  var blob = new Blob([text], {type: type});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function viewNotes(app){
+  var card = h('div', {class:'card'});
+  card.appendChild(h('h2', null, esc(tr('notesTitle'))));
+  var any = false;
+  D.chapters.forEach(function(c){
+    var ns = notesFor(c.n);
+    if (!ns.length) return;
+    any = true;
+    card.appendChild(h('h3', null, esc(tr('chTitle', {n: c.n, title: c.title}))));
+    var ul = h('ul', {class:'notelist'}); ns.forEach(function(n){ ul.appendChild(noteItem(c, n, false)); }); card.appendChild(ul);
+  });
+  if (!any) card.appendChild(h('p', {class:'muted'}, esc(tr('notesNone'))));
+  else card.appendChild(h('div', {class:'row', style:'margin-top:14px'}, '')).appendChild(h('button', {class:'btn primary', id:'notesdl', onclick: function(){ downloadText(D.id + '-notes.md', notesMd(), 'text/markdown'); }}, esc(tr('downloadNotes'))));
+  app.appendChild(card);
+}
+
+function viewLesson(app){
+  var L = lessonChapters(), i = lessonIndex(), c = L[i];
+  curLesson = c;
+  var bar = h('div', {class:'card'});
+  var row = h('div', {class:'lessonbar'});
+  var sel = h('select', {id:'lchap', 'aria-label': tr('lessonChapter')});
+  L.forEach(function(x){ sel.appendChild(h('option', {value:String(x.n)}, esc((S.read[x.n] ? '✓ ' : '') + tr('chTitle', {n: x.n, title: x.title})))); });
+  sel.value = String(c.n);
+  sel.addEventListener('change', function(){ go('lesson', sel.value); });
+  row.appendChild(sel);
+  if (c.lesson.md) row.appendChild(h('a', {class:'small', id:'openmd', href: c.lesson.md, target:'_blank', rel:'noopener'}, esc(tr('openMd'))));
+  bar.appendChild(row);
+  bar.appendChild(h('div', {class:'muted small', style:'margin-top:6px'}, esc(tr('readTime', {n: c.lesson.minutes})) + ' · ' + esc(tr('selectHint'))));
+  app.appendChild(bar);
+  var heads = c.lesson.toc.filter(function(x){ return x[0] === 2; });
+  var nav = null;
+  if (heads.length > 1) {
+    nav = h('nav', {class:'secnav', id:'secnav', 'aria-label': tr('sections')});
+    heads.forEach(function(x, k){
+      var a = h('a', {href:'#' + x[2], title: x[1], 'data-sec': x[2], 'aria-current': k === 0 ? 'true' : null}, esc(trunc(x[1], 34)));
+      a.addEventListener('click', function(ev){
+        ev.preventDefault();
+        var el = document.getElementById(x[2]);
+        if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+        markCurrent(x[2]);
+      });
+      nav.appendChild(a);
+    });
+    app.appendChild(nav);
+  }
+  function markCurrent(id){
+    if (!nav) return;
+    Array.prototype.forEach.call(nav.children, function(a){
+      var on = a.getAttribute('data-sec') === id;
+      if (on) { a.setAttribute('aria-current', 'true'); nav.scrollLeft = a.offsetLeft - nav.clientWidth / 2 + a.clientWidth / 2; }
+      else a.removeAttribute('aria-current');
+    });
+  }
+  var art = h('article', {class:'card lesson', id:'lesson'}, c.lesson.html);
+  app.appendChild(art);
+  Array.prototype.forEach.call(art.querySelectorAll('[data-t]'), function(e){ e.textContent = tr(e.getAttribute('data-t')); });
+  Array.prototype.forEach.call(art.querySelectorAll('a[data-go]'), function(a){
+    a.addEventListener('click', function(ev){ ev.preventDefault(); var p = a.getAttribute('data-go').split(':'); go(p[0], p[1]); });
+  });
+  notesFor(c.n).forEach(function(n){ paintNote(art, n); });
+  art.addEventListener('click', function(ev){
+    var m = ev.target.closest && ev.target.closest('mark.hl');
+    var s = window.getSelection();
+    if (!m || (s && !s.isCollapsed)) return;
+    var n = notesFor(c.n).filter(function(x){ return x.id === m.getAttribute('data-id'); })[0];
+    if (n) openEditor(n, m.getBoundingClientRect());
+  });
+  art.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter' && ev.target.matches && ev.target.matches('mark.hl')) ev.target.click();
+  });
+  if (nav && 'IntersectionObserver' in window) {
+    spy = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) markCurrent(e.target.id); }); }, {rootMargin:'-70px 0px -70% 0px'});
+    heads.forEach(function(x){ var el = document.getElementById(x[2]); if (el) spy.observe(el); });
+  }
+  var nb = h('details', {class:'card notes', id:'chnotes'});
+  app.appendChild(nb);
+  fillNotesCard();
+  var foot = h('div', {class:'card'});
+  var chk = h('label', null, '<input type="checkbox" id="markread"' + (S.read[c.n] ? ' checked' : '') + '> ' + esc(tr('markRead')));
+  chk.firstChild.addEventListener('change', function(ev){ if (ev.target.checked) S.read[c.n] = true; else delete S.read[c.n]; save(); sel.options[i].textContent = (S.read[c.n] ? '✓ ' : '') + tr('chTitle', {n: c.n, title: c.title}); });
+  foot.appendChild(chk);
+  var r = h('div', {class:'row', style:'margin-top:12px'});
+  r.appendChild(h('button', {class:'btn primary', id:'quizthis', onclick: function(){ go('quiz', c.n); }}, esc(tr('quizThis'))));
+  if (c.cards.length) r.appendChild(h('button', {class:'btn', id:'cardsthis', onclick: function(){ go('cards', c.n); }}, esc(tr('cardsThis'))));
+  if (i > 0) r.appendChild(h('button', {class:'btn', id:'prevch', onclick: function(){ go('lesson', L[i - 1].n); }}, esc(tr('prevCh'))));
+  if (i + 1 < L.length) r.appendChild(h('button', {class:'btn', id:'nextch', onclick: function(){ go('lesson', L[i + 1].n); }}, esc(tr('nextCh'))));
+  foot.appendChild(r);
+  if (c.lesson.md) foot.appendChild(h('p', {class:'muted small', style:'margin-top:10px'}, esc(tr('mdNote', {f: c.lesson.md}))));
+  app.appendChild(foot);
+  if (preset.note) { var id = preset.note; preset.note = null; flashNote(id); }
+}
+
+document.addEventListener('selectionchange', function(){ clearTimeout(selTimer); selTimer = setTimeout(checkSelection, 250); });
+document.addEventListener('mouseup', function(ev){ if (pop && pop.contains(ev.target)) return; setTimeout(checkSelection, 0); });
 
 /* ---------- quiz ---------- */
 function quizSets(){
@@ -290,6 +672,8 @@ function viewQuiz(app){
   card.appendChild(h('h2', null, esc(tr('quizPick'))));
   var sel = h('select', {id:'qset', 'aria-label': tr('quizSetLabel')});
   sets.forEach(function(s){ sel.appendChild(h('option', {value:s.id}, esc(s.label))); });
+  if (preset.quiz && sets.some(function(s){ return s.id === preset.quiz; })) sel.value = preset.quiz;
+  preset.quiz = null;
   card.appendChild(sel);
   var opts = h('div', {class:'row', style:'margin:12px 0'});
   opts.appendChild(h('label', null, '<input type="checkbox" id="qshuf" checked> ' + esc(tr('shufOpts'))));
@@ -418,6 +802,8 @@ function viewCards(app){
   var sel = h('select', {id:'cset', 'aria-label': tr('deckLabel')});
   sel.appendChild(h('option', {value:'all'}, esc(tr('deckAll', {n: cards.length}))));
   D.chapters.forEach(function(c){ if (c.cards.length) sel.appendChild(h('option', {value:String(c.n)}, esc(tr('deckCh', {n: c.n, title: c.title, k: c.cards.length})))); });
+  if (preset.cards && Array.prototype.some.call(sel.options, function(o){ return o.value === preset.cards; })) sel.value = preset.cards;
+  preset.cards = null;
   card.appendChild(sel);
   var info = h('p', {class:'muted small', id:'cinfo', style:'margin:10px 0'});
   card.appendChild(info);
@@ -593,10 +979,10 @@ function examResults(app){
 function viewProgress(app){
   var card = h('div', {class:'card'});
   card.appendChild(h('h2', null, esc(tr('yourProgress'))));
-  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th><th>' + esc(tr('thQuizLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
+  var t = '<table><tr><th>' + esc(tr('thChapter')) + '</th>' + (HAS_LESSONS ? '<th>' + esc(tr('thLesson')) + '</th>' : '') + '<th>' + esc(tr('thQuizLast')) + '</th><th>' + esc(tr('thBest')) + '</th><th>' + esc(tr('thTries')) + '</th></tr>';
   D.chapters.forEach(function(c){
     var r = S.quiz['c' + c.n];
-    t += '<tr><td>' + esc(tr('chTitle', {n: c.n, title: c.title})) + '</td><td>' + (r ? r.last + '%' : '-') + '</td><td>' + (r ? r.best + '%' : '-') + '</td><td>' + (r ? r.attempts : 0) + '</td></tr>';
+    t += '<tr><td>' + esc(tr('chTitle', {n: c.n, title: c.title})) + '</td>' + (HAS_LESSONS ? '<td>' + esc(c.lesson ? (S.read[c.n] ? tr('readYes') : tr('readNo')) : '-') + '</td>' : '') + '<td>' + (r ? r.last + '%' : '-') + '</td><td>' + (r ? r.best + '%' : '-') + '</td><td>' + (r ? r.attempts : 0) + '</td></tr>';
   });
   card.appendChild(h('div', null, t + '</table>'));
   var others = [['all', tr('setAllShort')], ['final', tr('setFinalShort')], ['misses', tr('setMissesShort')], ['misses-retake', tr('setRetakeShort')]].filter(function(x){ return S.quiz[x[0]]; });
@@ -626,7 +1012,8 @@ function viewProgress(app){
   app.appendChild(card);
 }
 function exportResults(){
-  var out = {course: D.title, exportedAt: new Date().toISOString(), quiz: S.quiz, exams: S.exams,
+  var out = {course: D.title, exportedAt: new Date().toISOString(), quiz: S.quiz, exams: S.exams, lessonsRead: Object.keys(S.read).map(Number),
+    notes: D.chapters.filter(function(c){ return notesFor(c.n).length; }).map(function(c){ return {chapter: c.n, title: c.title, items: notesFor(c.n).map(function(n){ return {quote: n.quote, note: n.note}; })}; }),
     misses: Object.keys(S.misses).map(function(id){ var q = byId(id); return {id: id, count: S.misses[id], chapter: q && q.ch || null, question: q ? q.stem.slice(0, 160) : ''}; }),
     flashcards: Object.keys(S.cards).map(function(id){ return {id: id, box: S.cards[id].box, due: dayStr(S.cards[id].due), seen: S.cards[id].seen}; })};
   var blob = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'});
@@ -636,10 +1023,12 @@ function exportResults(){
 
 /* ---------- keyboard ---------- */
 document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && pop) { hidePop(); return; }
   if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
   var tag = (ev.target && ev.target.tagName) || '';
   if (tag === 'SELECT' || tag === 'INPUT' || tag === 'TEXTAREA') return;
   var k = ev.key, KL = k.length === 1 ? k.toLowerCase() : k;
+  if (tab === 'lesson' && popMode === 'tb' && (KL === 'h' || KL === 'n')) { ev.preventDefault(); if (KL === 'h') addNote(''); else openEditor(null); return; }
   if (tab === 'quiz' && state.quiz && !state.quiz.done) {
     var Z = state.quiz;
     var idx = 'abcd'.indexOf(KL); if (idx < 0 && '1234'.indexOf(KL) >= 0) idx = '1234'.indexOf(KL);
@@ -666,7 +1055,7 @@ document.getElementById('tabs').setAttribute('aria-label', tr('studyModes'));
 var C = D.counts || {chapters: D.chapters.length, questions: allQuestions().length, cards: allCards().length, exam: D.exam ? D.exam.questions.length : 0};
 document.getElementById('subtitle').textContent = tr('subtitle', C) + (C.exam ? tr('subtitleExam', {n: C.exam}) : '');
 document.getElementById('foot').innerHTML = md(D.audience ? tr('footerAudience', {a: D.audience}) : tr('footerDefault'));
-window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, setTab: function(t){ tab = t; render(); }};
+window.__sgt = {D: D, t: tr, S: function(){ return S; }, state: function(){ return state; }, render: render, go: go, checkSelection: checkSelection, notesMd: notesMd, setTab: function(t){ tab = t; render(); }};
 render();
 })();
 </script>
